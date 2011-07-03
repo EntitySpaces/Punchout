@@ -22,10 +22,6 @@ EntitySpaces, LLC will be contributing much to this library, however, we will be
 
  * Documentation and tutorials on the EntitySpaces Blog (pre-Punchout):
  
-	[Blog Post](http://www.entityspaces.net/blog/2011/06/30/EntitySpaces+MVVM+JSON+And+Knockout+Ndash+Part+II.aspx)
- 
- * Online examples at 
- 
-	[Master Detail Sample](http://www.entityspaces.net/Knockout/Part1/Sample/masterDetail.htm)
+	[Master Detail Sample](http://www.entityspaces.net/portal/Products/Features/EntitySpacesKnockout.aspx)
 
 License: MIT [MIT http://www.opensource.org/licenses/mit-license.php](MIT http://www.opensource.org/licenses/mit-license.php)

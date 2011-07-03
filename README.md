@@ -1,5 +1,5 @@
 **Punchout** 
-Punchout is a set of user interface controls for Knockout. These will be generic Knockout controls, they will work well with EntitySpaces and all it's state tracking capabilities but will work without EntitySpaces as well.
+is a set of user interface controls for Knockout. These will be generic Knockout controls, they will work well with EntitySpaces and all it's state tracking capabilities but will work without EntitySpaces also.
 
 EntitySpaces, LLC will be contributing much to this library but enlisting others as well. 
 

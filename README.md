@@ -24,4 +24,4 @@ EntitySpaces, LLC will be contributing much to this library, however, we will be
  
 	[Master Detail Sample](http://www.entityspaces.net/portal/Products/Features/EntitySpacesKnockout.aspx)
 
-License: MIT [MIT http://www.opensource.org/licenses/mit-license.php](MIT http://www.opensource.org/licenses/mit-license.php)
+License: MIT [http://www.opensource.org/licenses/mit-license.php](MIT http://www.opensource.org/licenses/mit-license.php)

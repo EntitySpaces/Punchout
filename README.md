@@ -1,6 +1,7 @@
-The **Punchout** Controls are a set of user interface controls for Knockout. The Punchout Controls will come in two forms. 
+The **Punchout** Controls are a set of user interface controls for Knockout (MVVM) library for Javascript. The Punchout Controls will come in two forms. 
 
 1) Generic Knockout controls.
+
 2) EntitySpaces Knockout controls.
 
 The EntitysSpaces version of the knockout controls will work well with the EntitySpaces architecture with all it's row and dirty column state tracking capabilities.

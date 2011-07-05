@@ -13,7 +13,7 @@ Two Types of Controls
 1. Generic Punchout controls
 2. EntitySpaces Punchout controls
 
-The EntitySpaces versions of the Punchout Controls will take the "Generic Punchout Controls" and build in support for the EntitySpaces architecture with all its row and dirty column state tracking capabilities, its built in paging capabilities, and so on.
+The [EntitySpaces](http://www.entityspaces.net/) versions of the Punchout Controls will take the "Generic Punchout Controls" and build in support for the EntitySpaces architecture with all its row and dirty column state tracking capabilities, its built in paging capabilities, and so on.
 
 Further Information
 ---------------------

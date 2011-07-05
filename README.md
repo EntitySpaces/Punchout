@@ -1,19 +1,19 @@
-Purpose of this Javascript Library
+Purpose of Punchout
 ==================================
 
-The **Punchout** Controls are a set of user interface controls for Knockout (MVVM) library for Javascript. The Punchout Controls will come in two forms. 
+**The Punchout Controls** are a set of javascript user interface controls for Knockout (MVVM) library for Javascript. The Punchout Controls will come in two forms. 
 
 Controls Under Development
 ---------------------
-**poGrid** - A fully HTML true Knockout control with paging - just getting under way. There is a sample in the Examples folder (in the Non-EntitySpaces folder)
+**poGrid** - A fully HTML true Knockout control with both server side and client side paging, sorting, and more. We are just getting under way. There is a sample in the Examples folder (in the Non-EntitySpaces folder)
 
 Two Types of Controls
 ---------------------
 
-1. Generic Knockout controls
-2. EntitySpaces Knockout controls
+1. Generic Punchout controls
+2. EntitySpaces Punchout controls
 
-The EntitysSpaces version of the knockout controls will work well with the EntitySpaces architecture with all it's row and dirty column state tracking capabilities.
+The EntitySpaces versions of the Punchout Controls will take the “Generic Punchout Controls” and build in support for the EntitySpaces architecture with all its row and dirty column state tracking capabilities, its built in paging capabilities, and so on.
 
 Further Information
 ---------------------

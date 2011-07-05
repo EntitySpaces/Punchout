@@ -11,53 +11,189 @@
     <link href="../../css/punchout_grid.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
-    <div data-bind="poGrid: myView"></div>
-    <hr />
-    <div data-bind="poGrid: myView"></div>
+    <div data-bind="poGrid: myView" />
 </body>
 </html>
 
-<script language="javascript">
+<script language="javascript" type="text/javascript">
 
 var viewModel = {
     data: ko.observableArray([
         {
-        "EmployeeID": 80,
+        "EmployeeID": 1,
         "FirstName": "Fred",
         "LastName": "Smith",
         "Age": 42,
         "RowState": 2,
         },
     {
-        "EmployeeID": 81,
+        "EmployeeID": 2,
         "FirstName": "Joe",
         "LastName": "Smith",
         "Age": 39,
         "RowState": 2,
         },
     {
-        "EmployeeID": 82,
+        "EmployeeID": 3,
         "FirstName": "Mike",
         "LastName": "Smith",
         "Age": 26,
         "RowState": 2,
-        }
+        },
+        {
+        "EmployeeID": 4,
+        "FirstName": "Fred",
+        "LastName": "Smith",
+        "Age": 42,
+        "RowState": 2,
+        },
+    {
+        "EmployeeID": 5,
+        "FirstName": "Joe",
+        "LastName": "Smith",
+        "Age": 39,
+        "RowState": 2,
+        },
+    {
+        "EmployeeID": 6,
+        "FirstName": "Mike",
+        "LastName": "Smith",
+        "Age": 26,
+        "RowState": 2,
+        },
+        {
+        "EmployeeID": 7,
+        "FirstName": "Fred",
+        "LastName": "Smith",
+        "Age": 42,
+        "RowState": 2,
+        },
+    {
+        "EmployeeID": 8,
+        "FirstName": "Joe",
+        "LastName": "Smith",
+        "Age": 39,
+        "RowState": 2,
+        },
+    {
+        "EmployeeID": 9,
+        "FirstName": "Mike",
+        "LastName": "Smith",
+        "Age": 26,
+        "RowState": 2,
+        },
+        {
+        "EmployeeID": 10,
+        "FirstName": "Fred",
+        "LastName": "Smith",
+        "Age": 42,
+        "RowState": 2,
+        },
+    {
+        "EmployeeID": 11,
+        "FirstName": "Joe",
+        "LastName": "Smith",
+        "Age": 39,
+        "RowState": 2,
+        },
+    {
+        "EmployeeID": 12,
+        "FirstName": "Mike",
+        "LastName": "Smith",
+        "Age": 26,
+        "RowState": 2,
+        },
+        {
+        "EmployeeID": 13,
+        "FirstName": "Fred",
+        "LastName": "Smith",
+        "Age": 42,
+        "RowState": 2,
+        },
+    {
+        "EmployeeID": 14,
+        "FirstName": "Joe",
+        "LastName": "Smith",
+        "Age": 39,
+        "RowState": 2,
+        },
+    {
+        "EmployeeID": 15,
+        "FirstName": "Mike",
+        "LastName": "Smith",
+        "Age": 26,
+        "RowState": 2,
+        },
+        {
+        "EmployeeID": 16,
+        "FirstName": "Fred",
+        "LastName": "Smith",
+        "Age": 42,
+        "RowState": 2,
+        },
+    {
+        "EmployeeID": 17,
+        "FirstName": "Joe",
+        "LastName": "Smith",
+        "Age": 39,
+        "RowState": 2,
+        },
+    {
+        "EmployeeID": 18,
+        "FirstName": "Mike",
+        "LastName": "Smith",
+        "Age": 26,
+        "RowState": 2,
+        },
+        {
+        "EmployeeID": 19,
+        "FirstName": "Fred",
+        "LastName": "Smith",
+        "Age": 42,
+        "RowState": 2,
+        },
+    {
+        "EmployeeID": 20,
+        "FirstName": "Joe",
+        "LastName": "Smith",
+        "Age": 39,
+        "RowState": 2,
+        },
+    {
+        "EmployeeID": 21,
+        "FirstName": "Mike",
+        "LastName": "Smith",
+        "Age": 26,
+        "RowState": 2,
+        },
+        {
+        "EmployeeID": 22,
+        "FirstName": "Fred",
+        "LastName": "Smith",
+        "Age": 42,
+        "RowState": 2,
+        },
+    {
+        "EmployeeID": 23,
+        "FirstName": "Joe",
+        "LastName": "Smith",
+        "Age": 39,
+        "RowState": 2,
+        },
+    {
+        "EmployeeID": 24,
+        "FirstName": "Mike",
+        "LastName": "Smith",
+        "Age": 26,
+        "RowState": 2,
+        },
     ]),
-    columns: ko.observableArray([{
-        header: "Employee ID",
-        property: "EmployeeID"},
-    {
-        header: "First Name",
-        property: "FirstName"},
-    {
-        header: "Last Name",
-        property: "LastName"},
-    {
-        header: "RowState",
-        property: "RowState"}])
-}
+    columns: ko.observableArray(["EmployeeID", "FirstName", "LastName", "RowState"]),
+    headers: ko.observableArray(["Employee ID", "First Name", "Last Name", "Row State"]),
+};
 
-var myView = new po.poGrid.viewModel(viewModel.data, viewModel.columns);
+var myView = new po.poGrid.viewModel(viewModel.data, viewModel.columns, viewModel.headers);
+myView.pager.enabled(true);
 
 ko.applyBindings(myView);
 

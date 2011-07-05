@@ -20,10 +20,10 @@ Further Information
 
 EntitySpaces, LLC will be contributing much to this library, however, we will be enlisting others as well. 
 
- * Pre-Punchout example (learning the basics)
- 	[Master Detail Sample](http://www.entityspaces.net/portal/Products/Features/EntitySpacesKnockout.aspx)
-	
- * Punchout poGrid sample (a true Punchout Control)
+ * **Punchout poGrid Sample** (a true Punchout Control)
     [poGrid Sample](http://www.entityspaces.net/portal/Products/Features/EntitySpacesPunchout.aspx) 
+
+ * Pre-Punchout Example (when we were learning the basics)
+ 	[Master Detail Sample](http://www.entityspaces.net/portal/Products/Features/EntitySpacesKnockout.aspx)
 
 License: MIT [http://www.opensource.org/licenses/mit-license.php](MIT http://www.opensource.org/licenses/mit-license.php)

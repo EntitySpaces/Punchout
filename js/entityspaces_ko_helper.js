@@ -2,8 +2,12 @@
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
 /// <reference path="knockout-1.2.1.debug.js" />
-(function () {
-    es = {};
+/// <reference path="../lib/jquery-1.6.js" />
+/// <reference path="../lib/json2.js" />
+
+
+(function (es, $, undefined) {
+    "use strict";
 
     // Google Closure Compiler helpers (used only to make the minified file smaller)
     es.exportSymbol = function (publicPath, object) {
@@ -189,14 +193,35 @@
         return theData;
     };
 
+    //added by EMB 7/5/11
+    es.makeRequest2 = function (url, methodName, params, successHandler, errorHandler) {
+        //see http://api.jquery.com/jQuery.ajax/
+
+        var path = '';
+
+        path = url + methodName;
+
+        $.ajax({
+            contentType:'application/json;charset=utf-8',
+            context: this,
+            dataType: 'JSON',
+            type: 'POST',
+            url: path,
+            data: JSON.stringify(params),
+            success: successHandler,
+            error: errorHandler
+        });
+    };
+
     //---------------------------------------------------
     // Exported functions
     //---------------------------------------------------
     es.exportSymbol('es.makeRequest', es.makeRequest);
+    es.exportSymbol('es.makeRequest2', es.makeRequest2);
     es.exportSymbol('es.makeRequstError', es.makeRequstError);
     es.exportSymbol('es.trackStateMapping', es.trackStateMapping)
     es.exportSymbol('es.trackState', es.trackState);
     es.exportSymbol('es.markAsDeleted', es.markAsDeleted);
     es.exportSymbol('es.markAllAsDeleted', es.markAllAsDeleted);
     es.exportSymbol('es.RowStateEnum', es.RowStateEnum);
-})();
+})(window.es = window.es || {}, jQuery);

@@ -10,6 +10,10 @@
 
 (function (po, ko, $, undefined) {
 
+    var findParentElement = function (tagName, startingNode) {
+
+    };
+
     //create out actual binding
     ko.bindingHandlers.poGrid = {
 
@@ -47,5 +51,15 @@
             }, gridContainer, "replaceNode");
         }
     };
+
+    ko.bindingHandlers.poColumn = {
+        init: function (element, valueAccessor, allBindingsAccessor, viewModel) {
+
+        },
+
+        update: function (element, valueAccessor, allBindingsAccessor, viewModel) {
+
+        }
+    }
 
 })(window.po = window.po || {}, window.ko, jQuery);

@@ -3,7 +3,7 @@ Purpose of Punchout
 
 **The Punchout Controls** are a set of javascript user interface controls for Knockout (MVVM) library for Javascript.
 
-Controls Under Development
+Controls Currently Under Development
 ---------------------
 **poGrid** - A fully HTML true Knockout control with both server side and client side paging, sorting, and more. We are just getting under way. There is a sample in the Examples folder (in the Non-EntitySpaces folder)
 

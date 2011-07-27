@@ -2,80 +2,64 @@
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
 /// <reference path="knockout-1.2.1.debug.js" />
-/// <reference path="../lib/jquery-1.6.js" />
-/// <reference path="../lib/json2.js" />
+(function () {
+    po = {};
 
-(function (po, ko, $, undefined) {
-    "use strict";
+    /*
+        Please lets refactor this so that we don't have a ViewModel class that handles all the logic of the Grid itself
+    */
+    po.PagingControl = function (viewModel) {
+        var pgctrl = this;
 
-    po.templateEngine = new ko.jqueryTmplTemplateEngine(); //ensure that we are using a jQuery template engine
-    po.gridCollection = {}; //Dictionary of grids on the page
+        pgctrl.enabled = ko.observable(true);
+        pgctrl.grid = viewModel; // references parent
+        pgctrl.totalPageCount = ko.observable(0);
+        pgctrl.currentPage = ko.observable(1);
+        pgctrl.rowsPerPage = ko.observable(10);
 
-    po.poGrid = function (settings) {
-        var defaults = {}, self = this;
+        pgctrl.startingRow = ko.dependentObservable(function () {
+            return (pgctrl.currentPage() - 1) * pgctrl.rowsPerPage();
+        }, pgctrl);
 
-        defaults = {
-            //default settings here
-        };
+        pgctrl.endingRow = ko.dependentObservable(function () {
+            return pgctrl.currentPage() * pgctrl.rowsPerPage();
+        }, pgctrl);
 
-        this.columns = [];
-        this.collection = {};
-        this.footerControl = false;
-        this.headers = {};
-        this.selectedRow = null;
-        this.selectedIndex = ko.observable(0);
-        this.pager = {};
-        this.selectedRowStyle = '';
+        pgctrl.totalRowCount = ko.dependentObservable(function () {
+            return pgctrl.grid.collection().length;
+        }, pgctrl);
 
-        var init = function (settings) {
-            $.extend(settings, defaults);
-
-            //apply settings to child controls
-            self.pager = new po.poGrid.pagingControl(self);
-
-
-        };
-
-        var pagingControl = function (grid) {
-
-            this.enabled = ko.observable(true);
-            this.grid = grid;
-            this.totalPageCount = ko.observable(0);
-            this.currentPage = ko.observable(1);
-            this.rowsPerPage = ko.observable(10);
-
-            this.startingRow = ko.dependentObservable(function () {
-                return (this.currentPage() - 1) * this.rowsPerPage();
-            }, this);
-
-            this.endingRow = ko.dependentObservable(function () {
-                return this.currentPage() * this.rowsPerPage();
-            }, this);
-
-            this.totalRowCount = ko.dependentObservable(function () {
-                return this.grid.collection().length;
-            }, this);
-
-            this.totalPageCount = ko.dependentObservable(function () {
-                var count = this.grid.collection().length;
-                var lastPage = Math.round(count / this.rowsPerPage());
-                if ((count % this.rowsPerPage()) > 0) {
-                    lastPage += 1;
-                }
-                return lastPage;
-            }, this);
+        pgctrl.totalPageCount = ko.dependentObservable(function () {
+            var count = pgctrl.grid.collection().length;
+            var lastPage = Math.round(count / pgctrl.rowsPerPage());
+            if ((count % pgctrl.rowsPerPage()) > 0) {
+                lastPage += 1;
+            }
+            return lastPage;
+        }, pgctrl);
 
 
-        };
+    };
 
-        var findParentRow = function (element) {
+    po.GridViewModel = function () {
+        var thisVM = this;
+
+        thisVM.collection = ko.observableArray([]);
+        thisVM.columns = [];
+        thisVM.footerControl = false;
+        thisVM.headers = [];
+        thisVM.selectedRow = null;
+        thisVM.selectedIndex = ko.observable(0);
+        thisVM.pager; //TODO: could be all built in together
+
+        findParentRow = function (element) {
             if (element.tagName === "TR") {
                 return element;
             }
-            return this.findParentRow(element.parentNode);
-        };
+            return thisVM.findParentRow(element.parentNode);
+        }
 
-        this.OnMouseIn = function (event) {
+        thisVM.OnMouseIn = function (event) {
             var tableRow = findParentRow(event.target.parentNode);
             if (tableRow.style.backgroundColor == 'lightblue') {
                 return;
@@ -83,7 +67,7 @@
             tableRow.style.backgroundColor = '#dcfac9';
         };
 
-        this.OnMouseOut = function (event) {
+        thisVM.OnMouseOut = function (event) {
             var tableRow = findParentRow(event.target.parentNode);
             if (tableRow.style.backgroundColor == 'lightblue') {
                 return;
@@ -91,58 +75,42 @@
             tableRow.style.backgroundColor = 'white';
         };
 
-        this.OnClick = function (event) {
-            if (this.selectedRow != null) {
-                this.selectedRow.style.backgroundColor = 'white';
+        thisVM.OnClick = function (event) {
+            if (thisVM.selectedRow != null) {
+                thisVM.selectedRow.style.backgroundColor = 'white';
             }
             var tableRow = findParentRow(event.target.parentNode);
             tableRow.style.backgroundColor = 'lightblue';
 
-            this.selectedRow = tableRow;
-        };
+            thisVM.selectedRow = tableRow;
+        }
 
-        this.OnFirstPage = function (event) {
-            this.pager.currentPage(1);
-        };
+        thisVM.OnFirstPage = function (event) {
+            thisVM.pager.currentPage(1);
+        }
 
-        this.OnNextPage = function (event) {
-            var i = this.pager.currentPage();
-            this.pager.currentPage(Math.min(i + 1, this.pager.totalPageCount()));
-        };
+        thisVM.OnNextPage = function (event) {
+            var i = thisVM.pager.currentPage();
+            thisVM.pager.currentPage(Math.min(i + 1, thisVM.pager.totalPageCount()));
+        }
 
-        this.OnLastPage = function (event) {
-            var lastPage = this.pager.totalPageCount();
-            this.pager.currentPage(lastPage);
-        };
+        thisVM.OnLastPage = function (event) {
+            var lastPage = thisVM.pager.totalPageCount();
+            thisVM.pager.currentPage(lastPage);
+        }
 
-        this.OnPrevPage = function (event) {
-            var i = this.pager.currentPage();
-            this.pager.currentPage(Math.max(i - 1, 1));
-        };
-
-        //initialize it
-        init(settings);
+        thisVM.OnPrevPage = function (event) {
+            var i = thisVM.pager.currentPage();
+            thisVM.pager.currentPage(Math.max(i - 1, 1));
+        }
     };
 
-    po.poColumn = function (settings) {
-        var defaults = {}, self = this;
+    po.PunchoutGrid = function () {
+        var thisGrid = this;
 
-        defaults = {
-            //default settings here
-        };
-
-        this.propertyName = '';
-        this.cssClass = '';
-
-        var init = function (settings) {
-            $.extend(settings, defaults);
-
-            //setup the other initialization things
-        };
-
-
-        init(settings);
+        thisGrid.viewModel;
     };
+
     /* 
     =================================
     PULL OUT FOR INLINE TESTING
@@ -200,13 +168,53 @@
 
     */
 
-
+    var templateEngine = new ko.jqueryTmplTemplateEngine(); //ensure that we are using a jQuery template engine
 
     // Add our templates as strings
-    po.templateEngine.addTemplate("po_gridTemplate", "<table id=\"poGrid\" class=\"es-grid\" cellspacing=\"0\">{{if headers}}<thead><tr data-bind=\"template: { name: 'po_gridTH_template', foreach: headers, templateOptions: { vm: $data } }\" /></thead>{{/if}}<tbody data-bind=\"template: { name: 'po_gridTR_template', foreach: collection.slice(pager.startingRow(), pager.endingRow()), templateOptions: { columns: columns, vm: $data } }\"></tbody>{{if footerControl }}<tfoot><tr data-bind=\"template: { name: 'po_gridTF_template', foreach: headers, templateOptions: { vm: $data } }\" /></tfoot>{{/if}}{{if pager.enabled() }}<tfoot><tr><th align=\"left\" colspan=\"${headers().length}\" data-bind=\"template: { name: 'po_gridPager_template',  templateOptions: { vm: $data } }\" /></tr></tfoot>{{/if}}</table>");
-    po.templateEngine.addTemplate("po_gridTH_template", "<th data-bind=\"text: $data\" ></th>");
-    po.templateEngine.addTemplate("po_gridTR_template", "<tr data-bind=\"click: $item.vm.OnClick.bind($item.vm), event: { mouseover: $item.vm.OnMouseIn.bind($item.vm), mouseout: $item.vm.OnMouseOut.bind($item.vm) }, template: { name: 'po_gridTD_template', foreach: $item.columns, templateOptions: { rowData: $data } }\"></tr>");
-    po.templateEngine.addTemplate("po_gridTD_template", "<td data-bind=\"text: $item.rowData[$data]\"></td>");
-    po.templateEngine.addTemplate("po_gridPager_template", "<button data-bind=\"click: $item.vm.OnFirstPage.bind($item.vm)\"> << </button> <button data-bind=\"click: $item.vm.OnPrevPage.bind($item.vm)\"><</button> <button data-bind=\"click: $item.vm.OnNextPage.bind($item.vm)\">></button> <button data-bind=\"click: $item.vm.OnLastPage.bind($item.vm)\">>></button> Page ${$item.vm.pager.currentPage()} of ${$item.vm.pager.totalPageCount()}");
+    templateEngine.addTemplate("po_gridTemplate", "<table id=\"poGrid\" class=\"es-grid\" cellspacing=\"0\">{{if headers}}<thead><tr data-bind=\"template: { name: 'po_gridTH_template', foreach: headers, templateOptions: { vm: $data } }\" /></thead>{{/if}}<tbody data-bind=\"template: { name: 'po_gridTR_template', foreach: collection.slice(pager.startingRow(), pager.endingRow()), templateOptions: { columns: columns, vm: $data } }\"></tbody>{{if footerControl }}<tfoot><tr data-bind=\"template: { name: 'po_gridTF_template', foreach: headers, templateOptions: { vm: $data } }\" /></tfoot>{{/if}}{{if pager.enabled() }}<tfoot><tr><th align=\"left\" colspan=\"${headers().length}\" data-bind=\"template: { name: 'po_gridPager_template',  templateOptions: { vm: $data } }\" /></tr></tfoot>{{/if}}</table>");
+    templateEngine.addTemplate("po_gridTH_template", "<th data-bind=\"text: $data\" ></th>");
+    templateEngine.addTemplate("po_gridTR_template", "<tr data-bind=\"click: $item.vm.OnClick.bind($item.vm), event: { mouseover: $item.vm.OnMouseIn.bind($item.vm), mouseout: $item.vm.OnMouseOut.bind($item.vm) }, template: { name: 'po_gridTD_template', foreach: $item.columns, templateOptions: { rowData: $data } }\"></tr>");
+    templateEngine.addTemplate("po_gridTD_template", "<td data-bind=\"text: $item.rowData[$data]\"></td>");
+    templateEngine.addTemplate("po_gridPager_template", "<button data-bind=\"click: $item.vm.OnFirstPage.bind($item.vm)\"> << </button> <button data-bind=\"click: $item.vm.OnPrevPage.bind($item.vm)\"><</button> <button data-bind=\"click: $item.vm.OnNextPage.bind($item.vm)\">></button> <button data-bind=\"click: $item.vm.OnLastPage.bind($item.vm)\">>></button> Page ${$item.vm.pager.currentPage()} of ${$item.vm.pager.totalPageCount()}");
 
-})(window.po = window.po || {}, window.ko, jQuery);
+    //create out actual binding
+    ko.bindingHandlers.poGrid = {
+        init: function (element, valueAccessor, allBindingsAccessor, viewModel) {
+            var theGrid,
+                values;
+
+            values = valueAccessor();
+
+            //TODO: most of this could be cleaned up, but i'm proofing the concept
+            theGrid = new po.PunchoutGrid();
+            theGrid.viewModel = new po.GridViewModel();
+            theGrid.viewModel.pager = new po.PagingControl(theGrid.viewModel);
+
+            theGrid.viewModel.collection = values.items;
+            theGrid.viewModel.columns = values.columns;
+            theGrid.viewModel.headers = values.headers;
+            theGrid.viewModel.pager.enabled(values.pager);
+
+            element['poGrid'] = theGrid;
+        },
+        update: function (element, valueAccessor, allBindingsAccessor, viewModel) {
+            var theGrid
+
+            if (element['poGrid']) {
+
+                theGrid = element['poGrid'];
+                // Empty the element
+                while (element.firstChild) {
+                    ko.removeNode(element.firstChild);
+                }
+
+                // Render the main grid
+                var gridContainer = element.appendChild(document.createElement("DIV"));
+                ko.renderTemplate("po_gridTemplate", theGrid.viewModel, {
+                    templateEngine: templateEngine
+                }, gridContainer, "replaceNode");
+
+            }
+        }
+    };
+})();

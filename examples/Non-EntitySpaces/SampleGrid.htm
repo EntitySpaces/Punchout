@@ -11,7 +11,7 @@
     <link href="../../css/punchout_grid.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
-    <div data-bind="poGrid: myView" />
+    <div data-bind="poGrid: {items: viewModel.data, columns: viewModel.columns, headers: viewModel.headers, pager: true}" />
 </body>
 </html>
 
@@ -57,9 +57,6 @@ var viewModel = {
     headers: ko.observableArray(["Employee ID", "First Name", "Last Name", "Row State"])
 }
 
-var myView = new po.poGrid.viewModel(viewModel.data, viewModel.columns, viewModel.headers);
-myView.pager.enabled(true);
-
-ko.applyBindings(myView);
+ko.applyBindings(viewModel);
 
 </script>

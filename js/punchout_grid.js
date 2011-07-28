@@ -5,9 +5,6 @@
 (function () {
     po = {};
 
-    /*
-        Please lets refactor this so that we don't have a ViewModel class that handles all the logic of the Grid itself
-    */
     po.PagingControl = function (viewModel) {
         var pgctrl = this;
 
@@ -41,25 +38,32 @@
 
     };
 
-    po.GridViewModel = function () {
-        var thisVM = this;
+    po.PunchoutGrid = function () {
+        //private variables        
+        var self = this;
+        
+        //public properties
+        self.collection = ko.observableArray([]);
+        self.columns = [];
+        self.footerControl = false;
+        self.headers = [];
+        self.selectedRow = null;
+        self.selectedIndex = ko.observable(0);
+        self.pager = new po.PagingControl(self);
 
-        thisVM.collection = ko.observableArray([]);
-        thisVM.columns = [];
-        thisVM.footerControl = false;
-        thisVM.headers = [];
-        thisVM.selectedRow = null;
-        thisVM.selectedIndex = ko.observable(0);
-        thisVM.pager; //TODO: could be all built in together
-
-        findParentRow = function (element) {
-            if (element.tagName === "TR") {
-                return element;
+        //private functions
+        var findParentRow = function (element) {
+            var val;
+            val = $(element).closest('TR'); // a little jQuery love
+            if (val[0]) {
+                return val[0]; //return the first element in the matched set
+            } else {
+                return null;
             }
-            return thisVM.findParentRow(element.parentNode);
         }
 
-        thisVM.OnMouseIn = function (event) {
+        //public functions
+        self.onMouseIn = function (event) {
             var tableRow = findParentRow(event.target.parentNode);
             if (tableRow.style.backgroundColor == 'lightblue') {
                 return;
@@ -67,7 +71,7 @@
             tableRow.style.backgroundColor = '#dcfac9';
         };
 
-        thisVM.OnMouseOut = function (event) {
+        self.onMouseOut = function (event) {
             var tableRow = findParentRow(event.target.parentNode);
             if (tableRow.style.backgroundColor == 'lightblue') {
                 return;
@@ -75,95 +79,91 @@
             tableRow.style.backgroundColor = 'white';
         };
 
-        thisVM.OnClick = function (event) {
-            if (thisVM.selectedRow != null) {
-                thisVM.selectedRow.style.backgroundColor = 'white';
+        self.onClick = function (event) {
+            if (self.selectedRow != null) {
+                self.selectedRow.style.backgroundColor = 'white';
             }
             var tableRow = findParentRow(event.target.parentNode);
             tableRow.style.backgroundColor = 'lightblue';
 
-            thisVM.selectedRow = tableRow;
+            self.selectedRow = tableRow;
         }
 
-        thisVM.OnFirstPage = function (event) {
-            thisVM.pager.currentPage(1);
+        self.onFirstPage = function (event) {
+            self.pager.currentPage(1);
         }
 
-        thisVM.OnNextPage = function (event) {
-            var i = thisVM.pager.currentPage();
-            thisVM.pager.currentPage(Math.min(i + 1, thisVM.pager.totalPageCount()));
+        self.onNextPage = function (event) {
+            var i = self.pager.currentPage();
+            self.pager.currentPage(Math.min(i + 1, self.pager.totalPageCount()));
         }
 
-        thisVM.OnLastPage = function (event) {
-            var lastPage = thisVM.pager.totalPageCount();
-            thisVM.pager.currentPage(lastPage);
+        self.onLastPage = function (event) {
+            var lastPage = self.pager.totalPageCount();
+            self.pager.currentPage(lastPage);
         }
 
-        thisVM.OnPrevPage = function (event) {
-            var i = thisVM.pager.currentPage();
-            thisVM.pager.currentPage(Math.max(i - 1, 1));
+        self.onPrevPage = function (event) {
+            var i = self.pager.currentPage();
+            self.pager.currentPage(Math.max(i - 1, 1));
         }
+
     };
-
-    po.PunchoutGrid = function () {
-        var thisGrid = this;
-
-        thisGrid.viewModel;
-    };
-
+})();
     /* 
     =================================
     PULL OUT FOR INLINE TESTING
     =================================
-
+    */
+    /*
     <script type="text/html" id="po_gridTemplate">
     <table id="poGrid" class="es-grid" cellspacing="0">
 
     {{if headers}}
-    <thead>
-    <tr data-bind="template: { name: 'po_gridTH_template', foreach: headers, templateOptions: { vm: $data } }" />
-    </thead>
+        <thead>
+        <tr data-bind="template: { name: 'po_gridTH_template', foreach: headers, templateOptions: { vm: $data } }" />
+        </thead>
     {{/if}}
 
-    <tbody data-bind="template: { name: 'po_gridTR_template', foreach: collection.slice(pager.startingRow(), pager.endingRow()), templateOptions: { columns: columns, vm: $data } }"></tbody>
+        <tbody data-bind="template: { name: 'po_gridTR_template', foreach: collection.slice(pager.startingRow(), pager.endingRow()), templateOptions: { columns: columns, vm: $data } }"></tbody>
 
-    {{if footerControl }}
-    <tfoot>
-    <tr data-bind="template: { name: 'po_gridTF_template', foreach: headers, templateOptions: { vm: $data } }" />
-    </tfoot>
-    {{/if}}
+        {{if footerControl }}
+            <tfoot>
+                <tr data-bind="template: { name: 'po_gridTF_template', foreach: headers, templateOptions: { vm: $data } }" />
+            </tfoot>
+        {{/if}}
 
-    {{if pager.enabled() }}
-    <tfoot>
-    <tr>
-    <th align="left" colspan="${headers().length}" data-bind="template: { name: 'po_gridPager_template',  templateOptions: { vm: $data } }" />
-    </tr>
-    </tfoot>
-    {{/if}}
+        {{if pager.enabled() }}
+            <tfoot>
+                <tr>
+                    <th align="left" colspan="${headers().length}" data-bind="template: { name: 'po_gridPager_template',  templateOptions: { vm: $data } }" />
+                </tr>
+            </tfoot>
+        {{/if}}
     </table>
     </script>
 
     <script type="text/html" id="po_gridTH_template">
-    <th data-bind="text: $data" >
-    </th>
+        <th data-bind="text: $data" >
+        </th>
     </script>	
 
     <script type="text/html" id="po_gridTR_template">
-    <tr data-bind="click: $item.vm.OnClick.bind($item.vm), event: { mouseover: $item.vm.OnMouseIn.bind($item.vm), mouseout: $item.vm.OnMouseOut.bind($item.vm) }, 
-    template: { name: 'po_gridTD_template', foreach: $item.columns, templateOptions: { rowData: $data } }"></tr>
+        <tr data-bind="click: $item.vm.OnClick.bind($item.vm), event: { mouseover: $item.vm.OnMouseIn.bind($item.vm), mouseout: $item.vm.OnMouseOut.bind($item.vm) }, 
+                       template: { name: 'po_gridTD_template', foreach: $item.columns, templateOptions: { rowData: $data } }"></tr>
     </script>	
 
     <script type="text/html" id="po_gridTD_template">
-    <td data-bind="text: $item.rowData[$data]"></td>
+        <td data-bind="text: $item.rowData[$data]"></td>
     </script>
 
     <script type="text/html" id="po_gridTF_template">
-    <th data-bind="text: $data">
-    </th>
+        <th data-bind="text: $data">
+        </th>
     </script>
     
     <script type="text/html" id="po_gridPager_template">
-    <button data-bind="click: $item.vm.OnFirstPage.bind($item.vm)"> << </button> <button data-bind="click: $item.vm.OnPrevPage.bind($item.vm)"><</button> <button data-bind="click: $item.vm.OnNextPage.bind($item.vm)">></button> <button data-bind="click: $item.vm.OnLastPage.bind($item.vm)">>></button> Page ${$item.vm.pager.currentPage()} of ${$item.vm.pager.totalPageCount()}
+        <button data-bind="click: $item.vm.OnFirstPage.bind($item.vm)"> << </button> <button data-bind="click: $item.vm.OnPrevPage.bind($item.vm)"><</button> <button data-bind="click: $item.vm.OnNextPage.bind($item.vm)">></button> <button data-bind="click: $item.vm.OnLastPage.bind($item.vm)">>></button> Page ${$item.vm.pager.currentPage()} of ${$item.vm.pager.totalPageCount()}
     </script>    
 
     */
@@ -171,11 +171,11 @@
     var templateEngine = new ko.jqueryTmplTemplateEngine(); //ensure that we are using a jQuery template engine
 
     // Add our templates as strings
-    templateEngine.addTemplate("po_gridTemplate", "<table id=\"poGrid\" class=\"es-grid\" cellspacing=\"0\">{{if headers}}<thead><tr data-bind=\"template: { name: 'po_gridTH_template', foreach: headers, templateOptions: { vm: $data } }\" /></thead>{{/if}}<tbody data-bind=\"template: { name: 'po_gridTR_template', foreach: collection.slice(pager.startingRow(), pager.endingRow()), templateOptions: { columns: columns, vm: $data } }\"></tbody>{{if footerControl }}<tfoot><tr data-bind=\"template: { name: 'po_gridTF_template', foreach: headers, templateOptions: { vm: $data } }\" /></tfoot>{{/if}}{{if pager.enabled() }}<tfoot><tr><th align=\"left\" colspan=\"${headers().length}\" data-bind=\"template: { name: 'po_gridPager_template',  templateOptions: { vm: $data } }\" /></tr></tfoot>{{/if}}</table>");
-    templateEngine.addTemplate("po_gridTH_template", "<th data-bind=\"text: $data\" ></th>");
-    templateEngine.addTemplate("po_gridTR_template", "<tr data-bind=\"click: $item.vm.OnClick.bind($item.vm), event: { mouseover: $item.vm.OnMouseIn.bind($item.vm), mouseout: $item.vm.OnMouseOut.bind($item.vm) }, template: { name: 'po_gridTD_template', foreach: $item.columns, templateOptions: { rowData: $data } }\"></tr>");
-    templateEngine.addTemplate("po_gridTD_template", "<td data-bind=\"text: $item.rowData[$data]\"></td>");
-    templateEngine.addTemplate("po_gridPager_template", "<button data-bind=\"click: $item.vm.OnFirstPage.bind($item.vm)\"> << </button> <button data-bind=\"click: $item.vm.OnPrevPage.bind($item.vm)\"><</button> <button data-bind=\"click: $item.vm.OnNextPage.bind($item.vm)\">></button> <button data-bind=\"click: $item.vm.OnLastPage.bind($item.vm)\">>></button> Page ${$item.vm.pager.currentPage()} of ${$item.vm.pager.totalPageCount()}");
+    //templateEngine.addTemplate($("#po_gridTemplate").html);//, "<table id=\"poGrid\" class=\"es-grid\" cellspacing=\"0\">{{if headers}}<thead><tr data-bind=\"template: { name: 'po_gridTH_template', foreach: headers, templateOptions: { vm: $data } }\" /></thead>{{/if}}<tbody data-bind=\"template: { name: 'po_gridTR_template', foreach: collection.slice(pager.startingRow(), pager.endingRow()), templateOptions: { columns: columns, vm: $data } }\"></tbody>{{if footerControl }}<tfoot><tr data-bind=\"template: { name: 'po_gridTF_template', foreach: headers, templateOptions: { vm: $data } }\" /></tfoot>{{/if}}{{if pager.enabled() }}<tfoot><tr><th align=\"left\" colspan=\"${headers().length}\" data-bind=\"template: { name: 'po_gridPager_template',  templateOptions: { vm: $data } }\" /></tr></tfoot>{{/if}}</table>");
+    //templateEngine.addTemplate("po_gridTH_template", "<th data-bind=\"text: $data\" ></th>");
+    //templateEngine.addTemplate("po_gridTR_template", "<tr data-bind=\"click: $item.vm.OnClick.bind($item.vm), event: { mouseover: $item.vm.OnMouseIn.bind($item.vm), mouseout: $item.vm.OnMouseOut.bind($item.vm) }, template: { name: 'po_gridTD_template', foreach: $item.columns, templateOptions: { rowData: $data } }\"></tr>");
+    //templateEngine.addTemplate("po_gridTD_template", "<td data-bind=\"text: $item.rowData[$data]\"></td>");
+    //templateEngine.addTemplate("po_gridPager_template", "<button data-bind=\"click: $item.vm.OnFirstPage.bind($item.vm)\"> << </button> <button data-bind=\"click: $item.vm.OnPrevPage.bind($item.vm)\"><</button> <button data-bind=\"click: $item.vm.OnNextPage.bind($item.vm)\">></button> <button data-bind=\"click: $item.vm.OnLastPage.bind($item.vm)\">>></button> Page ${$item.vm.pager.currentPage()} of ${$item.vm.pager.totalPageCount()}");
 
     //create out actual binding
     ko.bindingHandlers.poGrid = {
@@ -187,13 +187,12 @@
 
             //TODO: most of this could be cleaned up, but i'm proofing the concept
             theGrid = new po.PunchoutGrid();
-            theGrid.viewModel = new po.GridViewModel();
-            theGrid.viewModel.pager = new po.PagingControl(theGrid.viewModel);
+            //theGrid.viewModel = new po.GridViewModel();
 
-            theGrid.viewModel.collection = values.items;
-            theGrid.viewModel.columns = values.columns;
-            theGrid.viewModel.headers = values.headers;
-            theGrid.viewModel.pager.enabled(values.pager);
+            theGrid.collection = values.items;
+            theGrid.columns = values.columns;
+            theGrid.headers = values.headers;
+            theGrid.pager.enabled(values.pager);
 
             element['poGrid'] = theGrid;
         },
@@ -210,11 +209,10 @@
 
                 // Render the main grid
                 var gridContainer = element.appendChild(document.createElement("DIV"));
-                ko.renderTemplate("po_gridTemplate", theGrid.viewModel, {
+                ko.renderTemplate("po_gridTemplate", theGrid, {
                     templateEngine: templateEngine
                 }, gridContainer, "replaceNode");
 
             }
         }
     };
-})();

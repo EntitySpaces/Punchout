@@ -1,7 +1,7 @@
 ﻿// Punchout JavaScript library v1.0
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
-/// <reference path="knockout-1.2.1.debug.js" />
+/// <reference path="knockout-latest.debug.js" />
 (function () {
     es = {};
 

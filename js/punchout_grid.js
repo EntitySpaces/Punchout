@@ -108,53 +108,53 @@
     =================================
 
     <script type="text/html" id="po_gridTemplate">
-        <table id="poGrid" class="es-grid" cellspacing="0">
+    <table id="poGrid" class="es-grid" cellspacing="0">
 
-            {{if headers}}
-            <thead>
-                <tr data-bind="template: { name: 'po_gridTH_template', foreach: headers, templateOptions: { vm: $data } }" />
-            </thead>
-            {{/if}}
+    {{if headers}}
+    <thead>
+    <tr data-bind="template: { name: 'po_gridTH_template', foreach: headers, templateOptions: { vm: $data } }" />
+    </thead>
+    {{/if}}
 
-            <tbody data-bind="template: { name: 'po_gridTR_template', foreach: collection.slice(pager.startingRow(), pager.endingRow()), templateOptions: { columns: columns, vm: $data } }"></tbody>
+    <tbody data-bind="template: { name: 'po_gridTR_template', foreach: collection.slice(pager.startingRow(), pager.endingRow()), templateOptions: { columns: columns, vm: $data } }"></tbody>
 
-            {{if footerControl }}
-            <tfoot>
-                <tr data-bind="template: { name: 'po_gridTF_template', foreach: headers, templateOptions: { vm: $data } }" />
-            </tfoot>
-            {{/if}}
+    {{if footerControl }}
+    <tfoot>
+    <tr data-bind="template: { name: 'po_gridTF_template', foreach: headers, templateOptions: { vm: $data } }" />
+    </tfoot>
+    {{/if}}
 
-            {{if pager.enabled() }}
-            <tfoot>
-                <tr>
-                    <th align="left" colspan="${headers().length}" data-bind="template: { name: 'po_gridPager_template',  templateOptions: { vm: $data } }" />
-                </tr>
-            </tfoot>
-            {{/if}}
-        </table>
+    {{if pager.enabled() }}
+    <tfoot>
+    <tr>
+    <th align="left" colspan="${headers().length}" data-bind="template: { name: 'po_gridPager_template',  templateOptions: { vm: $data } }" />
+    </tr>
+    </tfoot>
+    {{/if}}
+    </table>
     </script>
 
     <script type="text/html" id="po_gridTH_template">
-        <th data-bind="text: $data" >
-        </th>
+    <th data-bind="text: $data" >
+    </th>
     </script>	
 
     <script type="text/html" id="po_gridTR_template">
-        <tr data-bind="click: $item.vm.OnClick.bind($item.vm), event: { mouseover: $item.vm.OnMouseIn.bind($item.vm), mouseout: $item.vm.OnMouseOut.bind($item.vm) }, 
-        template: { name: 'po_gridTD_template', foreach: $item.columns, templateOptions: { rowData: $data } }"></tr>
+    <tr data-bind="click: $item.vm.OnClick.bind($item.vm), event: { mouseover: $item.vm.OnMouseIn.bind($item.vm), mouseout: $item.vm.OnMouseOut.bind($item.vm) }, 
+    template: { name: 'po_gridTD_template', foreach: $item.columns, templateOptions: { rowData: $data } }"></tr>
     </script>	
 
     <script type="text/html" id="po_gridTD_template">
-        <td data-bind="text: $item.rowData[$data]"></td>
+    <td data-bind="text: $item.rowData[$data]"></td>
     </script>
 
     <script type="text/html" id="po_gridTF_template">
-        <th data-bind="text: $data">
-        </th>
+    <th data-bind="text: $data">
+    </th>
     </script>
     
     <script type="text/html" id="po_gridPager_template">
-        <button data-bind="click: $item.vm.OnFirstPage.bind($item.vm)"> << </button> <button data-bind="click: $item.vm.OnPrevPage.bind($item.vm)"><</button> <button data-bind="click: $item.vm.OnNextPage.bind($item.vm)">></button> <button data-bind="click: $item.vm.OnLastPage.bind($item.vm)">>></button> Page ${$item.vm.pager.currentPage()} of ${$item.vm.pager.totalPageCount()}
+    <button data-bind="click: $item.vm.OnFirstPage.bind($item.vm)"> << </button> <button data-bind="click: $item.vm.OnPrevPage.bind($item.vm)"><</button> <button data-bind="click: $item.vm.OnNextPage.bind($item.vm)">></button> <button data-bind="click: $item.vm.OnLastPage.bind($item.vm)">>></button> Page ${$item.vm.pager.currentPage()} of ${$item.vm.pager.totalPageCount()}
     </script>    
 
     */

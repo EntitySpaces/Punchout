@@ -12,44 +12,47 @@
 </head>
 <body>
 
+
     <!-- Working on new 1.3 Native Template syntax -->
-    <table class="es-grid" cellspacing="0">
-        <thead data-bind="if: headerEnabled()">
-            <tr data-bind="foreach: headers">
-                <th data-bind="text: $data" >
-                </th>
-            </tr>
-        </thead>
 
-        <tbody data-bind="foreach: collection.slice(pager.startingRow(), pager.endingRow())">
-            <tr data-bind="foreach: $root.columns, event: { mouseover: $root.OnMouseIn.bind($parent),  mouseout: $root.OnMouseOut.bind($parent), click: $root.OnClick.bind($root) }">
-                <td data-bind="text: $parent[$data]">
-                </td>
-            </tr>
-        </tbody>
+    <script type="text/html" id="poGrid"> 
+        <table id="poGrid" class="es-grid" cellspacing="0">
+            <thead data-bind="if: headerEnabled()">
+                <tr data-bind="foreach: headers">
+                    <th data-bind="text: $data" >
+                    </th>
+                </tr>
+            </thead>
 
-        <tfoot data-bind="if: footerEnabled()">
-            <tr data-bind="foreach: footers" >
-                <td data-bind="text: $data">
-                </td>
-            </tr>
+            <tbody data-bind="foreach: collection.slice(pager.startingRow(), pager.endingRow())">
+                <tr data-bind="foreach: $root.columns, event: { mouseover: $root.OnMouseIn.bind($parent),  mouseout: $root.OnMouseOut.bind($parent), click: $root.OnClick.bind($root) }">
+                    <td data-bind="text: $parent[$data]">
+                    </td>
+                </tr>
+            </tbody>
 
-            <tr data-bind="if: pager.enabled()">
-                <td data-bind="attr: { colspan: headers().length }" nowrap="nowrap">
-                    <button data-bind="click: $root.OnFirstPage.bind($root)"> << </button> 
-                    <button data-bind="click: $root.OnPrevPage.bind($root)"> < </button>
-                    <button data-bind="click: $root.OnNextPage.bind($root)"> > </button>
-                    <button data-bind="click: $root.OnLastPage.bind($root)"> >> </button>
-                    Page <em data-bind="text: $root.pager.currentPage()" ></em> of 
-                    <em data-bind="text: $root.pager.totalPageCount()"></em>
-                </td>
-            </tr>
-        </tfoot>
+            <tfoot data-bind="if: footerEnabled()">
+                <tr data-bind="foreach: footers" >
+                    <td data-bind="text: $data">
+                    </td>
+                </tr>
 
-    </table>
+                <tr data-bind="if: pager.enabled()">
+                    <td data-bind="attr: { colspan: headers().length }" nowrap="nowrap">
+                        <button data-bind="click: $root.OnFirstPage.bind($root)"> << </button> 
+                        <button data-bind="click: $root.OnPrevPage.bind($root)"> < </button>
+                        <button data-bind="click: $root.OnNextPage.bind($root)"> > </button>
+                        <button data-bind="click: $root.OnLastPage.bind($root)"> >> </button>
+                        Page <em data-bind="text: $root.pager.currentPage()" ></em> of 
+                        <em data-bind="text: $root.pager.totalPageCount()"></em>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </script>
 
    <!-- poGrid using JQuery still, once I get the above finished it will all be KO template syntax -->
-<!--   <div data-bind="poGrid: myView" />-->
+   <div id="wow" data-bind="template: { name: 'poGrid'}" />
 
 </body>
 </html>

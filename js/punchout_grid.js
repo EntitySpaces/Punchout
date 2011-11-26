@@ -9,6 +9,7 @@
 
         pagingControl: function (grid) {
 
+            this.colSpan = ko.observable(4);
             this.enabled = ko.observable(true);
             this.grid = grid;
             this.totalPageCount = ko.observable(0);
@@ -39,14 +40,18 @@
 
         },
 
-        viewModel: function (data, columns, headers) {
+        viewModel: function (data, columns, headers, footers) {
             this.collection = data;
             this.columns = columns;
-            this.footerControl = false;
             this.headers = headers;
+            this.footers = footers;
             this.selectedRow = null;
             this.selectedIndex = ko.observable(0);
             this.pager = new po.poGrid.pagingControl(this);
+
+            // Settings
+            this.headerEnabled = ko.observable(true);
+            this.footerEnabled = ko.observable(false);
 
             findParentRow = function (element) {
                 if (element.tagName === "TR") {

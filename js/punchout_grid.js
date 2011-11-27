@@ -112,69 +112,57 @@
     PULL OUT FOR INLINE TESTING
     =================================
 
-    <script type="text/html" id="po_gridTemplate">
-    <table id="poGrid" class="es-grid" cellspacing="0">
+    <script type="text/html" id="poGrid"> 
+        <table id="poGrid" class="es-grid" cellspacing="0">
+            <thead data-bind="if: headerEnabled()">
+                <tr data-bind="foreach: headers">
+                    <th data-bind="text: $data" >
+                    </th>
+                </tr>
+            </thead>
 
-    {{if headers}}
-    <thead>
-    <tr data-bind="template: { name: 'po_gridTH_template', foreach: headers, templateOptions: { vm: $data } }" />
-    </thead>
-    {{/if}}
+            <tbody data-bind="foreach: collection.slice(pager.startingRow(), pager.endingRow())">
+                <tr data-bind="foreach: $root.columns, event: { mouseover: $root.OnMouseIn.bind($parent),  mouseout: $root.OnMouseOut.bind($parent), click: $root.OnClick.bind($root) }">
+                    <td data-bind="text: $parent[$data]">
+                    </td>
+                </tr>
+            </tbody>
 
-    <tbody data-bind="template: { name: 'po_gridTR_template', foreach: collection.slice(pager.startingRow(), pager.endingRow()), templateOptions: { columns: columns, vm: $data } }"></tbody>
+            <tfoot data-bind="if: footerEnabled()">
+                <tr data-bind="foreach: footers" >
+                    <td data-bind="text: $data">
+                    </td>
+                </tr>
 
-    {{if footerControl }}
-    <tfoot>
-    <tr data-bind="template: { name: 'po_gridTF_template', foreach: headers, templateOptions: { vm: $data } }" />
-    </tfoot>
-    {{/if}}
-
-    {{if pager.enabled() }}
-    <tfoot>
-    <tr>
-    <th align="left" colspan="${headers().length}" data-bind="template: { name: 'po_gridPager_template',  templateOptions: { vm: $data } }" />
-    </tr>
-    </tfoot>
-    {{/if}}
-    </table>
+                <tr data-bind="if: pager.enabled()">
+                    <td data-bind="attr: { colspan: headers().length }" nowrap="nowrap">
+                        <button data-bind="click: $root.OnFirstPage.bind($root)"> << </button> 
+                        <button data-bind="click: $root.OnPrevPage.bind($root)"> < </button>
+                        <button data-bind="click: $root.OnNextPage.bind($root)"> > </button>
+                        <button data-bind="click: $root.OnLastPage.bind($root)"> >> </button>
+                        Page <em data-bind="text: $root.pager.currentPage()" ></em> of 
+                        <em data-bind="text: $root.pager.totalPageCount()"></em>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
     </script>
-
-    <script type="text/html" id="po_gridTH_template">
-    <th data-bind="text: $data" >
-    </th>
-    </script>	
-
-    <script type="text/html" id="po_gridTR_template">
-    <tr data-bind="click: $item.vm.OnClick.bind($item.vm), event: { mouseover: $item.vm.OnMouseIn.bind($item.vm), mouseout: $item.vm.OnMouseOut.bind($item.vm) }, 
-    template: { name: 'po_gridTD_template', foreach: $item.columns, templateOptions: { rowData: $data } }"></tr>
-    </script>	
-
-    <script type="text/html" id="po_gridTD_template">
-    <td data-bind="text: $item.rowData[$data]"></td>
-    </script>
-
-    <script type="text/html" id="po_gridTF_template">
-    <th data-bind="text: $data">
-    </th>
-    </script>
-    
-    <script type="text/html" id="po_gridPager_template">
-    <button data-bind="click: $item.vm.OnFirstPage.bind($item.vm)"> << </button> <button data-bind="click: $item.vm.OnPrevPage.bind($item.vm)"><</button> <button data-bind="click: $item.vm.OnNextPage.bind($item.vm)">></button> <button data-bind="click: $item.vm.OnLastPage.bind($item.vm)">>></button> Page ${$item.vm.pager.currentPage()} of ${$item.vm.pager.totalPageCount()}
-    </script>    
 
     */
 
-    var templateEngine = new ko.jqueryTmplTemplateEngine(); //ensure that we are using a jQuery template engine
+    var templateEngine = new ko.nativeTemplateEngine();
 
-    // Add our templates as strings
-    templateEngine.addTemplate("po_gridTemplate", "<table id=\"poGrid\" class=\"es-grid\" cellspacing=\"0\">{{if headers}}<thead><tr data-bind=\"template: { name: 'po_gridTH_template', foreach: headers, templateOptions: { vm: $data } }\" /></thead>{{/if}}<tbody data-bind=\"template: { name: 'po_gridTR_template', foreach: collection.slice(pager.startingRow(), pager.endingRow()), templateOptions: { columns: columns, vm: $data } }\"></tbody>{{if footerControl }}<tfoot><tr data-bind=\"template: { name: 'po_gridTF_template', foreach: headers, templateOptions: { vm: $data } }\" /></tfoot>{{/if}}{{if pager.enabled() }}<tfoot><tr><th align=\"left\" colspan=\"${headers().length}\" data-bind=\"template: { name: 'po_gridPager_template',  templateOptions: { vm: $data } }\" /></tr></tfoot>{{/if}}</table>");
-    templateEngine.addTemplate("po_gridTH_template", "<th data-bind=\"text: $data\" ></th>");
-    templateEngine.addTemplate("po_gridTR_template", "<tr data-bind=\"click: $item.vm.OnClick.bind($item.vm), event: { mouseover: $item.vm.OnMouseIn.bind($item.vm), mouseout: $item.vm.OnMouseOut.bind($item.vm) }, template: { name: 'po_gridTD_template', foreach: $item.columns, templateOptions: { rowData: $data } }\"></tr>");
-    templateEngine.addTemplate("po_gridTD_template", "<td data-bind=\"text: $item.rowData[$data]\"></td>");
-    templateEngine.addTemplate("po_gridPager_template", "<button data-bind=\"click: $item.vm.OnFirstPage.bind($item.vm)\"> << </button> <button data-bind=\"click: $item.vm.OnPrevPage.bind($item.vm)\"><</button> <button data-bind=\"click: $item.vm.OnNextPage.bind($item.vm)\">></button> <button data-bind=\"click: $item.vm.OnLastPage.bind($item.vm)\">>></button> Page ${$item.vm.pager.currentPage()} of ${$item.vm.pager.totalPageCount()}");
+    templateEngine.addTemplate = function () {
+        document.write("poGrid", "<script type=\"text/html\" id=\"poGrid\"> <table id=\"poGrid\" class=\"es-grid\" cellspacing=\"0\"> <thead data-bind=\"if: headerEnabled()\"> <tr data-bind=\"foreach: headers\"> <th data-bind=\"text: $data\" > </th> </tr> </thead> <tbody data-bind=\"foreach: collection.slice(pager.startingRow(), pager.endingRow())\"> <tr data-bind=\"foreach: $root.columns, event: { mouseover: $root.OnMouseIn.bind($parent), mouseout: $root.OnMouseOut.bind($parent), click: $root.OnClick.bind($root) }\"> <td data-bind=\"text: $parent[$data]\"> </td> </tr> </tbody> <tfoot data-bind=\"if: footerEnabled()\"> <tr data-bind=\"foreach: footers\" > <td data-bind=\"text: $data\"> </td> </tr> <tr data-bind=\"if: pager.enabled()\"> <td data-bind=\"attr: { colspan: headers().length }\" nowrap=\"nowrap\"> <button data-bind=\"click: $root.OnFirstPage.bind($root)\"> << </button> <button data-bind=\"click: $root.OnPrevPage.bind($root)\"> < </button> <button data-bind=\"click: $root.OnNextPage.bind($root)\"> > </button> <button data-bind=\"click: $root.OnLastPage.bind($root)\"> >> </button>Page <em data-bind=\"text: $root.pager.currentPage()\" ></em> of <em data-bind=\"text: $root.pager.totalPageCount()\"></em> </td> </tr> </tfoot> </table></script>");
+    };
+
+    templateEngine.addTemplate();
 
     //create out actual binding
     ko.bindingHandlers.poGrid = {
+        init: function () {
+            return { 'controlsDescendantBindings': true };
+        },
         update: function (element, viewModelAccessor) {
             var viewModel = viewModelAccessor();
             // Empty the element
@@ -184,9 +172,7 @@
 
             // Render the main grid
             var gridContainer = element.appendChild(document.createElement("DIV"));
-            ko.renderTemplate("po_gridTemplate", viewModel, {
-                templateEngine: templateEngine
-            }, gridContainer, "replaceNode");
+            ko.renderTemplate("poGrid", viewModel, { templateEngine: templateEngine }, gridContainer, "replaceNode");
         }
     };
 })();

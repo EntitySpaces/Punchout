@@ -12,15 +12,13 @@
 </head>
 <body>
 
-
    <!-- poGrid using the new KO template syntax -->
-   <!-- FAILS !!! UGGH <div data-bind="template: { name: 'poGrid'}" /> --> 
+   <div data-bind="template: { name: 'poGrid'}" />
 
 </body>
 </html>
 
 <script language="javascript" type="text/javascript">
-
 
 var viewModel = {
     data: ko.observableArray([
@@ -64,7 +62,6 @@ var viewModel = {
 }
 
 var myView = new po.poGrid.viewModel(viewModel.data, viewModel.columns, viewModel.headers, viewModel.footers);
-myView.Init("1");
 myView.pager.enabled(true);
 myView.headerEnabled(true);
 myView.footerEnabled(true);

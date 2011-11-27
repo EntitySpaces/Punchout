@@ -11,13 +11,65 @@
     <link href="../../css/punchout_grid.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
-    <div data-bind="poGrid: myView" />
+
+   <!-- poGrid using the new KO template syntax -->
+   <table>
+		<tr>
+			<td valign="top">
+				<div data-bind="poGrid: myView1"></div>
+			</td>
+			<td valign="top">
+				<div data-bind="poGrid: myView2"></div>
+			</td>	
+		</tr>
+	<table>
 </body>
 </html>
 
 <script language="javascript" type="text/javascript">
 
-var viewModel = {
+var viewModel1 = {
+    data: ko.observableArray([
+        {"EmployeeID": 1,"FirstName": "Ben","LastName": "Smith","Age": 42,"RowState": 2},
+		{"EmployeeID": 2,"FirstName": "Joe", "LastName": "Smith","Age": 39,"RowState": 2},
+		{"EmployeeID": 3,"FirstName": "Mike","LastName": "Griffin","Age": 26,"RowState": 2},
+        {"EmployeeID": 4,"FirstName": "Sally","LastName": "BoJangles","Age": 42,"RowState": 2},
+		{"EmployeeID": 5,"FirstName": "Sam", "LastName": "Rollins","Age": 39,"RowState": 2},
+		{"EmployeeID": 6,"FirstName": "Mike","LastName": "Smith","Age": 26,"RowState": 2},		
+        {"EmployeeID": 7,"FirstName": "Max","LastName": "BoJangles","Age": 42,"RowState": 2},
+		{"EmployeeID": 8,"FirstName": "Joe", "LastName": "Smith","Age": 39,"RowState": 2},
+		{"EmployeeID": 9,"FirstName": "Mike","LastName": "Smith","Age": 26,"RowState": 2},
+        {"EmployeeID": 10,"FirstName": "Fred","LastName": "Smith","Age": 42,"RowState": 2},
+        {"EmployeeID": 11,"FirstName": "Fred","LastName": "Smith","Age": 42,"RowState": 2},
+		{"EmployeeID": 12,"FirstName": "Joe", "LastName": "Smith","Age": 39,"RowState": 2},
+		{"EmployeeID": 13,"FirstName": "Pamela","LastName": "Williams","Age": 26,"RowState": 2},
+        {"EmployeeID": 14,"FirstName": "Sally","LastName": "Smith","Age": 42,"RowState": 2},
+		{"EmployeeID": 15,"FirstName": "Sam", "LastName": "Rollins","Age": 39,"RowState": 2},
+		{"EmployeeID": 16,"FirstName": "Kelly","LastName": "Jones","Age": 26,"RowState": 2},		
+        {"EmployeeID": 17,"FirstName": "Max","LastName": "BoJangles","Age": 42,"RowState": 2},
+		{"EmployeeID": 18,"FirstName": "Joe", "LastName": "Smith","Age": 39,"RowState": 2},
+		{"EmployeeID": 19,"FirstName": "Mike","LastName": "Smith","Age": 26,"RowState": 2},
+        {"EmployeeID": 20,"FirstName": "Glenn","LastName": "Maxwell","Age": 42,"RowState": 2},		
+        {"EmployeeID": 21,"FirstName": "Fred","LastName": "Smith","Age": 42,"RowState": 2},
+		{"EmployeeID": 22,"FirstName": "Joe", "LastName": "Smith","Age": 39,"RowState": 2},
+		{"EmployeeID": 23,"FirstName": "Mike","LastName": "Griffin","Age": 26,"RowState": 2},
+        {"EmployeeID": 24,"FirstName": "Jamie","LastName": "Curtis","Age": 42,"RowState": 2},
+		{"EmployeeID": 25,"FirstName": "Sam", "LastName": "Rollins","Age": 39,"RowState": 2},
+		{"EmployeeID": 26,"FirstName": "Jim","LastName": "Smith","Age": 26,"RowState": 2},		
+        {"EmployeeID": 27,"FirstName": "Max","LastName": "BoJangles","Age": 42,"RowState": 2},
+		{"EmployeeID": 28,"FirstName": "Joe", "LastName": "Smith","Age": 39,"RowState": 2},
+		{"EmployeeID": 29,"FirstName": "Mike","LastName": "Ogle","Age": 26,"RowState": 2},
+        {"EmployeeID": 30,"FirstName": "Rick","LastName": "Smith","Age": 42,"RowState": 2},
+		{"EmployeeID": 31,"FirstName": "Joe", "LastName": "Smith","Age": 39,"RowState": 2},
+		{"EmployeeID": 32,"FirstName": "Mike","LastName": "Smith","Age": 26,"RowState": 2},
+        {"EmployeeID": 33,"FirstName": "Fred","LastName": "Smith","Age": 42,"RowState": 2}		
+    ]),
+    columns: ko.observableArray(["EmployeeID", "FirstName", "LastName", "RowState"]),
+    headers: ko.observableArray(["Employee ID", "First Name", "Last Name", "Row State"]),
+    footers: ko.observableArray(["$100.00", "$200.00", "$3.00", "$56.34"]),
+};
+
+var viewModel2 = {
     data: ko.observableArray([
         {"EmployeeID": 1,"FirstName": "Fred","LastName": "Smith","Age": 42,"RowState": 2},
 		{"EmployeeID": 2,"FirstName": "Joe", "LastName": "Smith","Age": 39,"RowState": 2},
@@ -54,12 +106,21 @@ var viewModel = {
         {"EmployeeID": 33,"FirstName": "Fred","LastName": "Smith","Age": 42,"RowState": 2}		
     ]),
     columns: ko.observableArray(["EmployeeID", "FirstName", "LastName", "RowState"]),
-    headers: ko.observableArray(["Employee ID", "First Name", "Last Name", "Row State"])
-}
+    headers: ko.observableArray(["Employee ID", "First Name", "Last Name", "Row State"]),
+    footers: ko.observableArray(["$100.00", "$200.00", "$3.00", "$56.34"]),
+};
 
-var myView = new po.poGrid.viewModel(viewModel.data, viewModel.columns, viewModel.headers);
-myView.pager.enabled(true);
+var myView1 = new po.poGrid.viewModel(viewModel1.data, viewModel1.columns, viewModel1.headers, viewModel1.footers);
+myView1.pager.enabled(true);
+myView1.headerEnabled(true);
+myView1.footerEnabled(true);
 
-ko.applyBindings(myView);
+var myView2 = new po.poGrid.viewModel(viewModel2.data, viewModel2.columns, viewModel2.headers, viewModel2.footers);
+myView2.pager.enabled(true);
+myView2.headerEnabled(true);
+myView2.footerEnabled(true);
+
+ko.applyBindings(myView1);
+ko.applyBindings(myView2);
 
 </script>

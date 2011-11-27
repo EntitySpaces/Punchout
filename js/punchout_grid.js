@@ -36,8 +36,6 @@
                 }
                 return lastPage;
             }, this);
-
-
         },
 
         viewModel: function (data, columns, headers, footers) {
@@ -48,13 +46,15 @@
             this.selectedRow = null;
             this.selectedIndex = ko.observable(0);
             this.pager = new po.poGrid.pagingControl(this);
+			this.id = 0;
 
-            this.Init = function () {
+            this.Init = function (id) {
                 var templateEngine = new ko.nativeTemplateEngine();
+				
+				this.id = id;
 
-                var rand = Math.floor(Math.random() * 11);
                 templateEngine.addTemplate = function () {
-                    document.write("", "<table id=\"poGrid" + rand + "\" class=\"es-grid\" cellspacing=\"0\"> <thead data-bind=\"if: headerEnabled()\"> <tr data-bind=\"foreach: headers\"> <th data-bind=\"text: $data\" > </th> </tr> </thead> <tbody data-bind=\"foreach: collection.slice(pager.startingRow(), pager.endingRow())\"> <tr data-bind=\"foreach: $root.columns, event: { mouseover: $root.OnMouseIn.bind($parent), mouseout: $root.OnMouseOut.bind($parent), click: $root.OnClick.bind($root) }\"> <td data-bind=\"text: $parent[$data]\"> </td> </tr> </tbody> <tfoot data-bind=\"if: footerEnabled()\"> <tr data-bind=\"foreach: footers\" > <td data-bind=\"text: $data\"> </td> </tr> <tr data-bind=\"if: pager.enabled()\"> <td data-bind=\"attr: { colspan: headers().length }\" nowrap=\"nowrap\"> <button data-bind=\"click: $root.OnFirstPage.bind($root)\"> << </button> <button data-bind=\"click: $root.OnPrevPage.bind($root)\"> < </button> <button data-bind=\"click: $root.OnNextPage.bind($root)\"> > </button> <button data-bind=\"click: $root.OnLastPage.bind($root)\"> >> </button>Page <em data-bind=\"text: $root.pager.currentPage()\" ></em> of <em data-bind=\"text: $root.pager.totalPageCount()\"></em> </td> </tr> </tfoot> </table>");
+                    document.write("", "<table id=\"poGrid" + id + "\" class=\"es-grid\" cellspacing=\"0\"> <thead data-bind=\"if: headerEnabled()\"> <tr data-bind=\"foreach: headers\"> <th data-bind=\"text: $data\" > </th> </tr> </thead> <tbody data-bind=\"foreach: collection.slice(pager.startingRow(), pager.endingRow())\"> <tr data-bind=\"foreach: $root.columns, event: { mouseover: $root.OnMouseIn.bind($parent), mouseout: $root.OnMouseOut.bind($parent), click: $root.OnClick.bind($root) }\"> <td data-bind=\"text: $parent[$data]\"> </td> </tr> </tbody> <tfoot data-bind=\"if: footerEnabled()\"> <tr data-bind=\"foreach: footers\" > <td data-bind=\"text: $data\"> </td> </tr> <tr data-bind=\"if: pager.enabled()\"> <td data-bind=\"attr: { colspan: headers().length }\" nowrap=\"nowrap\"> <button data-bind=\"click: $root.OnFirstPage.bind($root)\"> << </button> <button data-bind=\"click: $root.OnPrevPage.bind($root)\"> < </button> <button data-bind=\"click: $root.OnNextPage.bind($root)\"> > </button> <button data-bind=\"click: $root.OnLastPage.bind($root)\"> >> </button>Page <em data-bind=\"text: $root.pager.currentPage()\" ></em> of <em data-bind=\"text: $root.pager.totalPageCount()\"></em> </td> </tr> </tfoot> </table>");
                 };
 
                 templateEngine.addTemplate();
@@ -126,7 +126,7 @@
     =================================
 
     <script type="text/html" id="poGrid"> 
-        <table id="poGrid5" class="es-grid" cellspacing="0">
+        <table id="poGrid" class="es-grid" cellspacing="0">
             <thead data-bind="if: headerEnabled()">
                 <tr data-bind="foreach: headers">
                     <th data-bind="text: $data">
@@ -174,7 +174,7 @@
 
             // Render the main grid
             var gridContainer = element.appendChild(document.createElement("DIV"));
-            ko.renderTemplate("poGrid", viewModel, { templateEngine: templateEngine }, gridContainer, "replaceNode");
+            ko.renderTemplate("poGrid" + viewModel.id, viewModel, { templateEngine: templateEngine }, gridContainer, "replaceNode");
         }
     };
 })();

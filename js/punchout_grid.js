@@ -17,12 +17,6 @@
 			</th>\
 		</tr>\
 	</thead>\
-	<tbody data-bind=\"foreach: collection.slice(pager.startingRow(), pager.endingRow())\">\
-		<tr data-bind=\"foreach: $root.columns, event: { mouseover: $root.OnMouseIn.bind($parent),  mouseout: $root.OnMouseOut.bind($parent), click: $root.OnClick.bind($root) }\">\
-			<td data-bind=\"text: $parent[$data]\">\
-			</td>\
-		</tr>\
-	</tbody>\
 	<tfoot data-bind=\"if: footerEnabled()\">\
 		<tr data-bind=\"foreach: footers\">\
 			<td data-bind=\"text: $data\">\
@@ -34,13 +28,17 @@
 				<button data-bind=\"click: $root.OnPrevPage.bind($root)\">  <  </button>\
 				<button data-bind=\"click: $root.OnNextPage.bind($root)\">  >  </button>\
 				<button data-bind=\"click: $root.OnLastPage.bind($root)\">  >> </button>\
-				Page <em data-bind=\"text: $root.pager.currentPage()\"></em> of <em data-bind=\"text: $root.pager.totalPageCount()\">\
-				</em>\
+				Page <em data-bind=\"text: $root.pager.currentPage()\"></em> of <em data-bind=\"text: $root.pager.totalPageCount()\"></em>\
 			</td>\
 		</tr>\
 	</tfoot>\
-</table>\
-</script>");
+	<tbody data-bind=\"foreach: collection.slice(pager.startingRow(), pager.endingRow())\">\
+		<tr data-bind=\"foreach: $root.columns, event: { mouseover: $root.OnMouseIn.bind($parent),  mouseout: $root.OnMouseOut.bind($parent), click: $root.OnClick.bind($root) }\">\
+			<td data-bind=\"text: $parent[$data]\">\
+			</td>\
+		</tr>\
+	</tbody>\
+</table>");
 
     /* 
     =================================
@@ -58,13 +56,6 @@
                 </tr>
             </thead>
 
-            <tbody data-bind="foreach: collection.slice(pager.startingRow(), pager.endingRow())">
-                <tr data-bind="foreach: $root.columns, event: { mouseover: $root.OnMouseIn.bind($parent),  mouseout: $root.OnMouseOut.bind($parent), click: $root.OnClick.bind($root) }">
-                    <td data-bind="text: $parent[$data]">
-                    </td>
-                </tr>
-            </tbody>
-
             <tfoot data-bind="if: footerEnabled()">
                 <tr data-bind="foreach: footers">
                     <td data-bind="text: $data">
@@ -80,11 +71,17 @@
                     </td>
                 </tr>
             </tfoot>
+			
+            <tbody data-bind="foreach: collection.slice(pager.startingRow(), pager.endingRow())">
+                <tr data-bind="foreach: $root.columns, event: { mouseover: $root.OnMouseIn.bind($parent),  mouseout: $root.OnMouseOut.bind($parent), click: $root.OnClick.bind($root) }">
+                    <td data-bind="text: $parent[$data]">
+                    </td>
+                </tr>
+            </tbody>			
 
         </table>
 
     </script>
-
     */
 
     po = {};

@@ -66,8 +66,8 @@ var viewModel1 = {
     ]),
     columns: ko.observableArray(["EmployeeID", "FirstName", "LastName", "RowState"]),
     headers: ko.observableArray(["Employee ID", "First Name", "Last Name", "Row State"]),
-    footers: ko.observableArray(["$100.00", "$200.00", "$3.00", "$56.34"]),
-};
+    footers: ko.observableArray(["$100.00", "$200.00", "$3.00", "$56.34"])
+}
 
 var viewModel2 = {
     data: ko.observableArray([
@@ -107,8 +107,8 @@ var viewModel2 = {
     ]),
     columns: ko.observableArray(["EmployeeID", "FirstName", "LastName", "RowState"]),
     headers: ko.observableArray(["Employee ID", "First Name", "Last Name", "Row State"]),
-    footers: ko.observableArray(["$100.00", "$200.00", "$3.00", "$56.34"]),
-};
+    footers: ko.observableArray(["$100.00", "$200.00", "$3.00", "$56.34"])
+}
 
 var myView1 = new po.poGrid.viewModel(viewModel1.data, viewModel1.columns, viewModel1.headers, viewModel1.footers);
 myView1.pager.enabled(true);

@@ -25,5 +25,8 @@ EntitySpaces, LLC will be contributing much to this library, however, we will be
 
  * Pre-Punchout Example (when we were learning the basics)
  	[Master Detail Sample](http://www.entityspaces.net/portal/Products/Features/EntitySpacesKnockout.aspx)
+	
+ * Are you a JavaScript/HTML Guru? If so why not help out? 
+    [Trello Punchout Task List](https://trello.com/#board/punchout/4ed2e790d8f7b81f3000cfa9)
 
 License: MIT [http://www.opensource.org/licenses/mit-license.php](MIT http://www.opensource.org/licenses/mit-license.php)

@@ -1,7 +1,7 @@
 Purpose of Punchout
 ==================================
 
-**The Punchout Controls** are a set of javascript user interface controls for Knockout (MVVM) library for Javascript.
+**The Punchout Controls** are a set of javascript user interface controls for Knockout (MVVM) library for Javascript. Punchout is currently up-to-date with Knockout 1.3.
 
 Controls Currently Under Development
 ---------------------
@@ -21,7 +21,7 @@ Further Information
 EntitySpaces, LLC will be contributing much to this library, however, we will be enlisting others as well. 
 
  * **Punchout poGrid Sample** (a true Punchout Control)
-    [poGrid Sample](http://www.entityspaces.net/portal/Products/Features/EntitySpacesPunchout.aspx) 
+    [poGrid Sample](http://www.entityspaces.net/Punchout/examples/Non-EntitySpaces/SampleGrid.htm) 
 
  * Pre-Punchout Example (when we were learning the basics)
  	[Master Detail Sample](http://www.entityspaces.net/portal/Products/Features/EntitySpacesKnockout.aspx)

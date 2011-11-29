@@ -5,35 +5,35 @@
 
     var gridHTML = "\
         <table id=\"poTable" + 1 + "\" class=\"es-grid\" cellspacing=\"0\">\
-	        <thead data-bind=\"if: headerEnabled()\">\
-		        <tr data-bind=\"foreach: headers\">\
-			        <th data-bind=\"text: $data\">\
-			        </th>\
-		        </tr>\
-	        </thead>\
-	        <tfoot data-bind=\"if: showFooterControl\">\
+            <thead data-bind=\"if: headerEnabled()\">\
+                <tr data-bind=\"foreach: headers\">\
+                    <th data-bind=\"text: $data\">\
+                    </th>\
+                </tr>\
+            </thead>\
+            <tfoot data-bind=\"if: showFooterControl\">\
                 <!-- ko if: footerEnabled -->\
-		        <tr data-bind=\"foreach: footers\">\
-			        <td data-bind=\"text: $data\">\
-			        </td>\
-		        </tr>\
+                <tr data-bind=\"foreach: footers\">\
+                    <td data-bind=\"text: $data\">\
+                    </td>\
+                </tr>\
                 <!-- /ko -->\
-		        <tr data-bind=\"if: pager.enabled()\">\
-			        <td data-bind=\"attr: { colspan: headers().length }\" nowrap=\"nowrap\">\
-				        <button data-bind=\"click: onFirstPage\"> << </button>\
-				        <button data-bind=\"click: onPrevPage\">  <  </button>\
-				        <button data-bind=\"click: onNextPage\">  >  </button>\
-				        <button data-bind=\"click: onLastPage\">  >> </button>\
-				        Page <em data-bind=\"text: pager.currentPage()\"></em> of <em data-bind=\"text: pager.totalPageCount()\"></em>\
-			        </td>\
-		        </tr>\
-	        </tfoot>\
-	        <tbody data-bind=\"foreach: collection.slice(pager.startingRow(), pager.endingRow())\">\
-		        <tr data-bind=\"foreach: $parent.columns, event: { mouseover: $parent.onMouseIn.bind($parent),  mouseout: $parent.onMouseOut.bind($parent), click: $parent.onClick.bind($parent) }\">\
-			        <td data-bind=\"text: $parent[$data]\">\
-			        </td>\
-		        </tr>\
-	        </tbody>\
+                <tr data-bind=\"if: pager.enabled()\">\
+                    <td data-bind=\"attr: { colspan: headers().length }\" nowrap=\"nowrap\">\
+                        <button data-bind=\"click: onFirstPage\"> << </button>\
+                        <button data-bind=\"click: onPrevPage\">  <  </button>\
+                        <button data-bind=\"click: onNextPage\">  >  </button>\
+                        <button data-bind=\"click: onLastPage\">  >> </button>\
+                        Page <em data-bind=\"text: pager.currentPage()\"></em> of <em data-bind=\"text: pager.totalPageCount()\"></em>\
+                    </td>\
+                </tr>\
+            </tfoot>\
+            <tbody data-bind=\"foreach: collection.slice(pager.startingRow(), pager.endingRow())\">\
+                <tr data-bind=\"foreach: $parent.columns, event: { mouseover: $parent.onMouseIn.bind($parent),  mouseout: $parent.onMouseOut.bind($parent), click: $parent.onClick.bind($parent) }\">\
+                    <td data-bind=\"text: $parent[$data]\">\
+                    </td>\
+                </tr>\
+            </tbody>\
         </table>";
 
     po.poGrid = {

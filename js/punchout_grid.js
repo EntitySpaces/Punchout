@@ -1,7 +1,7 @@
 ﻿// Punchout JavaScript library v1.0
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
-(function () {
+(function (po) {
 
     var gridHTML = "\
         <table id=\"poTable" + 1 + "\" class=\"es-grid\" cellspacing=\"0\">\
@@ -27,7 +27,7 @@
 		        </tr>\
 	        </tfoot>\
 	        <tbody data-bind=\"foreach: collection.slice(pager.startingRow(), pager.endingRow())\">\
-		        <tr data-bind=\"foreach: $parent.columns, event: { mouseover: $parent.OnMouseIn,  mouseout: $parent.OnMouseOut, click: $parent.OnClick }\">\
+		        <tr data-bind=\"foreach: $parent.columns, event: { mouseover: $parent.OnMouseIn.bind($parent),  mouseout: $parent.OnMouseOut.bind($parent), click: $parent.OnClick.bind($parent) }\">\
 			        <td data-bind=\"text: $parent[$data]\">\
 			        </td>\
 		        </tr>\

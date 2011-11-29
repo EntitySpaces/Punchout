@@ -127,7 +127,7 @@ myView2.pager.enabled(true);
 myView2.headerEnabled(true);
 myView2.footerEnabled(true);
 
-ko.applyBindings(myView1);
-ko.applyBindings(myView2);
+ko.applyBindings({myView1: myView1, myView2: myView2}); 
+
 
 </script>

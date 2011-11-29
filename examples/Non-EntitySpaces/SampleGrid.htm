@@ -117,12 +117,12 @@ var viewModel2 = {
     footers: ko.observableArray(["$100.00", "$200.00", "$3.00", "$56.34"])
 }
 
-var myView1 = new po.poGrid.viewModel(viewModel1.data, viewModel1.columns, viewModel1.headers, viewModel1.footers);
+var myView1 = new po.poGrid.dataTable(viewModel1.data, viewModel1.columns, viewModel1.headers, viewModel1.footers);
 myView1.pager.enabled(true);
 myView1.headerEnabled(true);
 myView1.footerEnabled(true);
 
-var myView2 = new po.poGrid.viewModel(viewModel2.data, viewModel2.columns, viewModel2.headers, viewModel2.footers);
+var myView2 = new po.poGrid.dataTable(viewModel2.data, viewModel2.columns, viewModel2.headers, viewModel2.footers);
 myView2.pager.enabled(true);
 myView2.headerEnabled(true);
 myView2.footerEnabled(true);

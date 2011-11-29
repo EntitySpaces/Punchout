@@ -11,72 +11,30 @@
 			        </th>\
 		        </tr>\
 	        </thead>\
-	        <tfoot data-bind=\"if: footerEnabled()\">\
+	        <tfoot data-bind=\"if: showFooterControl\">\
+                <!-- ko if: footerEnabled -->\
 		        <tr data-bind=\"foreach: footers\">\
 			        <td data-bind=\"text: $data\">\
 			        </td>\
 		        </tr>\
+                <!-- /ko -->\
 		        <tr data-bind=\"if: pager.enabled()\">\
 			        <td data-bind=\"attr: { colspan: headers().length }\" nowrap=\"nowrap\">\
-				        <button data-bind=\"click: OnFirstPage\"> << </button>\
-				        <button data-bind=\"click: OnPrevPage\">  <  </button>\
-				        <button data-bind=\"click: OnNextPage\">  >  </button>\
-				        <button data-bind=\"click: OnLastPage\">  >> </button>\
+				        <button data-bind=\"click: onFirstPage\"> << </button>\
+				        <button data-bind=\"click: onPrevPage\">  <  </button>\
+				        <button data-bind=\"click: onNextPage\">  >  </button>\
+				        <button data-bind=\"click: onLastPage\">  >> </button>\
 				        Page <em data-bind=\"text: pager.currentPage()\"></em> of <em data-bind=\"text: pager.totalPageCount()\"></em>\
 			        </td>\
 		        </tr>\
 	        </tfoot>\
 	        <tbody data-bind=\"foreach: collection.slice(pager.startingRow(), pager.endingRow())\">\
-		        <tr data-bind=\"foreach: $parent.columns, event: { mouseover: $parent.OnMouseIn.bind($parent),  mouseout: $parent.OnMouseOut.bind($parent), click: $parent.OnClick.bind($parent) }\">\
+		        <tr data-bind=\"foreach: $parent.columns, event: { mouseover: $parent.onMouseIn.bind($parent),  mouseout: $parent.onMouseOut.bind($parent), click: $parent.onClick.bind($parent) }\">\
 			        <td data-bind=\"text: $parent[$data]\">\
 			        </td>\
 		        </tr>\
 	        </tbody>\
         </table>";
-
-    /* 
-    =================================
-    PULL OUT FOR INLINE TESTING
-    =================================
-
-    <script type="text/html" id="poGrid"> 
-
-    <table id="poTable" class="es-grid" cellspacing="0">
-
-    <thead data-bind="if: headerEnabled()">
-    <tr data-bind="foreach: headers">
-    <th data-bind="text: $data">
-    </th>
-    </tr>
-    </thead>
-
-    <tfoot data-bind="if: footerEnabled()">
-    <tr data-bind="foreach: footers">
-    <td data-bind="text: $data">
-    </td>
-    </tr>
-    <tr data-bind="if: pager.enabled()">
-    <td data-bind="attr: { colspan: headers().length }" nowrap="nowrap">
-    <button data-bind="click: $root.OnFirstPage.bind($root)"> << </button>
-    <button data-bind="click: $root.OnPrevPage.bind($root)">  <  </button>
-    <button data-bind="click: $root.OnNextPage.bind($root)">  >  </button>
-    <button data-bind="click: $root.OnLastPage.bind($root)">  >> </button>
-    Page <em data-bind="text: $root.pager.currentPage()"></em> of <em data-bind="text: $root.pager.totalPageCount()"></em>
-    </td>
-    </tr>
-    </tfoot>
-			
-    <tbody data-bind="foreach: collection.slice(pager.startingRow(), pager.endingRow())">
-    <tr data-bind="foreach: $root.columns, event: { mouseover: $root.OnMouseIn.bind($parent),  mouseout: $root.OnMouseOut.bind($parent), click: $root.OnClick.bind($root) }">
-    <td data-bind="text: $parent[$data]">
-    </td>
-    </tr>
-    </tbody>			
-
-    </table>
-
-    </script>
-    */
 
     po.poGrid = {
 
@@ -111,7 +69,8 @@
             }, this);
         },
 
-        viewModel: function (data, columns, headers, footers) {
+
+        dataTable: function (data, columns, headers, footers) {
             this.collection = data;
             this.columns = columns;
             this.headers = headers;
@@ -125,58 +84,67 @@
             this.headerEnabled = ko.observable(true);
             this.footerEnabled = ko.observable(false);
 
+            this.showFooterControl = ko.dependentObservable(function () {
+                if(this.footerEnabled) return true;
+                if(this.pager.enabled) return true;
+                return false;
+            }, this);
+
             findParentRow = function (element) {
                 if (element.tagName === "TR") {
                     return element;
                 }
                 return this.findParentRow(element.parentNode);
             }
-
-            this.OnMouseIn = function (event) {
-                var tableRow = findParentRow(event.target.parentNode);
-                if (tableRow.style.backgroundColor == 'lightblue') {
-                    return;
-                }
-                tableRow.style.backgroundColor = '#dcfac9';
-            };
-
-            this.OnMouseOut = function (event) {
-                var tableRow = findParentRow(event.target.parentNode);
-                if (tableRow.style.backgroundColor == 'lightblue') {
-                    return;
-                }
-                tableRow.style.backgroundColor = 'white';
-            };
-
-            this.OnClick = function (event) {
-                if (this.selectedRow != null) {
-                    this.selectedRow.style.backgroundColor = 'white';
-                }
-                var tableRow = findParentRow(event.target.parentNode);
-                tableRow.style.backgroundColor = 'lightblue';
-
-                this.selectedRow = tableRow;
-            }
-
-            this.OnFirstPage = function (event) {
-                this.pager.currentPage(1);
-            }
-
-            this.OnNextPage = function (event) {
-                var i = this.pager.currentPage();
-                this.pager.currentPage(Math.min(i + 1, this.pager.totalPageCount()));
-            }
-
-            this.OnLastPage = function (event) {
-                var lastPage = this.pager.totalPageCount();
-                this.pager.currentPage(lastPage);
-            }
-
-            this.OnPrevPage = function (event) {
-                var i = this.pager.currentPage();
-                this.pager.currentPage(Math.max(i - 1, 1));
-            }
         }
+    };
+
+    //-------------------------------------
+    // DataTable Prototypes
+    //-------------------------------------	
+    po.poGrid.dataTable.prototype['onMouseIn'] = function (event) {
+        var tableRow = findParentRow(event.target.parentNode);
+        if (tableRow.style.backgroundColor == 'lightblue') {
+            return;
+        }
+        tableRow.style.backgroundColor = '#dcfac9';
+    };
+
+    po.poGrid.dataTable.prototype['onMouseOut'] = function (event) {
+        var tableRow = findParentRow(event.target.parentNode);
+        if (tableRow.style.backgroundColor == 'lightblue') {
+            return;
+        }
+        tableRow.style.backgroundColor = 'white';
+    };
+
+    po.poGrid.dataTable.prototype['onClick'] = function (event) {
+        if (this.selectedRow != null) {
+            this.selectedRow.style.backgroundColor = 'white';
+        }
+        var tableRow = findParentRow(event.target.parentNode);
+        tableRow.style.backgroundColor = 'lightblue';
+
+        this.selectedRow = tableRow;
+    };
+
+    po.poGrid.dataTable.prototype['onFirstPage'] = function (event) {
+        this.pager.currentPage(1);
+    };
+
+    po.poGrid.dataTable.prototype['onNextPage'] = function (event) {
+        var i = this.pager.currentPage();
+        this.pager.currentPage(Math.min(i + 1, this.pager.totalPageCount()));
+    };
+
+    po.poGrid.dataTable.prototype['onLastPage'] = function (event) {
+        var lastPage = this.pager.totalPageCount();
+        this.pager.currentPage(lastPage);
+    };
+
+    po.poGrid.dataTable.prototype['onPrevPage'] = function (event) {
+        var i = this.pager.currentPage();
+        this.pager.currentPage(Math.max(i - 1, 1));
     };
 
     //create out actual binding
@@ -188,7 +156,7 @@
             gridContainer.innerHTML = gridHTML;
 
             element.appendChild(gridContainer);
-            
+
             return ko.bindingHandlers['with'].init(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
         },
 
@@ -196,4 +164,5 @@
             return ko.bindingHandlers['with'].update(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
         }
     };
+
 })(window.po = window.po || {});

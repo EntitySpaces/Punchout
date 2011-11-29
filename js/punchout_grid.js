@@ -85,8 +85,8 @@
             this.footerEnabled = ko.observable(false);
 
             this.showFooterControl = ko.dependentObservable(function () {
-                if(this.footerEnabled) return true;
-                if(this.pager.enabled) return true;
+                if (this.footerEnabled) return true;
+                if (this.pager.enabled) return true;
                 return false;
             }, this);
 
@@ -152,10 +152,8 @@
 
         init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
 
-            var gridContainer = document.createElement("DIV");
-            gridContainer.innerHTML = gridHTML;
-
-            element.appendChild(gridContainer);
+            // Add our Grid under the <div>
+            element.innerHTML = gridHTML;
 
             return ko.bindingHandlers['with'].init(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
         },

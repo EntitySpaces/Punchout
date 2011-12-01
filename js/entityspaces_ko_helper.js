@@ -2,8 +2,7 @@
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
 /// <reference path="knockout-latest.debug.js" />
-(function () {
-    es = {};
+(function (es) {
 
     es.dataPager = function (grid) {
 
@@ -13,23 +12,6 @@
         this.totalPageCount = ko.observable(0);
         this.currentPage = ko.observable(1);
         this.rowsPerPage = ko.observable(10);
-
-        // The four Magic Functions
-        this.firstPage = function (element) {
-            alert("Got Here");
-        }
-
-        this.nextPage = function (element) {
-            alert("Got Here"); ;
-        }
-
-        this.lastPage = function (element) {
-            alert("Got Here");
-        }
-
-        this.prevPage = function (element) {
-            alert("Got Here");
-        }
 
         this.startingRow = ko.dependentObservable(function () {
             return (this.currentPage() - 1) * this.rowsPerPage();
@@ -44,25 +26,31 @@
         }, this);
 
         this.totalPageCount = ko.dependentObservable(function () {
-            var count = this.grid.collection().length;
-            var lastPage = Math.round(count / this.rowsPerPage());
+            var count, lastPage;
+
+            count = this.grid.collection().length;
+            lastPage = Math.round(count / this.rowsPerPage());
+
             if ((count % this.rowsPerPage()) > 0) {
                 lastPage += 1;
             }
             return lastPage;
         }, this);
-    }
+    };
 
-    es.pagerRequest = function() {
+    es.pagerRequest = function () {
         this.pageSize = 0;
         this.pageNumber = 0;
-    }
+    };
 
     // Google Closure Compiler helpers (used only to make the minified file smaller)
     es.exportSymbol = function (publicPath, object) {
-        var tokens = publicPath.split(".");
-        var target = window;
-        for (var i = 0; i < tokens.length - 1; i++) {
+        var tokens, target, i;
+
+        tokens = publicPath.split(".");
+        target = window;
+
+        for (i = 0; i < tokens.length - 1; i += 1) {
             target = target[tokens[i]];
         }
         target[tokens[tokens.length - 1]] = object;
@@ -89,6 +77,8 @@
 
     function injectProperties(entity) {
 
+        var propertyName;
+
         if (!entity.hasOwnProperty("RowState")) {
             entity.RowState = ko.observable(es.RowStateEnum.added);
             if (entity.hasOwnProperty("__ko_mapping__")) {
@@ -103,9 +93,9 @@
             }
         }
 
-        for (var propertyName in entity) {
+        for (propertyName in entity) {
             if (propertyName !== "RowState") {
-                addPropertyChanged(entity, propertyName);
+                this.addPropertyChanged(entity, propertyName);
             }
         }
     }
@@ -154,39 +144,42 @@
         injectProperties(entity);
 
         return entity;
-    }
+    };
 
     es.markAsDeleted = function (entity) {
 
         if (!entity.hasOwnProperty("RowState")) {
             entity.RowState = ko.observable(es.RowStateEnum.deleted);
-        } else if (entity.RowState() != es.RowStateEnum.deleted) {
+        } else if (entity.RowState() !== es.RowStateEnum.deleted) {
             entity.RowState(es.RowStateEnum.deleted);
         }
 
         if (entity.hasOwnProperty("ModifiedColumns")) {
             entity.ModifiedColumns.removeAll();
         }
-    }
+    };
 
     es.markAllAsDeleted = function (collection) {
 
-        for (var i = 0; i < collection().length; i++) {
-            var entity = collection()[i];
+        var i, entity;
+
+        for (i = 0; i < collection().length; i += 1) {
+            entity = collection()[i];
             es.markAsDeleted(entity);
         }
-    }
+    };
 
     es.getDirtyEntities = function (collection) {
-        var modifiedRecords = new Array();
+        var modifiedRecords = {};
         var index = 0;
+
         ko.utils.arrayFirst(collection(), function (entity) {
             if (entity.RowState() !== es.RowStateEnum.unchanged) {
                 modifiedRecords[index++] = entity;
             }
         });
 
-        if (modifiedRecords.length === 0) return null;
+        if (modifiedRecords.length === 0) { return null; }
 
         return modifiedRecords;
     };
@@ -198,25 +191,26 @@
                 return es.trackState(obj);
             }
         }
-    }
+    };
 
     es.makeRequstError = null;
 
     es.makeRequest = function (url, methodName, params) {
         var theData = null;
+        var path = null;
         es.getDataError = null;
 
         // Create HTTP request
         var xmlHttp;
         try {
             xmlHttp = new XMLHttpRequest();
-        } catch (e) {
+        } catch (e1) {
             try {
                 xmlHttp = new ActiveXObject("Msxml2.XMLHTTP");
-            } catch (e) {
+            } catch (e2) {
                 try {
                     xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
-                } catch (e) {
+                } catch (e3) {
                     alert("This sample only works in browsers with AJAX support");
                     return false;
                 }
@@ -224,14 +218,14 @@
         }
 
         // Build the operation URL
-        var path = url + methodName;
+        path = url + methodName;
 
         // Make the HTTP request
         xmlHttp.open("POST", path, false);
         xmlHttp.setRequestHeader("Content-type", "application/json; charset=utf-8");
         xmlHttp.send(params);
 
-        if (xmlHttp.status == 200) {
+        if (xmlHttp.status === 200) {
             if (xmlHttp.responseText !== '{}' && xmlHttp.responseText !== "") {
                 theData = JSON.parse(xmlHttp.responseText);
             }
@@ -245,20 +239,38 @@
     //-------------------------------------
     // Paging Prototypes
     //-------------------------------------	
-    es.dataPager.prototype['onFirstPage'] = function (event) {
-        this.pager.firstPage(event);
+    es.dataPager.prototype.onFirstPage = function (event) {
+
     };
 
-    es.dataPager.prototype['onNextPage'] = function (event) {
-        this.pager.nextPage(event);
+    es.dataPager.prototype.onNextPage = function (event) {
+        this.grid.collection(vm.data);
     };
 
-    es.dataPager.prototype['onLastPage'] = function (event) {
-        this.pager.lastPage(event);
+    es.dataPager.prototype.onLastPage = function (event) {
+
     };
 
-    es.dataPager.prototype['onPrevPage'] = function (event) {
-        this.pager.prevPage(event);
+    es.dataPager.prototype.onPrevPage = function (event) {
+
+    };
+
+    var vm = {
+        data: ko.observableArray([
+			{ "EmployeeID": 61, "FirstName": "Fred", "LastName": "Smith", "Age": 42, "RowState": 2 },
+			{ "EmployeeID": 62, "FirstName": "Joe", "LastName": "Smith", "Age": 39, "RowState": 2 },
+			{ "EmployeeID": 63, "FirstName": "Mike", "LastName": "Griffin", "Age": 26, "RowState": 2 },
+			{ "EmployeeID": 64, "FirstName": "Sally", "LastName": "BoJangles", "Age": 42, "RowState": 2 },
+			{ "EmployeeID": 65, "FirstName": "Sam", "LastName": "Rollins", "Age": 39, "RowState": 2 },
+			{ "EmployeeID": 66, "FirstName": "Mike", "LastName": "Smith", "Age": 26, "RowState": 2 },
+			{ "EmployeeID": 67, "FirstName": "Max", "LastName": "BoJangles", "Age": 42, "RowState": 2 },
+			{ "EmployeeID": 68, "FirstName": "Joe", "LastName": "Smith", "Age": 39, "RowState": 2 },
+			{ "EmployeeID": 69, "FirstName": "Mike", "LastName": "Smith", "Age": 26, "RowState": 2 },
+			{ "EmployeeID": 70, "FirstName": "Fred", "LastName": "Smith", "Age": 42, "RowState": 2 }
+		]),
+        columns: ko.observableArray(["EmployeeID", "FirstName", "LastName", "RowState"]),
+        headers: ko.observableArray(["Employee ID", "First Name", "Last Name", "Row State"]),
+        footers: ko.observableArray(["$100.00", "$200.00", "$3.00", "$56.34"])
     };
 
     //---------------------------------------------------
@@ -266,9 +278,10 @@
     //---------------------------------------------------
     es.exportSymbol('es.makeRequest', es.makeRequest);
     es.exportSymbol('es.makeRequstError', es.makeRequstError);
-    es.exportSymbol('es.trackStateMapping', es.trackStateMapping)
+    es.exportSymbol('es.trackStateMapping', es.trackStateMapping);
     es.exportSymbol('es.trackState', es.trackState);
     es.exportSymbol('es.markAsDeleted', es.markAsDeleted);
     es.exportSymbol('es.markAllAsDeleted', es.markAllAsDeleted);
     es.exportSymbol('es.RowStateEnum', es.RowStateEnum);
-})();
+
+})(window.es = window.es || {});

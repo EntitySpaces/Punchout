@@ -20,10 +20,10 @@
                 <!-- /ko -->\
                 <tr data-bind=\"if: pager.enabled()\">\
                     <td data-bind=\"attr: { colspan: headers().length }\" nowrap=\"nowrap\">\
-                        <button data-bind=\"click: pager.onFirstPage\"> << </button>\
-                        <button data-bind=\"click: pager.onPrevPage\">  <  </button>\
-                        <button data-bind=\"click: pager.onNextPage\">  >  </button>\
-                        <button data-bind=\"click: pager.onLastPage\">  >> </button>\
+                        <button data-bind=\"click: pager.onFirstPage.bind(pager)\"> << </button>\
+                        <button data-bind=\"click: pager.onPrevPage.bind(pager)\">  <  </button>\
+                        <button data-bind=\"click: pager.onNextPage.bind(pager)\">  >  </button>\
+                        <button data-bind=\"click: pager.onLastPage.bind(pager)\">  >> </button>\
                         Page <em data-bind=\"text: pager.currentPage()\"></em> of <em data-bind=\"text: pager.totalPageCount()\"></em>\
                     </td>\
                 </tr>\
@@ -48,28 +48,6 @@
             this.enabled = ko.observable(true);
             this.currentPage = ko.observable(1);
             this.rowsPerPage = ko.observable(10);
-
-            //-------------------------------------
-            // The four Magic Functions
-            //-------------------------------------
-            this.firstPage = function (element) {
-                this.currentPage(1);
-            }
-
-            this.nextPage = function (element) {
-                var i = this.currentPage();
-                this.currentPage(Math.min(i + 1, this.totalPageCount()));
-            }
-
-            this.lastPage = function (element) {
-                var lastPage = this.totalPageCount();
-                this.currentPage(lastPage);
-            }
-
-            this.prevPage = function (element) {
-                var i = this.currentPage();
-                this.currentPage(Math.max(i - 1, 1));
-            }
 
             this.startingRow = ko.dependentObservable(function () {
                 return (this.currentPage() - 1) * this.rowsPerPage();
@@ -112,44 +90,44 @@
             this.footerEnabled = ko.observable(false);
 
             this.showFooterControl = ko.dependentObservable(function () {
-                if (this.footerEnabled) return true;
-                // if (this.pager.enabled) return true;
+                if (this.footerEnabled) { return true; }
+                if (this.pager.enabled) { return true; }
                 return false;
             }, this);
 
-            findParentRow = function (element) {
+            this.findParentRow = function (element) {
                 if (element.tagName === "TR") {
                     return element;
                 }
                 return this.findParentRow(element.parentNode);
-            }
+            };
         }
     };
 
     //-------------------------------------
     // DataTable Prototypes
     //-------------------------------------	
-    po.poGrid.dataTable.prototype['onMouseIn'] = function (event) {
-        var tableRow = findParentRow(event.target.parentNode);
-        if (tableRow.style.backgroundColor == 'lightblue') {
+    po.poGrid.dataTable.prototype.onMouseIn = function (event) {
+        var tableRow = this.findParentRow(event.target.parentNode);
+        if (tableRow.style.backgroundColor === 'lightblue') {
             return;
         }
         tableRow.style.backgroundColor = '#dcfac9';
     };
 
-    po.poGrid.dataTable.prototype['onMouseOut'] = function (event) {
-        var tableRow = findParentRow(event.target.parentNode);
-        if (tableRow.style.backgroundColor == 'lightblue') {
+    po.poGrid.dataTable.prototype.onMouseOut = function (event) {
+        var tableRow = this.findParentRow(event.target.parentNode);
+        if (tableRow.style.backgroundColor === 'lightblue') {
             return;
         }
         tableRow.style.backgroundColor = 'white';
     };
 
-    po.poGrid.dataTable.prototype['onClick'] = function (event) {
-        if (this.selectedRow != null) {
+    po.poGrid.dataTable.prototype.onClick = function (event) {
+        if (this.selectedRow !== null) {
             this.selectedRow.style.backgroundColor = 'white';
         }
-        var tableRow = findParentRow(event.target.parentNode);
+        var tableRow = this.findParentRow(event.target.parentNode);
         tableRow.style.backgroundColor = 'lightblue';
 
         this.selectedRow = tableRow;
@@ -158,20 +136,23 @@
     //-------------------------------------
     // Paging Prototypes
     //-------------------------------------	
-    po.poGrid.dataPager.prototype['onFirstPage'] = function (event) {
-        this.pager.firstPage(event);
+    po.poGrid.dataPager.prototype.onFirstPage = function (event) {
+        this.currentPage(1);
     };
 
-    po.poGrid.dataPager.prototype['onNextPage'] = function (event) {
-        this.pager.nextPage(event);
+    po.poGrid.dataPager.prototype.onNextPage = function (event) {
+        var i = this.currentPage();
+        this.currentPage(Math.min(i + 1, this.totalPageCount()));
     };
 
-    po.poGrid.dataPager.prototype['onLastPage'] = function (event) {
-        this.pager.lastPage(event);
+    po.poGrid.dataPager.prototype.onLastPage = function (event) {
+        var lastPage = this.totalPageCount();
+        this.currentPage(lastPage);
     };
 
-    po.poGrid.dataPager.prototype['onPrevPage'] = function (event) {
-        this.pager.prevPage(event);
+    po.poGrid.dataPager.prototype.onPrevPage = function (event) {
+        var i = this.currentPage();
+        this.currentPage(Math.max(i - 1, 1));
     };
 
     //-------------------------------------

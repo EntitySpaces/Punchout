@@ -5,6 +5,59 @@
 (function () {
     es = {};
 
+    es.dataPager = function (grid) {
+
+        this.grid = grid;
+        this.colSpan = ko.observable(4);
+        this.enabled = ko.observable(true);
+        this.totalPageCount = ko.observable(0);
+        this.currentPage = ko.observable(1);
+        this.rowsPerPage = ko.observable(10);
+
+        // The four Magic Functions
+        this.firstPage = function (element) {
+            alert("Got Here");
+        }
+
+        this.nextPage = function (element) {
+            alert("Got Here"); ;
+        }
+
+        this.lastPage = function (element) {
+            alert("Got Here");
+        }
+
+        this.prevPage = function (element) {
+            alert("Got Here");
+        }
+
+        this.startingRow = ko.dependentObservable(function () {
+            return (this.currentPage() - 1) * this.rowsPerPage();
+        }, this);
+
+        this.endingRow = ko.dependentObservable(function () {
+            return this.currentPage() * this.rowsPerPage();
+        }, this);
+
+        this.totalRowCount = ko.dependentObservable(function () {
+            return this.grid.collection().length;
+        }, this);
+
+        this.totalPageCount = ko.dependentObservable(function () {
+            var count = this.grid.collection().length;
+            var lastPage = Math.round(count / this.rowsPerPage());
+            if ((count % this.rowsPerPage()) > 0) {
+                lastPage += 1;
+            }
+            return lastPage;
+        }, this);
+    }
+
+    es.pagerRequest = function() {
+        this.pageSize = 0;
+        this.pageNumber = 0;
+    }
+
     // Google Closure Compiler helpers (used only to make the minified file smaller)
     es.exportSymbol = function (publicPath, object) {
         var tokens = publicPath.split(".");
@@ -187,6 +240,25 @@
         }
 
         return theData;
+    };
+
+    //-------------------------------------
+    // Paging Prototypes
+    //-------------------------------------	
+    es.dataPager.prototype['onFirstPage'] = function (event) {
+        this.pager.firstPage(event);
+    };
+
+    es.dataPager.prototype['onNextPage'] = function (event) {
+        this.pager.nextPage(event);
+    };
+
+    es.dataPager.prototype['onLastPage'] = function (event) {
+        this.pager.lastPage(event);
+    };
+
+    es.dataPager.prototype['onPrevPage'] = function (event) {
+        this.pager.prevPage(event);
     };
 
     //---------------------------------------------------

@@ -8,6 +8,7 @@
     <script src="../../lib/knockout-latest.debug.js" type="text/javascript"></script>
     <script src="../../lib/knockout.mapping.js" type="text/javascript"></script>
     <script src="../../js/punchout_grid.js" type="text/javascript"></script>
+    <script src="../../js/entityspaces_ko_helper.js" type="text/javascript"></script>
     <link href="../../css/punchout_grid.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -125,12 +126,17 @@ var viewModel2 = {
     footers: ko.observableArray(["$100.00", "$200.00", "$3.00", "$56.34"])
 }
 
+var service = "http://localhost/esService/esJson.svc/";
+
 var myView1 = new po.poGrid.dataTable(viewModel1.data, viewModel1.columns, viewModel1.headers, viewModel1.footers);
+myView1.pager = new es.dataPager(myView1);
 myView1.pager.enabled(true);
 myView1.headerEnabled(true);
 myView1.footerEnabled(true);
 
+
 var myView2 = new po.poGrid.dataTable(viewModel2.data, viewModel2.columns, viewModel2.headers, viewModel2.footers);
+myView2.pager = new po.poGrid.dataPager(myView2);
 myView2.pager.enabled(true);
 myView2.headerEnabled(true);
 myView2.footerEnabled(true);

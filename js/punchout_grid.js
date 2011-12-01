@@ -20,10 +20,10 @@
                 <!-- /ko -->\
                 <tr data-bind=\"if: pager.enabled()\">\
                     <td data-bind=\"attr: { colspan: headers().length }\" nowrap=\"nowrap\">\
-                        <button data-bind=\"click: onFirstPage\"> << </button>\
-                        <button data-bind=\"click: onPrevPage\">  <  </button>\
-                        <button data-bind=\"click: onNextPage\">  >  </button>\
-                        <button data-bind=\"click: onLastPage\">  >> </button>\
+                        <button data-bind=\"click: pager.onFirstPage\"> << </button>\
+                        <button data-bind=\"click: pager.onPrevPage\">  <  </button>\
+                        <button data-bind=\"click: pager.onNextPage\">  >  </button>\
+                        <button data-bind=\"click: pager.onLastPage\">  >> </button>\
                         Page <em data-bind=\"text: pager.currentPage()\"></em> of <em data-bind=\"text: pager.totalPageCount()\"></em>\
                     </td>\
                 </tr>\
@@ -38,14 +38,38 @@
 
     po.poGrid = {
 
-        pagingControl: function (grid) {
+        //-----------------------------------------------------------------------------
+        // Default Built in Client Paging Control for when all data is on the client
+        //-----------------------------------------------------------------------------
+        dataPager: function (grid) {
 
-            this.colSpan = ko.observable(4);
-            this.enabled = ko.observable(true);
             this.grid = grid;
-            this.totalPageCount = ko.observable(0);
+            this.colSpan = ko.observable(1);
+            this.enabled = ko.observable(true);
             this.currentPage = ko.observable(1);
             this.rowsPerPage = ko.observable(10);
+
+            //-------------------------------------
+            // The four Magic Functions
+            //-------------------------------------
+            this.firstPage = function (element) {
+                this.currentPage(1);
+            }
+
+            this.nextPage = function (element) {
+                var i = this.currentPage();
+                this.currentPage(Math.min(i + 1, this.totalPageCount()));
+            }
+
+            this.lastPage = function (element) {
+                var lastPage = this.totalPageCount();
+                this.currentPage(lastPage);
+            }
+
+            this.prevPage = function (element) {
+                var i = this.currentPage();
+                this.currentPage(Math.max(i - 1, 1));
+            }
 
             this.startingRow = ko.dependentObservable(function () {
                 return (this.currentPage() - 1) * this.rowsPerPage();
@@ -77,8 +101,11 @@
             this.footers = footers;
             this.selectedRow = null;
             this.selectedIndex = ko.observable(0);
-            this.pager = new po.poGrid.pagingControl(this);
             this.id = 0;
+
+            this.pager = null;
+
+            this.name = "The Datatable";
 
             // Settings
             this.headerEnabled = ko.observable(true);
@@ -86,7 +113,7 @@
 
             this.showFooterControl = ko.dependentObservable(function () {
                 if (this.footerEnabled) return true;
-                if (this.pager.enabled) return true;
+                // if (this.pager.enabled) return true;
                 return false;
             }, this);
 
@@ -128,26 +155,28 @@
         this.selectedRow = tableRow;
     };
 
-    po.poGrid.dataTable.prototype['onFirstPage'] = function (event) {
-        this.pager.currentPage(1);
+    //-------------------------------------
+    // Paging Prototypes
+    //-------------------------------------	
+    po.poGrid.dataPager.prototype['onFirstPage'] = function (event) {
+        this.pager.firstPage(event);
     };
 
-    po.poGrid.dataTable.prototype['onNextPage'] = function (event) {
-        var i = this.pager.currentPage();
-        this.pager.currentPage(Math.min(i + 1, this.pager.totalPageCount()));
+    po.poGrid.dataPager.prototype['onNextPage'] = function (event) {
+        this.pager.nextPage(event);
     };
 
-    po.poGrid.dataTable.prototype['onLastPage'] = function (event) {
-        var lastPage = this.pager.totalPageCount();
-        this.pager.currentPage(lastPage);
+    po.poGrid.dataPager.prototype['onLastPage'] = function (event) {
+        this.pager.lastPage(event);
     };
 
-    po.poGrid.dataTable.prototype['onPrevPage'] = function (event) {
-        var i = this.pager.currentPage();
-        this.pager.currentPage(Math.max(i - 1, 1));
+    po.poGrid.dataPager.prototype['onPrevPage'] = function (event) {
+        this.pager.prevPage(event);
     };
 
-    //create out actual binding
+    //-------------------------------------
+    // Create out actual binding
+    //-------------------------------------	
     ko.bindingHandlers.poGrid = {
 
         init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {

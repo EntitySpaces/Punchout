@@ -49,6 +49,10 @@
             this.currentPage = ko.observable(1);
             this.rowsPerPage = ko.observable(10);
 
+            this.initPager = function () {
+
+            }
+
             this.startingRow = ko.dependentObservable(function () {
                 return (this.currentPage() - 1) * this.rowsPerPage();
             }, this);
@@ -73,7 +77,7 @@
 
 
         dataTable: function (data, columns, headers, footers) {
-            this.collection = data;
+            this.collection = ko.observableArray(data);
             this.columns = columns;
             this.headers = headers;
             this.footers = footers;
@@ -161,6 +165,11 @@
     ko.bindingHandlers.poGrid = {
 
         init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+
+            viewModel.myView1.pager.initPager();
+            viewModel.myView2.pager.initPager();
+
+           // viewModel.pager.initPager();
 
             // Add our Grid under the <div>
             element.innerHTML = gridHTML;

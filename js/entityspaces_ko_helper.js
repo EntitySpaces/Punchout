@@ -9,38 +9,54 @@
         this.grid = grid;
         this.colSpan = ko.observable(4);
         this.enabled = ko.observable(true);
-        this.totalPageCount = ko.observable(0);
         this.currentPage = ko.observable(1);
         this.rowsPerPage = ko.observable(10);
+        this.totalRowCount = ko.observable(0);
+
+        this.service = "http://localhost/esService/esJson.svc/";
+        this.method = 'Employees_Pager';
+
+        this.pagerRequest = new es.pagerRequest();
+
+        this.initPager = function () {
+
+            this.pagerRequest.totalRows = 0;
+            this.pagerRequest.pageSize = 10;
+            this.pagerRequest.pageNumber = 1;
+
+            var resultSet = es.makeRequest(this.service, this.method, ko.toJSON(this.pagerRequest));
+            this.pagerRequest = resultSet.pagerRequest;
+            this.totalRowCount(resultSet.pagerRequest.totalRows);
+            this.grid.collection(ko.observableArray(resultSet.Collection));
+        }
 
         this.startingRow = ko.dependentObservable(function () {
-            return (this.currentPage() - 1) * this.rowsPerPage();
+            return (this.pagerRequest.pageNumber - 1) * this.rowsPerPage();
         }, this);
 
         this.endingRow = ko.dependentObservable(function () {
-            return this.currentPage() * this.rowsPerPage();
-        }, this);
-
-        this.totalRowCount = ko.dependentObservable(function () {
-            return this.grid.collection().length;
+            return this.pagerRequest.pageNumber * this.rowsPerPage();
         }, this);
 
         this.totalPageCount = ko.dependentObservable(function () {
-            var count, lastPage;
+            var count = this.totalRowCount();
 
-            count = this.grid.collection().length;
-            lastPage = Math.round(count / this.rowsPerPage());
-
-            if ((count % this.rowsPerPage()) > 0) {
-                lastPage += 1;
+            if (count > 0) {
+                var lastPage = Math.round(count / this.rowsPerPage());
+                //                if ((count % this.rowsPerPage()) > 0) {
+                //                    lastPage += 1;
+                //                }
+                return lastPage;
             }
-            return lastPage;
+
+            return 1;
         }, this);
     };
 
     es.pagerRequest = function () {
-        this.pageSize = 0;
-        this.pageNumber = 0;
+        this.totalRows = 0;
+        this.pageSize = 10;
+        this.pageNumber = 1;
     };
 
     // Google Closure Compiler helpers (used only to make the minified file smaller)
@@ -241,18 +257,47 @@
     //-------------------------------------	
     es.dataPager.prototype.onFirstPage = function (event) {
 
+        this.pagerRequest.pageNumber = 1;
+        var resultSet = es.makeRequest(this.service, this.method, ko.toJSON(this.pagerRequest));
+        this.pagerRequest = resultSet.pagerRequest;
+        this.grid.collection(ko.observableArray(resultSet.Collection));
+
+        this.currentPage(1);
     };
 
     es.dataPager.prototype.onNextPage = function (event) {
-        this.grid.collection(vm.data);
+
+        var i = Math.min(this.pagerRequest.pageNumber + 1, this.totalPageCount());
+
+        this.pagerRequest.pageNumber = i;
+        var resultSet = es.makeRequest(this.service, this.method, ko.toJSON(this.pagerRequest));
+        this.pagerRequest = resultSet.pagerRequest;
+        this.grid.collection(ko.observableArray(resultSet.Collection));
+
+        this.currentPage(i);
     };
 
     es.dataPager.prototype.onLastPage = function (event) {
 
+        this.pagerRequest.pageNumber = this.totalPageCount();
+        var resultSet = es.makeRequest(this.service, this.method, ko.toJSON(this.pagerRequest));
+        this.pagerRequest = resultSet.pagerRequest;
+        this.grid.collection(ko.observableArray(resultSet.Collection));
+
+        this.currentPage(this.pagerRequest.pageNumber);
     };
 
     es.dataPager.prototype.onPrevPage = function (event) {
 
+        var i = this.currentPage();
+        i = Math.max(this.pagerRequest.pageNumber - 1, 1);
+
+        this.pagerRequest.pageNumber = i;
+        var resultSet = es.makeRequest(this.service, this.method, ko.toJSON(this.pagerRequest));
+        this.pagerRequest = resultSet.pagerRequest;
+        this.grid.collection(ko.observableArray(resultSet.Collection));
+
+        this.currentPage(i);
     };
 
     var vm = {

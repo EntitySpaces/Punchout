@@ -50,7 +50,7 @@
             this.rowsPerPage = ko.observable(10);
 
             this.initPager = function () {
-
+                this.rowsPerPage(10);
             }
 
             this.startingRow = ko.dependentObservable(function () {
@@ -67,17 +67,26 @@
 
             this.totalPageCount = ko.dependentObservable(function () {
                 var count = this.grid.collection().length;
-                var lastPage = Math.round(count / this.rowsPerPage());
-                if ((count % this.rowsPerPage()) > 0) {
-                    lastPage += 1;
+
+                if (count > 0) {
+                    var lastPage = Math.round(count / this.rowsPerPage());
+                    var mod = count % this.rowsPerPage();
+
+                    if (mod === 0) { return lastPage; }
+
+                    if (mod < 5) {
+                        lastPage += 1;
+                    }
+                    return lastPage;
                 }
-                return lastPage;
+
+                return 1;
             }, this);
         },
 
 
         dataTable: function (data, columns, headers, footers) {
-            this.collection = ko.observableArray(data);
+            this.collection = data;
             this.columns = columns;
             this.headers = headers;
             this.footers = footers;
@@ -166,13 +175,11 @@
 
         init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
 
-            viewModel.myView1.pager.initPager();
-            viewModel.myView2.pager.initPager();
-
-           // viewModel.pager.initPager();
-
             // Add our Grid under the <div>
             element.innerHTML = gridHTML;
+
+            viewModel.myView1.pager.initPager();
+            viewModel.myView2.pager.initPager();
 
             return ko.bindingHandlers['with'].init(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
         },

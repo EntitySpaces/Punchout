@@ -28,7 +28,7 @@
             this.pagerRequest = resultSet.pagerRequest;
             this.totalRowCount(resultSet.pagerRequest.totalRows);
             this.grid.collection(ko.observableArray(resultSet.Collection));
-        }
+        };
 
         this.startingRow = ko.dependentObservable(function () {
             return (this.pagerRequest.pageNumber - 1) * this.rowsPerPage();
@@ -38,14 +38,23 @@
             return this.pagerRequest.pageNumber * this.rowsPerPage();
         }, this);
 
+        Number.prototype.toFixedDown = function (digits) {
+            var n = this - Math.pow(10, -digits) / 2;
+            return n.toFixed(digits);
+        };
+
         this.totalPageCount = ko.dependentObservable(function () {
             var count = this.totalRowCount();
 
             if (count > 0) {
                 var lastPage = Math.round(count / this.rowsPerPage());
-                //                if ((count % this.rowsPerPage()) > 0) {
-                //                    lastPage += 1;
-                //                }
+                var mod = count % this.rowsPerPage();
+
+                if (mod === 0) { return lastPage; }
+
+                if (mod < 5) {
+                    lastPage += 1;
+                }
                 return lastPage;
             }
 
@@ -298,24 +307,6 @@
         this.grid.collection(ko.observableArray(resultSet.Collection));
 
         this.currentPage(i);
-    };
-
-    var vm = {
-        data: ko.observableArray([
-			{ "EmployeeID": 61, "FirstName": "Fred", "LastName": "Smith", "Age": 42, "RowState": 2 },
-			{ "EmployeeID": 62, "FirstName": "Joe", "LastName": "Smith", "Age": 39, "RowState": 2 },
-			{ "EmployeeID": 63, "FirstName": "Mike", "LastName": "Griffin", "Age": 26, "RowState": 2 },
-			{ "EmployeeID": 64, "FirstName": "Sally", "LastName": "BoJangles", "Age": 42, "RowState": 2 },
-			{ "EmployeeID": 65, "FirstName": "Sam", "LastName": "Rollins", "Age": 39, "RowState": 2 },
-			{ "EmployeeID": 66, "FirstName": "Mike", "LastName": "Smith", "Age": 26, "RowState": 2 },
-			{ "EmployeeID": 67, "FirstName": "Max", "LastName": "BoJangles", "Age": 42, "RowState": 2 },
-			{ "EmployeeID": 68, "FirstName": "Joe", "LastName": "Smith", "Age": 39, "RowState": 2 },
-			{ "EmployeeID": 69, "FirstName": "Mike", "LastName": "Smith", "Age": 26, "RowState": 2 },
-			{ "EmployeeID": 70, "FirstName": "Fred", "LastName": "Smith", "Age": 42, "RowState": 2 }
-		]),
-        columns: ko.observableArray(["EmployeeID", "FirstName", "LastName", "RowState"]),
-        headers: ko.observableArray(["Employee ID", "First Name", "Last Name", "Row State"]),
-        footers: ko.observableArray(["$100.00", "$200.00", "$3.00", "$56.34"])
     };
 
     //---------------------------------------------------

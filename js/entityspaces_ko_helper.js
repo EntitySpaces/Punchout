@@ -13,8 +13,8 @@
         this.rowsPerPage = ko.observable(10);
         this.totalRowCount = ko.observable(0);
 
-        this.service = "http://localhost/esService/esJson.svc/";
-        this.method = 'Employees_Pager';
+        this.service = "";
+        this.method = "";
 
         this.pagerRequest = new es.pagerRequest();
 
@@ -37,11 +37,6 @@
         this.endingRow = ko.dependentObservable(function () {
             return this.pagerRequest.pageNumber * this.rowsPerPage();
         }, this);
-
-        Number.prototype.toFixedDown = function (digits) {
-            var n = this - Math.pow(10, -digits) / 2;
-            return n.toFixed(digits);
-        };
 
         this.totalPageCount = ko.dependentObservable(function () {
             var count = this.totalRowCount();

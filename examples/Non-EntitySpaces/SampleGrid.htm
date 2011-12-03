@@ -170,7 +170,7 @@ var viewModel2 = {
 var myView1 = new po.poGrid.dataTable(viewModel1.data, viewModel1.columns);
 myView1.pager = new es.dataPager(myView1); // Notice we use the es.dataPager here
 
-myView1.pager.service = "http://localhost/esService/esJson.svc/";
+myView1.pager.service = "http://www.entityspaces.net/Knockout/Part1/esService/esJson.svc/";
 myView1.pager.method = 'Employees_Pager';
 
 myView1.pager.enabled(true);

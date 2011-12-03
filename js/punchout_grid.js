@@ -7,7 +7,7 @@
         <table id=\"poTable\" class=\"es-grid\" cellspacing=\"0\">\
             <thead data-bind=\"if: headerEnabled()\">\
                 <tr data-bind=\"foreach: columns\">\
-                    <!-- ko if: $data.IsVisible() -->\
+                    <!-- ko if: $data.IsVisible -->\
                     <th data-bind=\"text: $data.DisplayName, event: {click: $parent.onSort.bind($parent)}\">\
                     </th>\
                     <!-- /ko -->\
@@ -16,7 +16,7 @@
             <tfoot data-bind=\"if: showFooterControl\">\
                 <!-- ko if: footerEnabled -->\
                 <tr data-bind=\"foreach: columns\">\
-                    <!-- ko if: $data.IsVisible() -->\
+                    <!-- ko if: $data.IsVisible -->\
                     <td data-bind=\"text: $data.FooterValue\">\
                     </td>\
                     <!-- /ko -->\
@@ -34,7 +34,7 @@
             </tfoot>\
             <tbody data-bind=\"foreach: collection.slice(pager.startingRow(), pager.endingRow())\">\
                 <tr data-bind=\"foreach: $parent.columns, event: { mouseover: $parent.onMouseIn.bind($parent),  mouseout: $parent.onMouseOut.bind($parent), click: $parent.onClick.bind($parent) }\">\
-                    <!-- ko if: $data.IsVisible() -->\
+                    <!-- ko if: $data.IsVisible -->\
                     <td data-bind=\"text: $parent[$data.PropertyName]\">\
                     </td>\
                     <!-- /ko -->\

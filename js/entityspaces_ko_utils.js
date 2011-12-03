@@ -22,7 +22,7 @@
 
         this.initPager = function () {
 
-            var i;
+            var i, resultSet;
 
             if (this.initialized === true) { return; }
 
@@ -33,7 +33,7 @@
             this.pagerRequest.pageSize = 10;
             this.pagerRequest.pageNumber = 1;
 
-            var resultSet = es.makeRequest(this.service, this.method, ko.toJSON(this.pagerRequest));
+            resultSet = es.makeRequest(this.service, this.method, ko.toJSON(this.pagerRequest));
 
             // Let's make IsVisible a ko.observable() since it is used in the template to drive 
             // the display
@@ -65,11 +65,11 @@
         }, this);
 
         this.totalPageCount = ko.dependentObservable(function () {
-            var count = this.totalRowCount();
+            var lastPage, mod, count = this.totalRowCount();
 
             if (count > 0) {
-                var lastPage = Math.round(count / this.rowsPerPage());
-                var mod = count % this.rowsPerPage();
+                lastPage = Math.round(count / this.rowsPerPage());
+                mod = count % this.rowsPerPage();
 
                 if (mod === 0) { return lastPage; }
 
@@ -217,8 +217,7 @@
     };
 
     es.getDirtyEntities = function (collection) {
-        var modifiedRecords = {};
-        var index = 0;
+        var index = 0, modifiedRecords = {};
 
         ko.utils.arrayFirst(collection(), function (entity) {
             if (entity.RowState() !== es.RowStateEnum.unchanged) {
@@ -243,12 +242,11 @@
     es.makeRequstError = null;
 
     es.makeRequest = function (url, methodName, params) {
-        var theData = null;
-        var path = null;
+        var theData = null, path = null, xmlHttp;
+        
         es.getDataError = null;
 
         // Create HTTP request
-        var xmlHttp;
         try {
             xmlHttp = new XMLHttpRequest();
         } catch (e1) {
@@ -298,14 +296,12 @@
 
     es.dataPager.prototype.onNextPage = function (event) {
 
-        var i = Math.min(this.pagerRequest.pageNumber + 1, this.totalPageCount());
-
-        this.pagerRequest.pageNumber = i;
+        this.pagerRequest.pageNumber = Math.min(this.pagerRequest.pageNumber + 1, this.totalPageCount());
         var resultSet = es.makeRequest(this.service, this.method, ko.toJSON(this.pagerRequest));
         this.pagerRequest = resultSet.pagerRequest;
         this.grid.collection(ko.observableArray(resultSet.Collection));
 
-        this.currentPage(i);
+        this.currentPage(this.pagerRequest.pageNumber);
     };
 
     es.dataPager.prototype.onLastPage = function (event) {
@@ -320,15 +316,12 @@
 
     es.dataPager.prototype.onPrevPage = function (event) {
 
-        var i = this.currentPage();
-        i = Math.max(this.pagerRequest.pageNumber - 1, 1);
-
-        this.pagerRequest.pageNumber = i;
+        this.pagerRequest.pageNumber = Math.max(this.pagerRequest.pageNumber - 1, 1);
         var resultSet = es.makeRequest(this.service, this.method, ko.toJSON(this.pagerRequest));
         this.pagerRequest = resultSet.pagerRequest;
         this.grid.collection(ko.observableArray(resultSet.Collection));
 
-        this.currentPage(i);
+        this.currentPage(this.pagerRequest.pageNumber);
     };
 
     //---------------------------------------------------

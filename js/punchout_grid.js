@@ -55,7 +55,7 @@
             this.currentPage = ko.observable(1);
             this.rowsPerPage = ko.observable(10);
 
-            this.initPager = function () {
+            this.init = function () {
                 this.colSpan(this.grid.columns().length);
             };
 
@@ -91,7 +91,6 @@
         },
 
         dataSorter: function (grid) {
-
             this.grid = grid;
 
             this.sort = function (column, dir) {
@@ -108,9 +107,9 @@
             this.selectedRow = null;
             this.selectedIndex = ko.observable(0);
             this.id = 0;
-
             this.pager = null;
-            this.sorter = new po.poGrid.dataSorter(this);
+            this.sorter = null;
+
 
             // Let's make IsVisible a ko.observable() since it is used in the template to drive 
             // the display
@@ -134,6 +133,15 @@
                 }
                 return this.findParentRow(element.parentNode);
             };
+
+            this.pager = function (thePager) {
+                this.pager = thePager;
+                this.pager.init();
+            };
+
+            this.sorter = function (theSorter) {
+                this.sorter = theSorter;
+            }
         }
     };
 
@@ -227,13 +235,8 @@
     ko.bindingHandlers.poGrid = {
 
         init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-
             // Add our Grid under the <div>
             element.innerHTML = gridHTML;
-
-            viewModel.myView1.pager.initPager();
-            viewModel.myView2.pager.initPager();
-
             return ko.bindingHandlers['with'].init(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
         },
 

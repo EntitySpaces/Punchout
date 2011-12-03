@@ -16,37 +16,25 @@
    <!-- poGrid using the new KO template syntax -->
    <table>
         <tr>
-            <td>
-                This Punchout Grid is using an EntitySpaces JSON Service
-            </td>
-            <td>
+            <td colspan="2">
                 This Punchout Grid is using all client side data
             </td>
         </tr>
         <tr>
-            <td valign="top">
-                <div data-bind="poGrid: myView1"></div>
+            <td colspan="2">
+                <div data-bind="poGrid: myView"></div>
             </td>
-            <td valign="top">
-                <div data-bind="poGrid: myView2"></div>
-            </td>	
         </tr>
         <tr>
             <td>
-                <input type="checkbox" onclick="{ myView1.headerEnabled(!myView1.headerEnabled()) }">Hide Headers</input><br />
-                <input type="checkbox" onclick="{ myView1.footerEnabled(!myView1.footerEnabled()) }">Hide Footers</input><br />
-                <input type="checkbox" onclick="{ myView1.pager.enabled(!myView1.pager.enabled()) }">Hide Pager</input><br /><br />
-                <input type="checkbox" onclick="{ myView1.columns()[0].isVisible(!checked) }">Hide Employee Id</input><br />
-                <input type="checkbox" onclick="{ myView1.columns()[1].isVisible(!checked) }">Hide Last Name</input><br />
-                <input type="checkbox" onclick="{ myView1.columns()[2].isVisible(!checked) }">Hide First Name</input>
+                <input type="checkbox" onclick="{ myView.headerEnabled(!myView.headerEnabled()) }">Hide Headers</input><br />
+                <input type="checkbox" onclick="{ myView.footerEnabled(!myView.footerEnabled()) }">Hide Footers</input><br />
+                <input type="checkbox" onclick="{ myView.pager.enabled(!myView.pager.enabled()) }">Hide Pager</input>
             </td>
             <td>
-                <input type="checkbox" onclick="{ myView2.headerEnabled(!myView2.headerEnabled()) }">Hide Headers</input><br />
-                <input type="checkbox" onclick="{ myView2.footerEnabled(!myView2.footerEnabled()) }">Hide Footers</input><br />
-                <input type="checkbox" onclick="{ myView2.pager.enabled(!myView2.pager.enabled()) }">Hide Pager</input><br /><br />
-                <input type="checkbox" onclick="{ myView2.columns()[0].isVisible(!checked) }">Hide Employee Id</input><br />
-                <input type="checkbox" onclick="{ myView2.columns()[1].isVisible(!checked) }">Hide Last Name</input><br />
-                <input type="checkbox" onclick="{ myView2.columns()[2].isVisible(!checked) }">Hide First Name</input>
+                <input type="checkbox" onclick="{ myView.columns()[0].isVisible(!checked) }">Hide Employee Id</input><br />
+                <input type="checkbox" onclick="{ myView.columns()[1].isVisible(!checked) }">Hide Last Name</input><br />
+                <input type="checkbox" onclick="{ myView.columns()[2].isVisible(!checked) }">Hide First Name</input>
             </td>
         </tr>
     </table>
@@ -64,12 +52,7 @@
 
 <script language="javascript" type="text/javascript">
 
-var viewModel1 = {
-    data: ko.observableArray([]),
-    columns: ko.observableArray([])
-}
-
-var viewModel2 = {
+var viewModel = {
     data: ko.observableArray([
         { "EmployeeID": 1, "FirstName": "Fred", "LastName": "Smith", "Age": 42, "RowState": 2 },
         { "EmployeeID": 2, "FirstName": "Joe", "LastName": "Smith", "Age": 39, "RowState": 2 },
@@ -162,30 +145,18 @@ var viewModel2 = {
        }])
 }
 
-//------------------------------------------------------------------------------
-// This view is going to page against an EntitySpaces JSON WCF Service
-//------------------------------------------------------------------------------
-var myView1 = new po.poGrid.dataTable(viewModel1.data, viewModel1.columns);
-myView1.pager = new es.dataPager(myView1); // Notice we use the es.dataPager here
-myView1.sorter = new es.dataSorter(myView1);
-
-//myView1.pager.service = "http://localhost/esService/esJson.svc/";
-myView1.pager.service = "http://www.entityspaces.net/Knockout/Part1/esService/esJson.svc/";
-myView1.pager.method = 'Employees_Pager';
-
-myView1.pager.enabled(true);
-myView1.headerEnabled(true);
-myView1.footerEnabled(true);
 
 //------------------------------------------------------------------------------
 // This is all client side
 //------------------------------------------------------------------------------
-var myView2 = new po.poGrid.dataTable(viewModel2.data, viewModel2.columns);
-myView2.pager = new po.poGrid.dataPager(myView2);  // standard punchout pager
-myView2.pager.enabled(true);
-myView2.headerEnabled(true);
-myView2.footerEnabled(true);
+var myView = new po.poGrid.dataTable(viewModel.data, viewModel.columns);
+myView.pager(new po.poGrid.dataPager(myView)); // Notice we use the Punchout dataPager here
+myView.sorter(new po.poGrid.dataSorter(myView));      // Notice we use the Punchout dataSorter here
 
-ko.applyBindings({myView1: myView1, myView2: myView2}); 
+myView.pager.enabled(true);
+myView.headerEnabled(true);
+myView.footerEnabled(true);
+
+ko.applyBindings(myView); 
 
 </script>

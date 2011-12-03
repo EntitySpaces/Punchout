@@ -4,7 +4,7 @@
 /// <reference path="knockout-latest.debug.js" />
 (function (es) {
 
-    es.dataPager = function (grid) {
+    es.dataPager = function (grid, service, method) {
 
         this.grid = grid;
         this.colSpan = ko.observable(1);
@@ -13,14 +13,14 @@
         this.rowsPerPage = ko.observable(10);
         this.totalRowCount = ko.observable(0);
 
-        this.service = "";
-        this.method = "";
+        this.service = service;
+        this.method = method;
 
         this.initialized = false;
 
         this.pagerRequest = new es.pagerRequest();
 
-        this.initPager = function () {
+        this.init = function () {
 
             var i, resultSet;
 
@@ -43,8 +43,8 @@
 
             // Let's make IsVisible a ko.observable() since it is used in the template to drive
             // the display
-            for (i = 0; i < grid.columns().length; i += 1) {
-                grid.columns()[i].isVisible = ko.observable(grid.columns()[i].isVisible);
+            for (i = 0; i < this.grid.columns().length; i += 1) {
+                this.grid.columns()[i].isVisible = ko.observable(this.grid.columns()[i].isVisible);
             }
 
             this.grid.collection(ko.observableArray(resultSet.collection));
@@ -83,16 +83,16 @@
 
         this.sort = function (column, dir) {
 
-            grid.pager.pagerRequest.pageNumber = 1;
-            grid.pager.pagerRequest.sortCriteria = [];
-            grid.pager.pagerRequest.sortCriteria[0] = column;
-            grid.pager.pagerRequest.sortCriteria[1] = dir;
+            this.grid.pager.pagerRequest.pageNumber = 1;
+            this.grid.pager.pagerRequest.sortCriteria = [];
+            this.grid.pager.pagerRequest.sortCriteria[0] = column;
+            this.grid.pager.pagerRequest.sortCriteria[1] = dir;
 
-            var resultSet = es.makeRequest(grid.pager.service, grid.pager.method, ko.toJSON(grid.pager.pagerRequest));
-            grid.pagerRequest = resultSet.pagerRequest;
-            grid.collection(ko.observableArray(resultSet.collection));
+            var resultSet = es.makeRequest(this.grid.pager.service, this.grid.pager.method, ko.toJSON(this.grid.pager.pagerRequest));
+            this.grid.pagerRequest = resultSet.pagerRequest;
+            this.grid.collection(ko.observableArray(resultSet.collection));
 
-            grid.pager.currentPage(1);
+            this.grid.pager.currentPage(1);
 
         };
     };

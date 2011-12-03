@@ -1,0 +1,77 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <script src="../../lib/json2.js" type="text/javascript"></script>
+    <script src="../../lib/jquery-1.7.js" type="text/javascript"></script>
+    <script src="../../lib/jquery.tmpl.js" type="text/javascript"></script>
+    <script src="../../lib/knockout-latest.debug.js" type="text/javascript"></script>
+    <script src="../../lib/knockout.mapping.js" type="text/javascript"></script>
+    <script src="../../js/punchout_grid.js" type="text/javascript"></script>
+    <script src="../../js/entityspaces_ko_utils.js" type="text/javascript"></script>
+    <link href="../../css/punchout_grid.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+   <!-- poGrid using the new KO template syntax -->
+   <table>
+        <tr>
+            <td colspan="2">
+                This Punchout Grid is using an EntitySpaces JSON Service
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <div data-bind="poGrid: myView"></div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="checkbox" onclick="{ myView.headerEnabled(!myView.headerEnabled()) }">Hide Headers</input><br />
+                <input type="checkbox" onclick="{ myView.footerEnabled(!myView.footerEnabled()) }">Hide Footers</input><br />
+                <input type="checkbox" onclick="{ myView.pager.enabled(!myView.pager.enabled()) }">Hide Pager</input>
+            </td>
+            <td>
+                <input type="checkbox" onclick="{ myView.columns()[0].isVisible(!checked) }">Hide Employee Id</input><br />
+                <input type="checkbox" onclick="{ myView.columns()[1].isVisible(!checked) }">Hide Last Name</input><br />
+                <input type="checkbox" onclick="{ myView.columns()[2].isVisible(!checked) }">Hide First Name</input>
+            </td>
+        </tr>
+    </table>
+
+    <br/><br/>
+    <a href="https://github.com/EntitySpaces/Punchout/blob/master/examples/Non-EntitySpaces/SampleGrid.htm" target="new">Source for this Page</A>
+    <br/>
+    <a href="https://github.com/EntitySpaces/Punchout/blob/master/js/punchout_grid.js" target="new">Source for the Punchout Grid</A>					
+    <br/>
+    <a href="https://github.com/EntitySpaces/Punchout/blob/master/js/entityspaces_ko_utils.js" target="new">Source for the EntitySpaces KO Utils</A>					
+    <br/>
+    <a href="https://github.com/EntitySpaces/Punchout" target="new">Punchout github site</A>	
+</body>
+</html>
+
+<script language="javascript" type="text/javascript">
+
+var viewModel = {
+    data: ko.observableArray([]),
+    columns: ko.observableArray([])
+}
+
+var service = 'http://localhost/esService/esJson.svc/';
+//var service = 'http://www.entityspaces.net/Knockout/Part1/esService/esJson.svc/';
+var method = 'Employees_Pager';
+
+//------------------------------------------------------------------------------
+// This view is going to page against an EntitySpaces JSON WCF Service
+//------------------------------------------------------------------------------
+var myView = new po.poGrid.dataTable(viewModel.data, viewModel.columns);
+myView.pager(new es.dataPager(myView, service, method)); // Notice we use the es.dataPager here
+myView.sorter(new es.dataSorter(myView)); // Notice we use the es.dataSorter here
+
+myView.pager.enabled(true);
+myView.headerEnabled(true);
+myView.footerEnabled(true);
+
+ko.applyBindings(myView);
+
+</script>

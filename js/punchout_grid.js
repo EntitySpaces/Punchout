@@ -173,7 +173,7 @@
         var current, sortColumn, sortDir, i, th, tds;
 
         if (event.target.poOrig === undefined) {
-            event.target.poOrig = event.target.innerText;
+            event.target.poOrig = event.target.innerHTML;
             event.target.poDir = 'd';
         }
 

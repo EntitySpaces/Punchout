@@ -23,7 +23,7 @@
                 </tr>\
                 <!-- /ko -->\
                 <tr data-bind=\"if: pager.enabled()\">\
-                    <td data-bind=\"attr: { colspan: pager.colSpan }\" nowrap=\"nowrap\">\
+                    <td colspan=\"200\" nowrap=\"nowrap\">\
                         <button data-bind=\"click: pager.onFirstPage.bind(pager)\"> << </button>\
                         <button data-bind=\"click: pager.onPrevPage.bind(pager)\">  <  </button>\
                         <button data-bind=\"click: pager.onNextPage.bind(pager)\">  >  </button>\
@@ -173,7 +173,7 @@
         var current, sortColumn, sortDir, i, th, tds;
 
         if (event.target.poOrig === undefined) {
-            event.target.poOrig = event.target.textContent;
+            event.target.poOrig = event.target.innerText;
             event.target.poDir = 'd';
         }
 

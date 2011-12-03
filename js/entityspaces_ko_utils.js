@@ -33,7 +33,6 @@
             this.pagerRequest.pageSize = 10;
             this.pagerRequest.pageNumber = 1;
 
-
             resultSet = es.makeRequest(this.service, this.method, ko.toJSON(this.pagerRequest));
 
             this.colSpan(resultSet.columns.length);
@@ -42,7 +41,7 @@
             this.totalRowCount(resultSet.pagerRequest.totalRows);
             this.grid.columns = ko.observableArray(resultSet.columns);
 
-            // Let's make IsVisible a ko.observable() since it is used in the template to drive 
+            // Let's make IsVisible a ko.observable() since it is used in the template to drive
             // the display
             for (i = 0; i < grid.columns().length; i += 1) {
                 grid.columns()[i].isVisible = ko.observable(grid.columns()[i].isVisible);
@@ -85,7 +84,7 @@
         this.sort = function (column, dir) {
 
             grid.pager.pagerRequest.pageNumber = 1;
-            grid.pager.pagerRequest.sortCriteria = new Array();
+            grid.pager.pagerRequest.sortCriteria = [];
             grid.pager.pagerRequest.sortCriteria[0] = column;
             grid.pager.pagerRequest.sortCriteria[1] = dir;
 

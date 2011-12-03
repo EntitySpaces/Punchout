@@ -33,27 +33,22 @@
             this.pagerRequest.pageSize = 10;
             this.pagerRequest.pageNumber = 1;
 
+
             resultSet = es.makeRequest(this.service, this.method, ko.toJSON(this.pagerRequest));
 
-            // Let's make IsVisible a ko.observable() since it is used in the template to drive 
-            // the display
-            for (i = 0; i < resultSet.Columns.length; i += 1) {
-                resultSet.Columns[i].IsVisible = ko.observable(resultSet.Columns[i].IsVisible);
-            }
-
-            this.colSpan(resultSet.Columns.length);
+            this.colSpan(resultSet.columns.length);
 
             this.pagerRequest = resultSet.pagerRequest;
             this.totalRowCount(resultSet.pagerRequest.totalRows);
-            this.grid.columns = ko.observableArray(resultSet.Columns);
+            this.grid.columns = ko.observableArray(resultSet.columns);
 
             // Let's make IsVisible a ko.observable() since it is used in the template to drive 
             // the display
             for (i = 0; i < grid.columns().length; i += 1) {
-                grid.columns()[i].IsVisible = ko.observable(grid.columns()[i].IsVisible);
+                grid.columns()[i].isVisible = ko.observable(grid.columns()[i].isVisible);
             }
 
-            this.grid.collection(ko.observableArray(resultSet.Collection));
+            this.grid.collection(ko.observableArray(resultSet.collection));
         };
 
         this.startingRow = ko.dependentObservable(function () {
@@ -83,11 +78,32 @@
         }, this);
     };
 
+    es.dataSorter = function (grid) {
+
+        this.grid = grid;
+
+        this.sort = function (column, dir) {
+
+            grid.pager.pagerRequest.pageNumber = 1;
+            grid.pager.pagerRequest.sortCriteria = new Array();
+            grid.pager.pagerRequest.sortCriteria[0] = column;
+            grid.pager.pagerRequest.sortCriteria[1] = dir;
+
+            var resultSet = es.makeRequest(grid.pager.service, grid.pager.method, ko.toJSON(grid.pager.pagerRequest));
+            grid.pagerRequest = resultSet.pagerRequest;
+            grid.collection(ko.observableArray(resultSet.collection));
+
+            grid.pager.currentPage(1);
+
+        };
+    };
+
     es.pagerRequest = function () {
         this.initialRequest = 1;
         this.totalRows = 0;
         this.pageSize = 10;
         this.pageNumber = 1;
+        this.sortCriteria = new Array();
     };
 
     // Google Closure Compiler helpers (used only to make the minified file smaller)
@@ -243,7 +259,7 @@
 
     es.makeRequest = function (url, methodName, params) {
         var theData = null, path = null, xmlHttp;
-        
+
         es.getDataError = null;
 
         // Create HTTP request
@@ -289,7 +305,7 @@
         this.pagerRequest.pageNumber = 1;
         var resultSet = es.makeRequest(this.service, this.method, ko.toJSON(this.pagerRequest));
         this.pagerRequest = resultSet.pagerRequest;
-        this.grid.collection(ko.observableArray(resultSet.Collection));
+        this.grid.collection(ko.observableArray(resultSet.collection));
 
         this.currentPage(1);
     };
@@ -299,7 +315,7 @@
         this.pagerRequest.pageNumber = Math.min(this.pagerRequest.pageNumber + 1, this.totalPageCount());
         var resultSet = es.makeRequest(this.service, this.method, ko.toJSON(this.pagerRequest));
         this.pagerRequest = resultSet.pagerRequest;
-        this.grid.collection(ko.observableArray(resultSet.Collection));
+        this.grid.collection(ko.observableArray(resultSet.collection));
 
         this.currentPage(this.pagerRequest.pageNumber);
     };
@@ -309,7 +325,7 @@
         this.pagerRequest.pageNumber = this.totalPageCount();
         var resultSet = es.makeRequest(this.service, this.method, ko.toJSON(this.pagerRequest));
         this.pagerRequest = resultSet.pagerRequest;
-        this.grid.collection(ko.observableArray(resultSet.Collection));
+        this.grid.collection(ko.observableArray(resultSet.collection));
 
         this.currentPage(this.pagerRequest.pageNumber);
     };
@@ -319,7 +335,7 @@
         this.pagerRequest.pageNumber = Math.max(this.pagerRequest.pageNumber - 1, 1);
         var resultSet = es.makeRequest(this.service, this.method, ko.toJSON(this.pagerRequest));
         this.pagerRequest = resultSet.pagerRequest;
-        this.grid.collection(ko.observableArray(resultSet.Collection));
+        this.grid.collection(ko.observableArray(resultSet.collection));
 
         this.currentPage(this.pagerRequest.pageNumber);
     };

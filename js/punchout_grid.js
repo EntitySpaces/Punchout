@@ -7,8 +7,8 @@
         <table id=\"poTable\" class=\"es-grid\" cellspacing=\"0\">\
             <thead data-bind=\"if: headerEnabled()\">\
                 <tr data-bind=\"foreach: columns\">\
-                    <!-- ko if: $data.IsVisible -->\
-                    <th data-bind=\"text: $data.DisplayName, event: {click: $parent.onSort.bind($parent)}\">\
+                    <!-- ko if: $data.isVisible -->\
+                    <th data-bind=\"text: $data.displayName, attr: { poColumn: $data.columnName }, event: {click: $parent.onSort.bind($parent)}\">\
                     </th>\
                     <!-- /ko -->\
                 </tr>\
@@ -16,8 +16,8 @@
             <tfoot data-bind=\"if: showFooterControl\">\
                 <!-- ko if: footerEnabled -->\
                 <tr data-bind=\"foreach: columns\">\
-                    <!-- ko if: $data.IsVisible -->\
-                    <td data-bind=\"text: $data.FooterValue\">\
+                    <!-- ko if: $data.isVisible -->\
+                    <td data-bind=\"text: $data.footerValue\">\
                     </td>\
                     <!-- /ko -->\
                 </tr>\
@@ -34,8 +34,8 @@
             </tfoot>\
             <tbody data-bind=\"foreach: collection.slice(pager.startingRow(), pager.endingRow())\">\
                 <tr data-bind=\"foreach: $parent.columns, event: { mouseover: $parent.onMouseIn.bind($parent),  mouseout: $parent.onMouseOut.bind($parent), click: $parent.onClick.bind($parent) }\">\
-                    <!-- ko if: $data.IsVisible -->\
-                    <td data-bind=\"text: $parent[$data.PropertyName]\">\
+                    <!-- ko if: $data.isVisible -->\
+                    <td data-bind=\"text: $parent[$data.propertyName]\">\
                     </td>\
                     <!-- /ko -->\
                 </tr>\
@@ -90,6 +90,15 @@
             }, this);
         },
 
+        dataSorter: function (grid) {
+
+            this.grid = grid;
+
+            this.sort = function (column, dir) {
+                alert("Sort on " + column);
+            };
+        },
+
 
         dataTable: function (data, columns) {
             var i;
@@ -101,11 +110,12 @@
             this.id = 0;
 
             this.pager = null;
+            this.sorter = new po.poGrid.dataSorter(this);
 
             // Let's make IsVisible a ko.observable() since it is used in the template to drive 
             // the display
             for (i = 0; i < this.columns().length; i += 1) {
-                this.columns()[i].IsVisible = ko.observable(this.columns()[i].IsVisible);
+                this.columns()[i].isVisible = ko.observable(this.columns()[i].isVisible);
             }
 
             // Settings
@@ -156,8 +166,11 @@
         this.selectedRow = tableRow;
     };
 
+    //-------------------------------------	
+    // Sort Handler
+    //-------------------------------------	
     po.poGrid.dataTable.prototype.onSort = function (event) {
-        var current, i, th, tds;
+        var current, sortColumn, sortDir, i, th, tds;
 
         if (event.target.poOrig === undefined) {
             event.target.poOrig = event.target.textContent;
@@ -165,6 +178,7 @@
         }
 
         current = event.target.poDir;
+        sortColumn = event.target.attributes["poColumn"].value;
 
         tds = event.target.parentNode.getElementsByTagName('th');
         for (i = 0; i < tds.length; i += 1) {
@@ -175,12 +189,14 @@
         }
 
         if (event.target.poDir === 'u') {
-            event.target.poDir = 'd';
+            sortDir = event.target.poDir = 'd';
             event.target.innerHTML = event.target.poOrig + '&nbsp;&#x25B4';
         } else {
-            event.target.poDir = 'u';
+            sortDir = event.target.poDir = 'u';
             event.target.innerHTML = event.target.poOrig + '&nbsp;&#x25BE';
         }
+
+        this.sorter.sort(sortColumn, sortDir);
     };
 
     //-------------------------------------

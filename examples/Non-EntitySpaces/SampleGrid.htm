@@ -36,17 +36,17 @@
                 <input type="checkbox" onclick="{ myView1.headerEnabled(!myView1.headerEnabled()) }">Hide Headers</input><br />
                 <input type="checkbox" onclick="{ myView1.footerEnabled(!myView1.footerEnabled()) }">Hide Footers</input><br />
                 <input type="checkbox" onclick="{ myView1.pager.enabled(!myView1.pager.enabled()) }">Hide Pager</input><br /><br />
-                <input type="checkbox" onclick="{ myView1.columns()[0].IsVisible(!checked) }">Hide Employee Id</input><br />
-                <input type="checkbox" onclick="{ myView1.columns()[1].IsVisible(!checked) }">Hide Last Name</input><br />
-                <input type="checkbox" onclick="{ myView1.columns()[2].IsVisible(!checked) }">Hide First Name</input>
+                <input type="checkbox" onclick="{ myView1.columns()[0].isVisible(!checked) }">Hide Employee Id</input><br />
+                <input type="checkbox" onclick="{ myView1.columns()[1].isVisible(!checked) }">Hide Last Name</input><br />
+                <input type="checkbox" onclick="{ myView1.columns()[2].isVisible(!checked) }">Hide First Name</input>
             </td>
             <td>
                 <input type="checkbox" onclick="{ myView2.headerEnabled(!myView2.headerEnabled()) }">Hide Headers</input><br />
                 <input type="checkbox" onclick="{ myView2.footerEnabled(!myView2.footerEnabled()) }">Hide Footers</input><br />
                 <input type="checkbox" onclick="{ myView2.pager.enabled(!myView2.pager.enabled()) }">Hide Pager</input><br /><br />
-                <input type="checkbox" onclick="{ myView2.columns()[0].IsVisible(!checked) }">Hide Employee Id</input><br />
-                <input type="checkbox" onclick="{ myView2.columns()[1].IsVisible(!checked) }">Hide Last Name</input><br />
-                <input type="checkbox" onclick="{ myView2.columns()[2].IsVisible(!checked) }">Hide First Name</input>
+                <input type="checkbox" onclick="{ myView2.columns()[0].isVisible(!checked) }">Hide Employee Id</input><br />
+                <input type="checkbox" onclick="{ myView2.columns()[1].isVisible(!checked) }">Hide Last Name</input><br />
+                <input type="checkbox" onclick="{ myView2.columns()[2].isVisible(!checked) }">Hide First Name</input>
             </td>
         </tr>
     </table>
@@ -56,17 +56,13 @@
     <br/>
     <a href="https://github.com/EntitySpaces/Punchout/blob/master/js/punchout_grid.js" target="new">Source for the Punchout Grid</A>					
     <br/>
-    <a href="https://github.com/EntitySpaces/Punchout/blob/master/js/entityspaces_ko_utils.jss" target="new">Source for the EntitySpaces KO Utils</A>					
+    <a href="https://github.com/EntitySpaces/Punchout/blob/master/js/entityspaces_ko_utils.js" target="new">Source for the EntitySpaces KO Utils</A>					
     <br/>
     <a href="https://github.com/EntitySpaces/Punchout" target="new">Punchout github site</A>	
 </body>
 </html>
 
 <script language="javascript" type="text/javascript">
-
-    function doit(o, checked) {
-        o[1].IsVisible(checked);
-    }
 
 var viewModel1 = {
     data: ko.observableArray([]),
@@ -111,58 +107,58 @@ var viewModel2 = {
     ]),
     columns: ko.observableArray([
        {
-           "CharacterMaxLength": 0,
-           "ColumnName": "EmployeeID",
-           "DataType": "Int32",
-           "Default": null,
-           "DisplayName": "EmployeeID",
-           "HasDefault": false,
-           "IsAutoIncrement": true,
-           "IsConcurrency": false,
-           "IsInPrimaryKey": true,
-           "IsNullable": false,
-           "IsVisible": true,
-           "NumericPrecision": 10,
-           "NumericScale": 0,
-           "Ordinal": 0,
-           "PropertyName": "EmployeeID",
-           "FooterValue": "$100"
+           "characterMaxLength": 0,
+           "columnName": "EmployeeID",
+           "dataType": "Int32",
+           "default": null,
+           "displayName": "EmployeeID",
+           "hasDefault": false,
+           "isAutoIncrement": true,
+           "isConcurrency": false,
+           "isInPrimaryKey": true,
+           "isNullable": false,
+           "isVisible": true,
+           "numericPrecision": 10,
+           "numericScale": 0,
+           "ordinal": 0,
+           "propertyName": "EmployeeID",
+           "footerValue": "$100"
        },
        {
-           "CharacterMaxLength": 20,
-           "ColumnName": "LastName",
-           "DataType": "String",
-           "Default": null,
-           "DisplayName": "LastName",
-           "HasDefault": false,
-           "IsAutoIncrement": false,
-           "IsConcurrency": false,
-           "IsInPrimaryKey": false,
-           "IsNullable": false,
-           "IsVisible": true,
-           "NumericPrecision": 0,
-           "NumericScale": 0,
-           "Ordinal": 1,
-           "PropertyName": "LastName",
-           "FooterValue": "$102"
+           "characterMaxLength": 20,
+           "columnName": "LastName",
+           "dataType": "String",
+           "default": null,
+           "displayName": "LastName",
+           "hasDefault": false,
+           "isAutoIncrement": false,
+           "isConcurrency": false,
+           "isInPrimaryKey": false,
+           "isNullable": false,
+           "isVisible": true,
+           "numericPrecision": 0,
+           "numericScale": 0,
+           "ordinal": 1,
+           "propertyName": "LastName",
+           "footerValue": "$102"
        },
        {
-           "CharacterMaxLength": 10,
-           "ColumnName": "FirstName",
-           "DataType": "String",
-           "Default": null,
-           "DisplayName": "FirstName",
-           "HasDefault": false,
-           "IsAutoIncrement": false,
-           "IsConcurrency": false,
-           "IsInPrimaryKey": false,
-           "IsNullable": false,
-           "IsVisible": true,
-           "NumericPrecision": 0,
-           "NumericScale": 0,
-           "Ordinal": 2,
-           "PropertyName": "FirstName",
-           "FooterValue": "$104"
+           "characterMaxLength": 10,
+           "columnName": "FirstName",
+           "dataType": "String",
+           "default": null,
+           "displayName": "FirstName",
+           "hasDefault": false,
+           "isAutoIncrement": false,
+           "isConcurrency": false,
+           "isInPrimaryKey": false,
+           "isNullable": false,
+           "isVisible": true,
+           "numericPrecision": 0,
+           "numericScale": 0,
+           "ordinal": 2,
+           "propertyName": "FirstName",
+           "footerValue": "$104"
        }])
 }
 
@@ -171,9 +167,10 @@ var viewModel2 = {
 //------------------------------------------------------------------------------
 var myView1 = new po.poGrid.dataTable(viewModel1.data, viewModel1.columns);
 myView1.pager = new es.dataPager(myView1); // Notice we use the es.dataPager here
+myView1.sorter = new es.dataSorter(myView1);
 
-myView1.pager.service = "http://localhost/esService/esJson.svc/";
-//myView1.pager.service = "http://www.entityspaces.net/Knockout/Part1/esService/esJson.svc/";
+//myView1.pager.service = "http://localhost/esService/esJson.svc/";
+myView1.pager.service = "http://www.entityspaces.net/Knockout/Part1/esService/esJson.svc/";
 myView1.pager.method = 'Employees_Pager';
 
 myView1.pager.enabled(true);

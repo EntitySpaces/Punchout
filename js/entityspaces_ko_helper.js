@@ -7,7 +7,7 @@
     es.dataPager = function (grid) {
 
         this.grid = grid;
-        this.colSpan = ko.observable(4);
+        this.colSpan = ko.observable(1);
         this.enabled = ko.observable(true);
         this.currentPage = ko.observable(1);
         this.rowsPerPage = ko.observable(10);
@@ -20,13 +20,27 @@
 
         this.initPager = function () {
 
+            var i;
+
+            this.pagerRequest.initialRequest = 1;
             this.pagerRequest.totalRows = 0;
             this.pagerRequest.pageSize = 10;
             this.pagerRequest.pageNumber = 1;
 
             var resultSet = es.makeRequest(this.service, this.method, ko.toJSON(this.pagerRequest));
+
+            // Let's make IsVisible a ko.observable() since it is used in the template to drive 
+            // the display
+            for (i = 0; i < resultSet.Columns.length; i += 1) {
+                resultSet.Columns[i].IsVisible = ko.observable(resultSet.Columns[i].IsVisible);
+            }
+
+            this.colSpan(resultSet.Columns.length);
+
             this.pagerRequest = resultSet.pagerRequest;
             this.totalRowCount(resultSet.pagerRequest.totalRows);
+            this.grid.columns(ko.observableArray(resultSet.Columns));
+
             this.grid.collection(ko.observableArray(resultSet.Collection));
         };
 
@@ -58,6 +72,7 @@
     };
 
     es.pagerRequest = function () {
+        this.initialRequest = 1;
         this.totalRows = 0;
         this.pageSize = 10;
         this.pageNumber = 1;

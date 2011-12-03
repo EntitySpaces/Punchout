@@ -6,20 +6,24 @@
     var gridHTML = "\
         <table id=\"poTable" + 1 + "\" class=\"es-grid\" cellspacing=\"0\">\
             <thead data-bind=\"if: headerEnabled()\">\
-                <tr data-bind=\"foreach: headers\">\
-                    <th data-bind=\"text: $data\">\
+                <tr data-bind=\"foreach: columns\">\
+                    <!-- ko if: $data.IsVisible -->\
+                    <th data-bind=\"text: $data.DisplayName, event: {click: $parent.onSort.bind($parent)}\">\
                     </th>\
+                    <!-- /ko -->\
                 </tr>\
             </thead>\
             <tfoot data-bind=\"if: showFooterControl\">\
                 <!-- ko if: footerEnabled -->\
-                <tr data-bind=\"foreach: footers\">\
-                    <td data-bind=\"text: $data\">\
+                <tr data-bind=\"foreach: columns\">\
+                    <!-- ko if: $data.IsVisible -->\
+                    <td data-bind=\"text: $data.FooterValue\">\
                     </td>\
+                    <!-- /ko -->\
                 </tr>\
                 <!-- /ko -->\
                 <tr data-bind=\"if: pager.enabled()\">\
-                    <td data-bind=\"attr: { colspan: headers().length }\" nowrap=\"nowrap\">\
+                    <td data-bind=\"attr: { colspan: pager.colSpan }\" nowrap=\"nowrap\">\
                         <button data-bind=\"click: pager.onFirstPage.bind(pager)\"> << </button>\
                         <button data-bind=\"click: pager.onPrevPage.bind(pager)\">  <  </button>\
                         <button data-bind=\"click: pager.onNextPage.bind(pager)\">  >  </button>\
@@ -30,8 +34,10 @@
             </tfoot>\
             <tbody data-bind=\"foreach: collection.slice(pager.startingRow(), pager.endingRow())\">\
                 <tr data-bind=\"foreach: $parent.columns, event: { mouseover: $parent.onMouseIn.bind($parent),  mouseout: $parent.onMouseOut.bind($parent), click: $parent.onClick.bind($parent) }\">\
-                    <td data-bind=\"text: $parent[$data]\">\
+                    <!-- ko if: $data.IsVisible -->\
+                    <td data-bind=\"text: $parent[$data.PropertyName]\">\
                     </td>\
+                    <!-- /ko -->\
                 </tr>\
             </tbody>\
         </table>";
@@ -50,8 +56,8 @@
             this.rowsPerPage = ko.observable(10);
 
             this.initPager = function () {
-                this.rowsPerPage(10);
-            }
+                this.colSpan(this.grid.collection().length);
+            };
 
             this.startingRow = ko.dependentObservable(function () {
                 return (this.currentPage() - 1) * this.rowsPerPage();
@@ -85,18 +91,22 @@
         },
 
 
-        dataTable: function (data, columns, headers, footers) {
+        dataTable: function (data, columns) {
+            var i;
+
             this.collection = data;
             this.columns = columns;
-            this.headers = headers;
-            this.footers = footers;
             this.selectedRow = null;
             this.selectedIndex = ko.observable(0);
             this.id = 0;
 
             this.pager = null;
 
-            this.name = "The Datatable";
+            // Let's make IsVisible a ko.observable() since it is used in the template to drive 
+            // the display
+            for (i = 0; i < columns.length; i += 1) {
+                columns[i].IsVisible = ko.observable(columns[i].IsVisible);
+            }
 
             // Settings
             this.headerEnabled = ko.observable(true);
@@ -144,6 +154,33 @@
         tableRow.style.backgroundColor = 'lightblue';
 
         this.selectedRow = tableRow;
+    };
+
+    po.poGrid.dataTable.prototype.onSort = function (event) {
+        var current, i, th, tds;
+
+        if (event.target.poOrig === undefined) {
+            event.target.poOrig = event.target.textContent;
+            event.target.poDir = 'd';
+        }
+
+        current = event.target.poDir;
+
+        tds = event.target.parentNode.getElementsByTagName('th');
+        for (i = 0; i < tds.length; i += 1) {
+            th = tds[i];
+            if (th.poOrig !== undefined) {
+                th.innerHTML = th.poOrig;
+            }
+        }
+
+        if (event.target.poDir === 'u') {
+            event.target.poDir = 'd';
+            event.target.innerHTML = event.target.poOrig + '&nbsp;&#x25B4';
+        } else {
+            event.target.poDir = 'u';
+            event.target.innerHTML = event.target.poOrig + '&nbsp;&#x25BE';
+        }
     };
 
     //-------------------------------------

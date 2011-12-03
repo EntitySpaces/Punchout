@@ -4,10 +4,10 @@
 (function (po) {
 
     var gridHTML = "\
-        <table id=\"poTable" + 1 + "\" class=\"es-grid\" cellspacing=\"0\">\
+        <table id=\"poTable\" class=\"es-grid\" cellspacing=\"0\">\
             <thead data-bind=\"if: headerEnabled()\">\
                 <tr data-bind=\"foreach: columns\">\
-                    <!-- ko if: $data.IsVisible -->\
+                    <!-- ko if: $data.IsVisible() -->\
                     <th data-bind=\"text: $data.DisplayName, event: {click: $parent.onSort.bind($parent)}\">\
                     </th>\
                     <!-- /ko -->\
@@ -16,7 +16,7 @@
             <tfoot data-bind=\"if: showFooterControl\">\
                 <!-- ko if: footerEnabled -->\
                 <tr data-bind=\"foreach: columns\">\
-                    <!-- ko if: $data.IsVisible -->\
+                    <!-- ko if: $data.IsVisible() -->\
                     <td data-bind=\"text: $data.FooterValue\">\
                     </td>\
                     <!-- /ko -->\
@@ -34,7 +34,7 @@
             </tfoot>\
             <tbody data-bind=\"foreach: collection.slice(pager.startingRow(), pager.endingRow())\">\
                 <tr data-bind=\"foreach: $parent.columns, event: { mouseover: $parent.onMouseIn.bind($parent),  mouseout: $parent.onMouseOut.bind($parent), click: $parent.onClick.bind($parent) }\">\
-                    <!-- ko if: $data.IsVisible -->\
+                    <!-- ko if: $data.IsVisible() -->\
                     <td data-bind=\"text: $parent[$data.PropertyName]\">\
                     </td>\
                     <!-- /ko -->\
@@ -56,7 +56,7 @@
             this.rowsPerPage = ko.observable(10);
 
             this.initPager = function () {
-                this.colSpan(this.grid.collection().length);
+                this.colSpan(this.grid.columns().length);
             };
 
             this.startingRow = ko.dependentObservable(function () {
@@ -104,8 +104,8 @@
 
             // Let's make IsVisible a ko.observable() since it is used in the template to drive 
             // the display
-            for (i = 0; i < columns.length; i += 1) {
-                columns[i].IsVisible = ko.observable(columns[i].IsVisible);
+            for (i = 0; i < this.columns().length; i += 1) {
+                this.columns()[i].IsVisible = ko.observable(this.columns()[i].IsVisible);
             }
 
             // Settings

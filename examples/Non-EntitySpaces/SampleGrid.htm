@@ -36,17 +36,17 @@
                 <input type="checkbox" onclick="{ myView1.headerEnabled(!myView1.headerEnabled()) }">Hide Headers</input><br />
                 <input type="checkbox" onclick="{ myView1.footerEnabled(!myView1.footerEnabled()) }">Hide Footers</input><br />
                 <input type="checkbox" onclick="{ myView1.pager.enabled(!myView1.pager.enabled()) }">Hide Pager</input><br /><br />
-                <input type="checkbox" onclick="{ myView1.columns()()[0].IsVisible(!checked) }">Hide Employee Id</input><br />
-                <input type="checkbox" onclick="{ doit(myView1.columns(), !checked) }">Hide Last Name</input><br />
-                <input type="checkbox" onclick="{ myView1.columns()()[2].IsVisible(!checked) }">Hide First Name</input>
+                <input type="checkbox" onclick="{ myView1.columns()[0].IsVisible(!checked) }">Hide Employee Id</input><br />
+                <input type="checkbox" onclick="{ myView1.columns()[1].IsVisible(!checked) }">Hide Last Name</input><br />
+                <input type="checkbox" onclick="{ myView1.columns()[2].IsVisible(!checked) }">Hide First Name</input>
             </td>
             <td>
                 <input type="checkbox" onclick="{ myView2.headerEnabled(!myView2.headerEnabled()) }">Hide Headers</input><br />
                 <input type="checkbox" onclick="{ myView2.footerEnabled(!myView2.footerEnabled()) }">Hide Footers</input><br />
                 <input type="checkbox" onclick="{ myView2.pager.enabled(!myView2.pager.enabled()) }">Hide Pager</input><br /><br />
-                <input type="checkbox" onclick="{ myView2.columns()()[0].IsVisible(!checked) }">Hide Employee Id</input><br />
-                <input type="checkbox" onclick="{ doit(myView2.columns(), !checked) }">Hide Last Name</input><br />
-                <input type="checkbox" onclick="{ myView2.columns()()[2].IsVisible(!checked) }">Hide First Name</input>
+                <input type="checkbox" onclick="{ myView2.columns()[0].IsVisible(!checked) }">Hide Employee Id</input><br />
+                <input type="checkbox" onclick="{ myView2.columns()[1].IsVisible(!checked) }">Hide Last Name</input><br />
+                <input type="checkbox" onclick="{ myView2.columns()[2].IsVisible(!checked) }">Hide First Name</input>
             </td>
         </tr>
     </table>
@@ -63,7 +63,7 @@
 <script language="javascript" type="text/javascript">
 
     function doit(o, checked) {
-        o()[1].IsVisible(checked);
+        o[1].IsVisible(checked);
     }
 
 var viewModel1 = {
@@ -187,6 +187,5 @@ myView2.headerEnabled(true);
 myView2.footerEnabled(true);
 
 ko.applyBindings({myView1: myView1, myView2: myView2}); 
-
 
 </script>

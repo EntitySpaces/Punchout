@@ -16,11 +16,17 @@
         this.service = "";
         this.method = "";
 
+        this.initialized = false;
+
         this.pagerRequest = new es.pagerRequest();
 
         this.initPager = function () {
 
             var i;
+
+            if (this.initialized === true) { return; }
+
+            this.initialized = true;
 
             this.pagerRequest.initialRequest = 1;
             this.pagerRequest.totalRows = 0;
@@ -39,7 +45,13 @@
 
             this.pagerRequest = resultSet.pagerRequest;
             this.totalRowCount(resultSet.pagerRequest.totalRows);
-            this.grid.columns(ko.observableArray(resultSet.Columns));
+            this.grid.columns = ko.observableArray(resultSet.Columns);
+
+            // Let's make IsVisible a ko.observable() since it is used in the template to drive 
+            // the display
+            for (i = 0; i < grid.columns().length; i += 1) {
+                grid.columns()[i].IsVisible = ko.observable(grid.columns()[i].IsVisible);
+            }
 
             this.grid.collection(ko.observableArray(resultSet.Collection));
         };

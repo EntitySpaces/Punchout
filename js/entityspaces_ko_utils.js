@@ -53,6 +53,10 @@
             this.grid.collection(data);
         };
 
+        this.adjustIndex = function (index) {
+            return index;
+        };
+
         this.startingRow = ko.dependentObservable(function () {
             return (this.pagerRequest.pageNumber - 1) * this.rowsPerPage();
         }, this);

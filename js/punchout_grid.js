@@ -61,6 +61,10 @@
                 this.colSpan(this.grid.columns().length);
             };
 
+            this.adjustIndex = function (index) {
+                return ((this.currentPage() - 1) * this.rowsPerPage()) + index;
+            };
+
             this.startingRow = ko.dependentObservable(function () {
                 return (this.currentPage() - 1) * this.rowsPerPage();
             }, this);
@@ -137,20 +141,12 @@
                 return this.findParentRow(element.parentNode);
             };
 
-            this.pager = function (thePager) {
-                this.pager = thePager;
-                this.pager.init();
-            };
-
-            this.sorter = function (theSorter) {
-                this.sorter = theSorter;
-            };
-
             this.selectedEntity = ko.dependentObservable(function () {
-                if (this.collection()().length > 0) {
+                var i = this.selectedIndex();
+                if (this.collection()().length > 0 && this.pager !== null) {
                     return this.collection()()[this.selectedIndex()];
                 } else {
-                    return {};
+                    return this.collection()()[0];
                 }
             }, this);
         }
@@ -183,7 +179,7 @@
         tableRow.style.backgroundColor = 'lightblue';
 
         this.selectedRow = tableRow;
-        this.selectedIndex(this.selectedRow.rowIndex - 1);
+        this.selectedIndex(this.pager.adjustIndex(this.selectedRow.rowIndex - 1));
     };
 
     //-------------------------------------	

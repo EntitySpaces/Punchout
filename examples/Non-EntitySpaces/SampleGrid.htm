@@ -44,16 +44,6 @@
                     <td>Last Name: </td>
                     <td><input data-bind='value: myView.selectedEntity().LastName, valueUpdate: "afterkeydown"' maxlength="20"/></td>
                 </tr>
-                <tr>
-                    <td>RowState: </td>
-                    <td data-bind="text: myView.selectedEntity().RowState"></td>
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        <hr />
-                        Unchanged = 2, Added = 4, Deleted = 8, Modified = 16
-                    </td>
-                </tr>
             </table>
         </td>
         </tr>
@@ -180,8 +170,10 @@ var viewModel = {
 // This is all client side
 //------------------------------------------------------------------------------
 var myView = new po.poGrid.dataTable(ko.mapping.fromJS(viewModel.data()), viewModel.columns);
-myView.pager(new po.poGrid.dataPager(myView)); // Notice we use the Punchout dataPager here
-myView.sorter(new po.poGrid.dataSorter(myView));      // Notice we use the Punchout dataSorter here
+myView.pager = new po.poGrid.dataPager(myView);   // Notice we use the Punchout dataPager here
+myView.sorter = new po.poGrid.dataSorter(myView); // Notice we use the Punchout dataSorter here
+
+myView.pager.init();
 
 myView.pager.enabled(true);
 myView.headerEnabled(true);

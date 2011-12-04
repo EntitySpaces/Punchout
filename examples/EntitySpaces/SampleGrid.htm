@@ -100,7 +100,6 @@
     var method = 'Employees_Pager';
 
     function onCommit() {
-
         var json = ko.toJSON(myView.selectedEntity());
         var employees = es.makeRequest(service, 'Employees_Save', json);
 
@@ -111,8 +110,7 @@
     }
 
     function onAdd() {
-
-        var employee = { "EmployeeID": 0, "FirstName": "", "LastName": "", "RowState": 4 };
+        var employee = { "EmployeeID": 0, "FirstName": "", "LastName": "", "RowState": es.RowStateEnum.added };
         employee = ko.mapping.fromJS(employee);
         employee = es.trackState(employee);
 
@@ -122,7 +120,6 @@
     }
 
     function onDelete() {
-
         es.markAsDeleted(myView.selectedEntity());
 
         var json = ko.toJSON(myView.selectedEntity());
@@ -145,8 +142,10 @@
     // This view is going to page against an EntitySpaces JSON WCF Service
     //------------------------------------------------------------------------------
     var myView = new po.poGrid.dataTable(viewModel.data, viewModel.columns);
-    myView.pager(new es.dataPager(myView, service, method)); // Notice we use the es.dataPager here
-    myView.sorter(new es.dataSorter(myView)); // Notice we use the es.dataSorter here
+    myView.pager = new es.dataPager(myView, service, method); // Notice we use the es.dataPager here
+    myView.sorter = new es.dataSorter(myView);                // Notice we use the es.dataSorter here
+
+    myView.pager.init();
 
     myView.pager.enabled(true);
     myView.headerEnabled(true);

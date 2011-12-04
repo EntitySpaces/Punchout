@@ -331,17 +331,29 @@
 
     es.dataPager.prototype.fetchData = function () {
 
-        var resultSet = es.makeRequest(this.service, this.method, ko.toJSON(this.pagerRequest));
+        var resultSet;
+
+        this.pagerRequest.pageSize = this.rowsPerPage();
+        resultSet = es.makeRequest(this.service, this.method, ko.toJSON(this.pagerRequest));
         this.pagerRequest = resultSet.pagerRequest;
+
+        this.totalRowCount(resultSet.pagerRequest.totalRows);
+        this.currentPage(this.pagerRequest.pageNumber);
+
+        // This checks to see if a delete means we have less pages
+        if (this.currentPage() > this.totalPageCount()) {
+            this.pagerRequest.pageNumber = this.totalPageCount();
+            this.fetchData();
+            return;
+        }
 
         var data = ko.mapping.fromJS(resultSet.collection);
         data = es.trackState(data);
 
         this.grid.collection(data);
 
-        this.currentPage(this.pagerRequest.pageNumber);
         this.grid.selectedIndex(0);
-    }
+    };
 
     //---------------------------------------------------
     // Exported functions

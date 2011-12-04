@@ -49,7 +49,7 @@
         //-----------------------------------------------------------------------------
         dataPager: function (grid) {
 
-            this.this = this;
+            this.self = this;
 
             this.grid = grid;
             this.colSpan = ko.observable(1);
@@ -74,11 +74,11 @@
             }, this);
 
             this.totalPageCount = ko.dependentObservable(function () {
-                var count = this.grid.collection()().length;
+                var lastPage, mod, count = this.grid.collection()().length;
 
                 if (count > 0) {
-                    var lastPage = Math.round(count / this.rowsPerPage());
-                    var mod = count % this.rowsPerPage();
+                    lastPage = Math.round(count / this.rowsPerPage());
+                    mod = count % this.rowsPerPage();
 
                     if (mod === 0) { return lastPage; }
 
@@ -96,7 +96,7 @@
             this.grid = grid;
 
             this.sort = function (column, dir) {
-                alert("Sort on " + column);
+                alert("Sort on " + column + " dir " + dir);
             };
         },
 
@@ -144,7 +144,7 @@
 
             this.sorter = function (theSorter) {
                 this.sorter = theSorter;
-            }
+            };
 
             this.selectedEntity = ko.dependentObservable(function () {
                 if (this.collection()().length > 0) {
@@ -183,7 +183,7 @@
         tableRow.style.backgroundColor = 'lightblue';
 
         this.selectedRow = tableRow;
-        this.selectedIndex(this.selectedRow.rowIndex-1);
+        this.selectedIndex(this.selectedRow.rowIndex - 1);
     };
 
     //-------------------------------------	

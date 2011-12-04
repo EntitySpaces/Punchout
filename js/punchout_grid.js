@@ -70,11 +70,11 @@
             }, this);
 
             this.totalRowCount = ko.dependentObservable(function () {
-                return this.grid.collection().length;
+                return this.grid.collection()().length;
             }, this);
 
             this.totalPageCount = ko.dependentObservable(function () {
-                var count = this.grid.collection().length;
+                var count = this.grid.collection()().length;
 
                 if (count > 0) {
                     var lastPage = Math.round(count / this.rowsPerPage());
@@ -104,9 +104,9 @@
         dataTable: function (data, columns) {
             var i;
 
-            this.this = this;
+            this.self = this;
 
-            this.collection = data;
+            this.collection = ko.observableArray(data);
             this.columns = columns;
             this.selectedRow = null;
             this.selectedIndex = ko.observable(0);

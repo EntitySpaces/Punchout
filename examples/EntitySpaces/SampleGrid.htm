@@ -83,7 +83,7 @@
     </table>
 
     <br/><br/>
-    <a href="https://github.com/EntitySpaces/Punchout/blob/master/examples/Non-EntitySpaces/SampleGrid.htm" target="new">Source for this Page</A>
+    <a href="https://github.com/EntitySpaces/Punchout/blob/master/examples/EntitySpaces/SampleGrid.htm" target="new">Source for this Page</A>
     <br/>
     <a href="https://github.com/EntitySpaces/Punchout/blob/master/js/punchout_grid.js" target="new">Source for the Punchout Grid</A>					
     <br/>
@@ -95,8 +95,8 @@
 
 <script language="javascript" type="text/javascript">
 
-    var service = 'http://localhost/esService/esJson.svc/';
-  //var service = 'http://www.entityspaces.net/Knockout/Part1/esService/esJson.svc/';
+ // var service = 'http://localhost/esService/esJson.svc/';
+    var service = 'http://www.entityspaces.net/Knockout/Part1/esService/esJson.svc/';
     var method = 'Employees_Pager';
 
     function onCommit() {
@@ -133,7 +133,7 @@
     // Since w'ere going to load this from the database let's give the 
     // Punchout Grid and empty viewmodel
     var viewModel = {
-        data: ko.observableArray(ko.observableArray([])),
+        data: ko.observableArray([]),
         columns: ko.observableArray([])
     }
 

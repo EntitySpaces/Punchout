@@ -35,6 +35,9 @@
 
             resultSet = es.makeRequest(this.service, this.method, ko.toJSON(this.pagerRequest));
 
+            var data = ko.mapping.fromJS(resultSet.collection);
+            data = es.trackState(data);
+
             this.colSpan(resultSet.columns.length);
 
             this.pagerRequest = resultSet.pagerRequest;
@@ -47,7 +50,7 @@
                 this.grid.columns()[i].isVisible = ko.observable(this.grid.columns()[i].isVisible);
             }
 
-            this.grid.collection(ko.observableArray(resultSet.collection));
+            this.grid.collection(data);
         };
 
         this.startingRow = ko.dependentObservable(function () {
@@ -90,10 +93,13 @@
 
             var resultSet = es.makeRequest(this.grid.pager.service, this.grid.pager.method, ko.toJSON(this.grid.pager.pagerRequest));
             this.grid.pagerRequest = resultSet.pagerRequest;
-            this.grid.collection(ko.observableArray(resultSet.collection));
+
+            var data = ko.mapping.fromJS(resultSet.collection);
+            data = es.trackState(data);
+
+            this.grid.collection(data);
 
             this.grid.pager.currentPage(1);
-
         };
     };
 
@@ -156,8 +162,8 @@
         }
 
         for (propertyName in entity) {
-            if (propertyName !== "RowState") {
-                this.addPropertyChanged(entity, propertyName);
+            if (propertyName !== "RowState" && propertyName !== "__type") {
+                addPropertyChanged(entity, propertyName);
             }
         }
     }
@@ -302,42 +308,40 @@
     es.dataPager.prototype.onFirstPage = function (event) {
 
         this.pagerRequest.pageNumber = 1;
-        var resultSet = es.makeRequest(this.service, this.method, ko.toJSON(this.pagerRequest));
-        this.pagerRequest = resultSet.pagerRequest;
-        this.grid.collection(ko.observableArray(resultSet.collection));
-
-        this.currentPage(1);
+        this.fetchData();
     };
 
     es.dataPager.prototype.onNextPage = function (event) {
 
         this.pagerRequest.pageNumber = Math.min(this.pagerRequest.pageNumber + 1, this.totalPageCount());
-        var resultSet = es.makeRequest(this.service, this.method, ko.toJSON(this.pagerRequest));
-        this.pagerRequest = resultSet.pagerRequest;
-        this.grid.collection(ko.observableArray(resultSet.collection));
-
-        this.currentPage(this.pagerRequest.pageNumber);
+        this.fetchData();
     };
 
     es.dataPager.prototype.onLastPage = function (event) {
 
         this.pagerRequest.pageNumber = this.totalPageCount();
-        var resultSet = es.makeRequest(this.service, this.method, ko.toJSON(this.pagerRequest));
-        this.pagerRequest = resultSet.pagerRequest;
-        this.grid.collection(ko.observableArray(resultSet.collection));
-
-        this.currentPage(this.pagerRequest.pageNumber);
+        this.fetchData();
     };
 
     es.dataPager.prototype.onPrevPage = function (event) {
 
         this.pagerRequest.pageNumber = Math.max(this.pagerRequest.pageNumber - 1, 1);
+        this.fetchData();
+    };
+
+    es.dataPager.prototype.fetchData = function () {
+
         var resultSet = es.makeRequest(this.service, this.method, ko.toJSON(this.pagerRequest));
         this.pagerRequest = resultSet.pagerRequest;
-        this.grid.collection(ko.observableArray(resultSet.collection));
+
+        var data = ko.mapping.fromJS(resultSet.collection);
+        data = es.trackState(data);
+
+        this.grid.collection(data);
 
         this.currentPage(this.pagerRequest.pageNumber);
-    };
+        this.grid.selectedIndex(0);
+    }
 
     //---------------------------------------------------
     // Exported functions

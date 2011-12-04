@@ -12,8 +12,6 @@
     <link href="../../css/punchout_grid.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
-
-   <!-- poGrid using the new KO template syntax -->
    <table>
         <tr>
             <td colspan="2">
@@ -21,9 +19,54 @@
             </td>
         </tr>
         <tr>
-            <td colspan="2">
+            <td colspan="2" valign="top">
+                <!--------------------------->
+                <!--   The Punchout Grid   -->
+                <!--------------------------->
                 <div data-bind="poGrid: myView"></div>
             </td>
+        <td>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+        </td>
+        <td valign="top">
+            <!--------------------------->
+            <!-- This is our Edit Area -->
+            <!--------------------------->
+            <table id="EditArea" class="es-grid" cellpadding="3" style="vertical-align:top;">
+                <tr>
+                    <td>EmployeeID: </td>
+                    <td data-bind="text: myView.selectedEntity().EmployeeID"></td>
+                </tr>
+                <tr>
+                    <td>First Name: </td>
+                    <td><input data-bind='value: myView.selectedEntity().FirstName, valueUpdate: "afterkeydown"' maxlength="10" /></td>
+                </tr>
+                <tr>
+                    <td>Last Name: </td>
+                    <td><input data-bind='value: myView.selectedEntity().LastName, valueUpdate: "afterkeydown"' maxlength="20"/></td>
+                </tr>
+                <tr>
+                    <td>RowState: </td>
+                    <td data-bind="text: myView.selectedEntity().RowState"></td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <hr />
+                        Unchanged = 2, Added = 4, Deleted = 8, Modified = 16
+                        <hr>
+                    </td>
+                </tr>
+                <tr align="right">
+                    <td colspan="6"><button data-bind="click: onAdd" style="width:80px">Add</button></td>
+                </tr>
+                <tr align="right">
+                    <td colspan="6"><button data-bind="click: onDelete" style="width:80px">Delete</button></td>
+                </tr>
+                <tr align="right">
+                    <td colspan="6"><button data-bind="click: onCommit" style="width:80px">Commit</button></td>
+                </tr>
+            </table>
+        </td>
         </tr>
         <tr>
             <td>
@@ -52,26 +95,59 @@
 
 <script language="javascript" type="text/javascript">
 
-var viewModel = {
-    data: ko.observableArray([]),
-    columns: ko.observableArray([])
-}
+    var service = 'http://localhost/esService/esJson.svc/';
+  //var service = 'http://www.entityspaces.net/Knockout/Part1/esService/esJson.svc/';
+    var method = 'Employees_Pager';
 
-var service = 'http://localhost/esService/esJson.svc/';
-//var service = 'http://www.entityspaces.net/Knockout/Part1/esService/esJson.svc/';
-var method = 'Employees_Pager';
+    function onCommit() {
 
-//------------------------------------------------------------------------------
-// This view is going to page against an EntitySpaces JSON WCF Service
-//------------------------------------------------------------------------------
-var myView = new po.poGrid.dataTable(viewModel.data, viewModel.columns);
-myView.pager(new es.dataPager(myView, service, method)); // Notice we use the es.dataPager here
-myView.sorter(new es.dataSorter(myView)); // Notice we use the es.dataSorter here
+        var json = ko.toJSON(myView.selectedEntity());
+        var employees = es.makeRequest(service, 'Employees_Save', json);
 
-myView.pager.enabled(true);
-myView.headerEnabled(true);
-myView.footerEnabled(true);
+        myView.pager.pagerRequest.totalRows = 0;
 
-ko.applyBindings(myView);
+        myView.pager.fetchData();
+    }
+
+    function onAdd() {
+
+        var employee = { "EmployeeID": 0, "FirstName": "", "LastName": "", "RowState": 4 };
+        employee = ko.mapping.fromJS(employee);
+        employee = es.trackState(employee);
+
+        myView.collection().pop();
+        myView.collection().push(employee);
+        myView.selectedIndex(myView.collection()().length - 1);
+    }
+
+    function onDelete() {
+
+        es.markAsDeleted(myView.selectedEntity());
+
+        var json = ko.toJSON(myView.selectedEntity());
+        var employees = es.makeRequest(service, 'Employees_Save', json);
+
+        myView.pager.fetchData();
+    }
+
+    // Since w'ere going to load this from the database let's give the 
+    // Punchout Grid and empty viewmodel
+    var viewModel = {
+        data: ko.observableArray(ko.observableArray([])),
+        columns: ko.observableArray([])
+    }
+
+    //------------------------------------------------------------------------------
+    // This view is going to page against an EntitySpaces JSON WCF Service
+    //------------------------------------------------------------------------------
+    var myView = new po.poGrid.dataTable(viewModel.data, viewModel.columns);
+    myView.pager(new es.dataPager(myView, service, method)); // Notice we use the es.dataPager here
+    myView.sorter(new es.dataSorter(myView)); // Notice we use the es.dataSorter here
+
+    myView.pager.enabled(true);
+    myView.headerEnabled(true);
+    myView.footerEnabled(true);
+
+    ko.applyBindings(myView);
 
 </script>

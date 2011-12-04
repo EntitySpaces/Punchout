@@ -49,6 +49,8 @@
         //-----------------------------------------------------------------------------
         dataPager: function (grid) {
 
+            this.this = this;
+
             this.grid = grid;
             this.colSpan = ko.observable(1);
             this.enabled = ko.observable(true);
@@ -102,6 +104,8 @@
         dataTable: function (data, columns) {
             var i;
 
+            this.this = this;
+
             this.collection = data;
             this.columns = columns;
             this.selectedRow = null;
@@ -109,7 +113,6 @@
             this.id = 0;
             this.pager = null;
             this.sorter = null;
-
 
             // Let's make IsVisible a ko.observable() since it is used in the template to drive 
             // the display
@@ -142,6 +145,14 @@
             this.sorter = function (theSorter) {
                 this.sorter = theSorter;
             }
+
+            this.selectedEntity = ko.dependentObservable(function () {
+                if (this.collection()().length > 0) {
+                    return this.collection()()[this.selectedIndex()];
+                } else {
+                    return {};
+                }
+            }, this);
         }
     };
 
@@ -172,6 +183,7 @@
         tableRow.style.backgroundColor = 'lightblue';
 
         this.selectedRow = tableRow;
+        this.selectedIndex(this.selectedRow.rowIndex-1);
     };
 
     //-------------------------------------	

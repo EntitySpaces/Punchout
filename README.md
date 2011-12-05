@@ -28,5 +28,8 @@ EntitySpaces, LLC will be contributing much to this library, however, we will be
 	
  * Are you a JavaScript/HTML Guru? If so why not help out? 
     [Trello Punchout Task List](https://trello.com/#board/punchout/4ed2e790d8f7b81f3000cfa9)
+	
+ * ![Punchout Design Goals](http://www.entityspaces.net/blog/content/binary/WindowsLiveWriter/4c131d011ab1_EE97/architecture_2.png)
+	
 
 License: MIT [http://www.opensource.org/licenses/mit-license.php](MIT http://www.opensource.org/licenses/mit-license.php)

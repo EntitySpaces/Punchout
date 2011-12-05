@@ -5,7 +5,7 @@ Purpose of Punchout
 
 Controls Currently Under Development
 ---------------------
-**poGrid** - A fully HTML true Knockout control with both server side and client side paging, sorting, and more. We are just getting under way. There is a sample in the Examples folder (in the Non-EntitySpaces folder)
+**poGrid** - A fully HTML true Knockout control with both server side and client side paging, sorting, and more. There are samples in the Examples folder.
 
 Two Types of Controls
 ---------------------

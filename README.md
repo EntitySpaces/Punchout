@@ -14,7 +14,7 @@ Two Types of Controls
 1. Generic Punchout controls
 2. EntitySpaces Punchout controls
 
-The [EntitySpaces](http://www.entityspaces.net/) versions of the Punchout Controls will take the "Generic Punchout Controls" and build in support for the EntitySpaces architecture with all its row and dirty column state tracking capabilities, its built in paging capabilities, and so on.
+The [EntitySpaces](http://www.entityspaces.net/blog/2011/12/05/Announcing+The+EntitySpaces+Punchout+Early+Adopters+Program.aspx) controls will work with and without EntitySpaces. The EntitySpaces javascript file tracks row and dirty column level changes just as does EntitySpaces in the .NET Framework.
 
 Further Information
 ---------------------
@@ -22,10 +22,7 @@ Further Information
 EntitySpaces, LLC will be contributing much to this library, however, we will be enlisting others as well. 
 
  * **Punchout poGrid Sample** (a true Punchout Control)
-    [poGrid Sample](http://www.entityspaces.net/Punchout/examples/Non-EntitySpaces/SampleGrid.htm) 
-
- * Pre-Punchout Example (when we were learning the basics)
- 	[Master Detail Sample](http://www.entityspaces.net/portal/Products/Features/EntitySpacesKnockout.aspx)
+    [poGrid Sample](http://www.entityspaces.net/Punchout/examples/EntitySpaces/SampleGrid.htm) 
 	
  * Are you a JavaScript/HTML Guru? If so why not help out? 
     [Trello Punchout Task List](https://trello.com/#board/punchout/4ed2e790d8f7b81f3000cfa9)

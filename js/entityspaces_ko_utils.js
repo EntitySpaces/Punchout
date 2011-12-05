@@ -2,7 +2,22 @@
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
 /// <reference path="knockout-latest.debug.js" />
-(function (es) {
+(function (window, undefined) {
+
+    var po = window["es"] = {};
+
+    // Google Closure Compiler helpers (used only to make the minified file smaller)
+    es.exportSymbol = function (publicPath, object) {
+        var tokens = publicPath.split(".");
+        var target = window;
+        for (var i = 0; i < tokens.length - 1; i++)
+            target = target[tokens[i]];
+        target[tokens[tokens.length - 1]] = object;
+    };
+
+    es.exportProperty = function (owner, publicName, object) {
+        owner[publicName] = object;
+    };
 
     es.dataPager = function (grid, service, method) {
 
@@ -27,11 +42,6 @@
             if (this.initialized === true) { return; }
 
             this.initialized = true;
-
-            this.pagerRequest.initialRequest = 1;
-            this.pagerRequest.totalRows = 0;
-            this.pagerRequest.pageSize = 10;
-            this.pagerRequest.pageNumber = 1;
 
             resultSet = es.makeRequest(this.service, this.method, ko.toJSON(this.pagerRequest));
 
@@ -82,6 +92,8 @@
 
             return 1;
         }, this);
+
+        this.init();
     };
 
     es.dataSorter = function (grid) {
@@ -115,23 +127,6 @@
         this.sortCriteria = new Array();
     };
 
-    // Google Closure Compiler helpers (used only to make the minified file smaller)
-    es.exportSymbol = function (publicPath, object) {
-        var tokens, target, i;
-
-        tokens = publicPath.split(".");
-        target = window;
-
-        for (i = 0; i < tokens.length - 1; i += 1) {
-            target = target[tokens[i]];
-        }
-        target[tokens[tokens.length - 1]] = object;
-    };
-
-    es.exportProperty = function (owner, publicName, object) {
-        owner[publicName] = object;
-    };
-
     //---------------------------------------------------
     // Private helper functions
     //---------------------------------------------------
@@ -145,6 +140,26 @@
 
     function isArray(o) {
         return o.push && o.pop;
+    }
+
+    function addPropertyChanged(obj, propertyName) {
+        var property = obj[propertyName];
+        if (ko.isObservable(property) && !isArray(property)) {
+
+            // This is the actual PropertyChanged event
+            property.subscribe(function () {
+                if (ko.utils.arrayIndexOf(obj.ModifiedColumns(), propertyName) === -1) {
+
+                    if (propertyName !== "RowState") {
+                        obj.ModifiedColumns.push(propertyName);
+
+                        if (obj.RowState() !== es.RowStateEnum.modified && obj.RowState() !== es.RowStateEnum.added) {
+                            obj.RowState(es.RowStateEnum.modified);
+                        }
+                    }
+                }
+            });
+        }
     }
 
     function injectProperties(entity) {
@@ -169,27 +184,6 @@
             if (propertyName !== "RowState" && propertyName !== "__type") {
                 addPropertyChanged(entity, propertyName);
             }
-        }
-    }
-
-
-    function addPropertyChanged(obj, propertyName) {
-        var property = obj[propertyName];
-        if (ko.isObservable(property) && !isArray(property)) {
-
-            // This is the actual PropertyChanged event
-            property.subscribe(function () {
-                if (ko.utils.arrayIndexOf(obj.ModifiedColumns(), propertyName) === -1) {
-
-                    if (propertyName !== "RowState") {
-                        obj.ModifiedColumns.push(propertyName);
-
-                        if (obj.RowState() !== es.RowStateEnum.modified && obj.RowState() !== es.RowStateEnum.added) {
-                            obj.RowState(es.RowStateEnum.modified);
-                        }
-                    }
-                }
-            });
         }
     }
 
@@ -370,4 +364,4 @@
     es.exportSymbol('es.markAllAsDeleted', es.markAllAsDeleted);
     es.exportSymbol('es.RowStateEnum', es.RowStateEnum);
 
-})(window.es = window.es || {});
+})(window);

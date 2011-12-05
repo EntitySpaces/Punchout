@@ -1,53 +1,77 @@
 ﻿// Punchout JavaScript library v1.0
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
-(function (po) {
+(function (window, undefined) {
+
+    var po = window["po"] = {};
+
+    // Google Closure Compiler helpers (used only to make the minified file smaller)
+    po.exportSymbol = function (publicPath, object) {
+        var tokens = publicPath.split(".");
+        var target = window;
+        for (var i = 0; i < tokens.length - 1; i++)
+            target = target[tokens[i]];
+        target[tokens[tokens.length - 1]] = object;
+    };
+
+    po.exportProperty = function (owner, publicName, object) {
+        owner[publicName] = object;
+    };
 
     var gridHTML = "\
         <table id=\"poTable\" class=\"es-grid\" cellspacing=\"0\"><thead data-bind=\"if: headerEnabled()\"><tr data-bind=\"foreach: columns\"><!-- ko if: $data.isVisible --><th data-bind=\"text: $data.displayName, attr: { poColumn: $data.columnName }, event: {click: $parent.onSort.bind($parent)}\"></th><!-- /ko --></tr></thead><tfoot data-bind=\"if: showFooterControl\"><!-- ko if: footerEnabled --><tr data-bind=\"foreach: columns\"><!-- ko if: $data.isVisible --><td data-bind=\"text: $data.footerValue\"></td><!-- /ko --></tr><!-- /ko --><tr data-bind=\"if: pager.enabled()\"><td colspan=\"200\" nowrap=\"nowrap\"><button data-bind=\"click: pager.onFirstPage.bind(pager)\"> << </button><button data-bind=\"click: pager.onPrevPage.bind(pager)\">  <  </button><button data-bind=\"click: pager.onNextPage.bind(pager)\">  >  </button><button data-bind=\"click: pager.onLastPage.bind(pager)\">  >> </button> Page <em data-bind=\"text: pager.currentPage()\"></em> of <em data-bind=\"text: pager.totalPageCount()\"></em></td></tr></tfoot><tbody data-bind=\"foreach: collection.slice(pager.startingRow(), pager.endingRow())\"><tr data-bind=\"foreach: $parent.columns, event: { mouseover: $parent.onMouseIn.bind($parent),  mouseout: $parent.onMouseOut.bind($parent), click: $parent.onClick.bind($parent) }\"><!-- ko if: $data.isVisible --><td data-bind=\"text: $parent[$data.propertyName]\"></td><!-- /ko --></tr></tbody></table>";
 
-        /*
-        //------------------------------------------------------
-        // THIS IS WHAT THE TEMPLATE REALLY LOOKS LIKE    
-        //------------------------------------------------------
-        <table id="poTable" class="es-grid" cellspacing="0">
-            <thead data-bind="if: headerEnabled()">
-                <tr data-bind="foreach: columns">
-                    <!-- ko if: $data.isVisible -->
-                    <th data-bind="text: $data.displayName, attr: { poColumn: $data.columnName }, event: {click: $parent.onSort.bind($parent)}">
-                    </th>
-                    <!-- /ko -->
-                </tr>
-            </thead>
-            <tfoot data-bind="if: showFooterControl">
-                <!-- ko if: footerEnabled -->
-                <tr data-bind="foreach: columns">
-                    <!-- ko if: $data.isVisible -->
-                    <td data-bind="text: $data.footerValue">
-                    </td>
-                    <!-- /ko -->
-                </tr>
+    /*
+    //------------------------------------------------------
+    // THIS IS WHAT THE TEMPLATE REALLY LOOKS LIKE    
+    //------------------------------------------------------
+    <table id="poTable" class="es-grid" cellspacing="0">
+        <thead data-bind="if: headerEnabled()">
+            <tr data-bind="foreach: columns">
+                <!-- ko if: $data.isVisible -->
+                <th data-bind="text: $data.displayName, attr: { poColumn: $data.columnName }, event: {click: $parent.onSort.bind($parent)}">
+                </th>
                 <!-- /ko -->
-                <tr data-bind="if: pager.enabled()">
-                    <td colspan="200" nowrap="nowrap">
-                        <button data-bind="click: pager.onFirstPage.bind(pager)"> << </button>
-                        <button data-bind="click: pager.onPrevPage.bind(pager)">  <  </button>
-                        <button data-bind="click: pager.onNextPage.bind(pager)">  >  </button>
-                        <button data-bind="click: pager.onLastPage.bind(pager)">  >> </button>
-                        Page <em data-bind="text: pager.currentPage()"></em> of <em data-bind="text: pager.totalPageCount()"></em>
-                    </td>
-                </tr>
-            </tfoot>
-            <tbody data-bind="foreach: collection.slice(pager.startingRow(), pager.endingRow())">
-                <tr data-bind="foreach: $parent.columns, event: { mouseover: $parent.onMouseIn.bind($parent),  mouseout: $parent.onMouseOut.bind($parent), click: $parent.onClick.bind($parent) }">
-                    <!-- ko if: $data.isVisible -->
-                    <td data-bind="text: $parent[$data.propertyName]">
-                    </td>
-                    <!-- /ko -->
-                </tr>
-            </tbody>
-        </table>
-       */
+            </tr>
+        </thead>
+        <tfoot data-bind="if: showFooterControl">
+            <!-- ko if: footerEnabled -->
+            <tr data-bind="foreach: columns">
+                <!-- ko if: $data.isVisible -->
+                <td data-bind="text: $data.footerValue">
+                </td>
+                <!-- /ko -->
+            </tr>
+            <!-- /ko -->
+            <tr data-bind="if: pager.enabled()">
+                <td colspan="200" nowrap="nowrap">
+                    <button data-bind="click: pager.onFirstPage.bind(pager)">
+                        <<
+                    </button>
+                    <button data-bind="click: pager.onPrevPage.bind(pager)">
+                        <
+                    </button>
+                    <button data-bind="click: pager.onNextPage.bind(pager)">
+                        >
+                    </button>
+                    <button data-bind="click: pager.onLastPage.bind(pager)">
+                        >>
+                    </button>
+                    Page <em data-bind="text: pager.currentPage()"></em>of <em data-bind="text: pager.totalPageCount()">
+                    </em>
+                </td>
+            </tr>
+        </tfoot>
+        <tbody data-bind="foreach: collection.slice(pager.startingRow(), pager.endingRow())">
+            <tr data-bind="foreach: $parent.columns, event: { mouseover: $parent.onMouseIn.bind($parent),  mouseout: $parent.onMouseOut.bind($parent), click: $parent.onClick.bind($parent) }">
+                <!-- ko if: $data.isVisible -->
+                <td data-bind="text: $parent[$data.propertyName]">
+                </td>
+                <!-- /ko -->
+            </tr>
+        </tbody>
+    </table>
+    */
 
     po.poGrid = {
 
@@ -149,7 +173,7 @@
             };
 
             this.selectedEntity = ko.dependentObservable(function () {
-                var i = this.selectedIndex();
+                var index = this.selectedIndex(); // workaround
                 if (this.collection()().length > 0 && this.pager !== null) {
                     return this.collection()()[this.selectedIndex()];
                 } else {
@@ -260,4 +284,4 @@
         }
     };
 
-})(window.po = window.po || {});
+})(window);

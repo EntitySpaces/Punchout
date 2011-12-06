@@ -236,11 +236,11 @@
     };
 
     es.getDirtyEntities = function (collection) {
-        var index = 0, modifiedRecords = {};
+        var index = 0, modifiedRecords = [];
 
         ko.utils.arrayFirst(collection(), function (entity) {
             if (entity.RowState() !== es.RowStateEnum.unchanged) {
-                modifiedRecords[index++] = entity;
+                modifiedRecords.push(entity);
             }
         });
 

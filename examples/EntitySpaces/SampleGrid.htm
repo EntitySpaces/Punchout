@@ -95,6 +95,7 @@
 
 <script language="javascript" type="text/javascript">
 
+ // var service = 'http://localhost/esService/esJson.svc/';
     var service = 'http://www.entityspaces.net/Knockout/Part1/esService/esJson.svc/';
     var method = 'Employees_Pager';
 
@@ -102,8 +103,11 @@
     //       ENTITYSPACES JAVASCRIPT FILE
 
     function onCommit() {
-        var json = ko.toJSON(myView.selectedEntity());
-        var employees = es.makeRequest(service, 'Employees_Save', json);
+
+        var dirty = es.getDirtyEntities(myView.collection());
+        var json = ko.toJSON(dirty);
+
+        var employees = es.makeRequest(service, 'EmployeesCollection_Save', json);
 
         // For total rows to be refetched ..
         myView.pager.pagerRequest.totalRows = 0;

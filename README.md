@@ -27,7 +27,7 @@ EntitySpaces, LLC will be contributing much to this library, however, we will be
  * **Punchout poGrid Sample** (This example does not EntitySpaces)
     [poGrid Sample](http://www.entityspaces.net/Punchout/examples/Non-EntitySpaces/SampleGrid.htm) 	
 	
- * **Free Licenses for Early Adopters** 
+ * **Free EntitySpaces Studio/Profiler Licenses for Early Adopters** 
     [poGrid Sample](http://www.entityspaces.net/blog/2011/12/05/Announcing+The+EntitySpaces+Punchout+Early+Adopters+Program.aspx) 		
 	
  * **A Closer Look at how EntitySpaces tracks changes to data in Punchout** 

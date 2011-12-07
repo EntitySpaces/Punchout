@@ -21,8 +21,17 @@ Further Information
 
 EntitySpaces, LLC will be contributing much to this library, however, we will be enlisting others as well. 
 
- * **Punchout poGrid Sample** (a true Punchout Control)
+ * **Punchout poGrid Sample** (This example uses EntitySpaces)
     [poGrid Sample](http://www.entityspaces.net/Punchout/examples/EntitySpaces/SampleGrid.htm) 
+	
+ * **Punchout poGrid Sample** (This example does not EntitySpaces)
+    [poGrid Sample](http://www.entityspaces.net/Punchout/examples/Non-EntitySpaces/SampleGrid.htm) 	
+	
+ * **Free Licenses for Early Adopters** 
+    [poGrid Sample](http://www.entityspaces.net/blog/2011/12/05/Announcing+The+EntitySpaces+Punchout+Early+Adopters+Program.aspx) 		
+	
+ * **A Closer Look at how EntitySpaces tracks changes to data in Punchout** 
+    [poGrid Sample](http://www.entityspaces.net/blog/2011/12/07/A+Closer+Look+At+How+EntitySpaces+Tracks+Changes+To+Data+In+Punchout.aspx) 		
 	
  * Are you a JavaScript/HTML Guru? If so why not help out? 
     [Trello Punchout Task List](https://trello.com/#board/punchout/4ed2e790d8f7b81f3000cfa9)

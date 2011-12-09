@@ -4,7 +4,7 @@
 /// <reference path="knockout-latest.debug.js" />
 (function (window, undefined) {
 
-    var po = window["es"] = {};
+    var es = window["es"] = {};
 
     // Google Closure Compiler helpers (used only to make the minified file smaller)
     es.exportSymbol = function (publicPath, object) {
@@ -37,7 +37,7 @@
 
         this.init = function () {
 
-            var i, resultSet;
+            var i, resultSet, data;
 
             if (this.initialized === true) { return; }
 
@@ -45,8 +45,7 @@
 
             resultSet = es.makeRequest(this.service, this.method, ko.toJSON(this.pagerRequest));
 
-            var data = ko.mapping.fromJS(resultSet.collection);
-            data = es.trackState(data);
+            data = es.mapping.fromJS(resultSet.collection);
 
             this.colSpan(resultSet.columns.length);
 
@@ -110,8 +109,7 @@
             var resultSet = es.makeRequest(this.grid.pager.service, this.grid.pager.method, ko.toJSON(this.grid.pager.pagerRequest));
             this.grid.pagerRequest = resultSet.pagerRequest;
 
-            var data = ko.mapping.fromJS(resultSet.collection);
-            data = es.trackState(data);
+            data = es.mapping.fromJS(resultSet.collection);
 
             this.grid.collection(data);
 
@@ -181,36 +179,137 @@
         }
 
         for (propertyName in entity) {
-            if (propertyName !== "RowState" && propertyName !== "__type") {
+            if (propertyName !== 'RowState' && propertyName !== '__type' && propertyName !== 'esExtendedData') {
                 addPropertyChanged(entity, propertyName);
             }
         }
     }
 
+    es.toJSON = function (rootObject) {
+        var plainJavaScriptObject = es.mapping.toJS(rootObject);
+        return ko.utils.stringifyJson(plainJavaScriptObject);
+    };
+
     //---------------------------------------------------
     // Public functions
     //---------------------------------------------------
-    es.trackState = function (entity) {
+    (function () {
+        es.mapping = {};
 
-        if (isArray(entity)) {
-            var array;
+        es.mapping.fromJS = function (entity, reentry) {
 
-            if (ko.isObservable(entity)) {
-                array = ko.utils.unwrapObservable(entity);
-            } else {
-                array = entity;
+            var i, ent;
+            var ext = undefined;
+
+            if (isArray(entity)) {
+                var array;
+
+                if (ko.isObservable(entity)) {
+                    array = ko.utils.unwrapObservable(entity);
+                } else {
+                    array = entity;
+                }
+
+                ko.utils.arrayForEach(array, function (e) {
+                    es.mapping.fromJS(e, true);
+                });
             }
 
-            ko.utils.arrayForEach(array, function (e) {
-                es.trackState(e);
-            });
+            if (entity.esExtendedData !== undefined) {
+                for (i = 0; i < entity.esExtendedData.length; i++) {
+                    entity[entity.esExtendedData[i].Key] = entity.esExtendedData[i].Value;
+                }
 
-        }
+                ext = entity.esExtendedData;
+                delete entity.esExtendedData;
+            }
 
-        injectProperties(entity);
+            if (ext !== undefined) {
 
-        return entity;
-    };
+                entity["esExtendedData"] = [];
+
+                for (i = 0; i < ext.length; i++) {
+                    entity.esExtendedData.push(ext[i].Key);
+                }
+            }
+
+            entity = ko.mapping.fromJS(entity);
+
+            if (isArray(entity)) {
+                var array;
+
+                if (ko.isObservable(entity)) {
+                    array = ko.utils.unwrapObservable(entity);
+                } else {
+                    array = entity;
+                }
+
+                ko.utils.arrayForEach(array, function (e) {
+                    injectProperties(e);
+                });
+            }
+            else {
+                if (!isArray(entity) && reentry === undefined) {
+                    injectProperties(entity);
+                }
+            }
+
+            return entity;
+        };
+
+        es.mapping.toJS = function (entity, reentry) {
+
+            var i;
+
+            if (isArray(entity)) {
+                var array;
+
+                if (ko.isObservable(entity)) {
+                    array = ko.utils.unwrapObservable(entity);
+                } else {
+                    array = entity;
+                }
+
+                ko.utils.arrayForEach(array, function (e) {
+                    es.mapping.toJS(e, true);
+                });
+            }
+
+            entity = ko.mapping.toJS(entity);
+
+            if (isArray(entity)) {
+                var array;
+
+                if (ko.isObservable(entity)) {
+                    array = ko.utils.unwrapObservable(entity);
+                } else {
+                    array = entity;
+                }
+
+                ko.utils.arrayForEach(array, function (e) {
+                    if (e.esExtendedData !== undefined) {
+                        for (i = 0; i < e.esExtendedData.length; i++) {
+                            delete e[e.esExtendedData[i]];
+                        }
+                        delete e.esExtendedData;
+                    }
+                });
+            }
+            else {
+                if (!isArray(entity) && reentry === undefined) {
+                    if (entity.esExtendedData !== undefined) {
+                        for (i = 0; i < entity.esExtendedData.length; i++) {
+                            delete entity[entity.esExtendedData[i]];
+                        }
+                        delete entity.esExtendedData;
+                    }
+                }
+            }
+
+            return entity;
+        };
+
+    })();
 
     es.markAsDeleted = function (entity) {
 
@@ -247,15 +346,6 @@
         if (modifiedRecords.length === 0) { return null; }
 
         return modifiedRecords;
-    };
-
-    es.trackStateMapping = {
-        '': {
-            create: function (options) {
-                var obj = ko.mapping.fromJS(options.data);
-                return es.trackState(obj);
-            }
-        }
     };
 
     es.makeRequstError = null;
@@ -329,7 +419,7 @@
 
     es.dataPager.prototype.fetchData = function () {
 
-        var resultSet;
+        var resultSet, data;
 
         this.pagerRequest.pageSize = this.rowsPerPage();
         resultSet = es.makeRequest(this.service, this.method, ko.toJSON(this.pagerRequest));
@@ -345,9 +435,7 @@
             return;
         }
 
-        var data = ko.mapping.fromJS(resultSet.collection);
-        data = es.trackState(data);
-
+        data = es.mapping.fromJS(resultSet.collection);
         this.grid.collection(data);
 
         this.grid.selectedIndex(0);

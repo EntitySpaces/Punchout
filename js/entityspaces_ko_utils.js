@@ -309,6 +309,81 @@
             return entity;
         };
 
+        es.mapping.visitModel = function (rootObject, callback, options) {
+            options = options || {};
+            options.visitedObjects = options.visitedObjects || new objectLookup();
+
+            var mappedRootObject;
+            var unwrappedRootObject = ko.utils.unwrapObservable(rootObject);
+            if (!canHaveProperties(unwrappedRootObject)) {
+                return callback(rootObject);
+            } else {
+                // Only do a callback, but ignore the results
+                callback(rootObject);
+                mappedRootObject = unwrappedRootObject instanceof Array ? [] : {};
+            }
+
+            visitPropertiesOrArrayEntries(unwrappedRootObject, function (indexer) {
+                if (options.ignore && ko.utils.arrayIndexOf(options.ignore, indexer) != -1) return;
+
+                if (options.include && ko.utils.arrayIndexOf(options.include, indexer) === -1) {
+                    // The mapped properties object contains all the properties that were part of the original object.
+                    // If a property does not exist, and it is not because it is part of an array (e.g. "myProp[3]"), then it should not be unmapped.
+                    if (unwrappedRootObject[mappingProperty] && unwrappedRootObject[mappingProperty].mappedProperties && !unwrappedRootObject[mappingProperty].mappedProperties[indexer] && !(unwrappedRootObject instanceof Array)) {
+                        return;
+                    }
+                }
+
+                var propertyValue = unwrappedRootObject[indexer];
+                switch (getType(ko.utils.unwrapObservable(propertyValue))) {
+                    case "object":
+                    case "undefined":
+                        var previouslyMappedValue = options.visitedObjects.get(propertyValue);
+                        mappedRootObject[indexer] = (getType(previouslyMappedValue) !== "undefined") ? previouslyMappedValue : ko.mapping.visitModel2(propertyValue, callback, options);
+                        break;
+                }
+            });
+
+            return mappedRootObject;
+        }
+
+        function visitPropertiesOrArrayEntries(rootObject, visitorCallback) {
+            if (rootObject instanceof Array) {
+                for (var i = 0; i < rootObject.length; i++)
+                    visitorCallback(i);
+            } else {
+                for (var propertyName in rootObject)
+                    visitorCallback(propertyName);
+            }
+        };
+
+        function canHaveProperties(object) {
+            var type = getType(object);
+            return (type == "object") && (object !== null) && (type !== "undefined");
+        }
+
+        function objectLookup() {
+            var keys = [];
+            var values = [];
+            this.save = function (key, value) {
+                var existingIndex = ko.utils.arrayIndexOf(keys, key);
+                if (existingIndex >= 0) values[existingIndex] = value;
+                else {
+                    keys.push(key);
+                    values.push(value);
+                }
+            };
+            this.get = function (key) {
+                var existingIndex = ko.utils.arrayIndexOf(keys, key);
+                return (existingIndex >= 0) ? values[existingIndex] : undefined;
+            };
+        };
+
+        function getType(x) {
+            if ((x) && (typeof (x) === "object") && (x.constructor == (new Date).constructor)) return "date";
+            return typeof x;
+        }
+
     })();
 
     es.markAsDeleted = function (entity) {

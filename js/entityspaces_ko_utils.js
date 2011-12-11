@@ -140,50 +140,7 @@
         return o.push && o.pop;
     }
 
-    function addPropertyChanged(obj, propertyName) {
-        var property = obj[propertyName];
-        if (ko.isObservable(property) && !isArray(property)) {
 
-            // This is the actual PropertyChanged event
-            property.subscribe(function () {
-                if (ko.utils.arrayIndexOf(obj.ModifiedColumns(), propertyName) === -1) {
-
-                    if (propertyName !== "RowState") {
-                        obj.ModifiedColumns.push(propertyName);
-
-                        if (obj.RowState() !== es.RowStateEnum.modified && obj.RowState() !== es.RowStateEnum.added) {
-                            obj.RowState(es.RowStateEnum.modified);
-                        }
-                    }
-                }
-            });
-        }
-    }
-
-    function injectProperties(entity) {
-
-        var propertyName;
-
-        if (!entity.hasOwnProperty("RowState")) {
-            entity.RowState = ko.observable(es.RowStateEnum.added);
-            if (entity.hasOwnProperty("__ko_mapping__")) {
-                entity.__ko_mapping__.mappedProperties["RowState"] = true;
-            }
-        }
-
-        if (!entity.hasOwnProperty("ModifiedColumns")) {
-            entity.ModifiedColumns = ko.observableArray();
-            if (entity.hasOwnProperty("__ko_mapping__")) {
-                entity.__ko_mapping__.mappedProperties["ModifiedColumns"] = true;
-            }
-        }
-
-        for (propertyName in entity) {
-            if (propertyName !== 'RowState' && propertyName !== '__type' && propertyName !== 'esExtendedData') {
-                addPropertyChanged(entity, propertyName);
-            }
-        }
-    }
 
     es.toJSON = function (rootObject) {
         var plainJavaScriptObject = es.mapping.toJS(rootObject);
@@ -198,61 +155,15 @@
 
         es.mapping.fromJS = function (entity, reentry) {
 
-            var i, ent;
-            var ext = undefined;
-
-            if (isArray(entity)) {
-                var array;
-
-                if (ko.isObservable(entity)) {
-                    array = ko.utils.unwrapObservable(entity);
-                } else {
-                    array = entity;
-                }
-
-                ko.utils.arrayForEach(array, function (e) {
-                    es.mapping.fromJS(e, true);
-                });
-            }
-
-            if (entity.esExtendedData !== undefined) {
-                for (i = 0; i < entity.esExtendedData.length; i++) {
-                    entity[entity.esExtendedData[i].Key] = entity.esExtendedData[i].Value;
-                }
-
-                ext = entity.esExtendedData;
-                delete entity.esExtendedData;
-            }
-
-            if (ext !== undefined) {
-
-                entity["esExtendedData"] = [];
-
-                for (i = 0; i < ext.length; i++) {
-                    entity.esExtendedData.push(ext[i].Key);
-                }
-            }
-
             entity = ko.mapping.fromJS(entity);
 
-            if (isArray(entity)) {
-                var array;
+            es.mapping.visitModel(entity, function (entity, parent) {
 
-                if (ko.isObservable(entity)) {
-                    array = ko.utils.unwrapObservable(entity);
-                } else {
-                    array = entity;
-                }
-
-                ko.utils.arrayForEach(array, function (e) {
-                    injectProperties(e);
-                });
-            }
-            else {
-                if (!isArray(entity) && reentry === undefined) {
+                if (entity.hasOwnProperty("RowState")) {
                     injectProperties(entity);
+                    setupExtendedColumns(entity);
                 }
-            }
+            });
 
             return entity;
         };
@@ -339,7 +250,7 @@
                     case "object":
                     case "undefined":
                         var previouslyMappedValue = options.visitedObjects.get(propertyValue);
-                        mappedRootObject[indexer] = (getType(previouslyMappedValue) !== "undefined") ? previouslyMappedValue : ko.mapping.visitModel2(propertyValue, callback, options);
+                        mappedRootObject[indexer] = (getType(previouslyMappedValue) !== "undefined") ? previouslyMappedValue : es.mapping.visitModel(propertyValue, callback, options);
                         break;
                 }
             });
@@ -382,6 +293,84 @@
         function getType(x) {
             if ((x) && (typeof (x) === "object") && (x.constructor == (new Date).constructor)) return "date";
             return typeof x;
+        }
+
+        function addPropertyChanged(obj, propertyName) {
+            var property = obj[propertyName];
+            if (ko.isObservable(property) && !isArray(property)) {
+
+                // This is the actual PropertyChanged event
+                property.subscribe(function () {
+                    if (ko.utils.arrayIndexOf(obj.ModifiedColumns(), propertyName) === -1) {
+
+                        if (propertyName !== "RowState") {
+                            obj.ModifiedColumns.push(propertyName);
+
+                            if (obj.RowState() !== es.RowStateEnum.modified && obj.RowState() !== es.RowStateEnum.added) {
+                                obj.RowState(es.RowStateEnum.modified);
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        function injectProperties(entity) {
+
+            var propertyName;
+
+            if (!entity.hasOwnProperty("RowState")) {
+                entity.RowState = ko.observable(es.RowStateEnum.added);
+                if (entity.hasOwnProperty("__ko_mapping__")) {
+                    entity.__ko_mapping__.mappedProperties["RowState"] = true;
+                }
+            }
+
+            if (!entity.hasOwnProperty("ModifiedColumns")) {
+                entity.ModifiedColumns = ko.observableArray();
+                if (entity.hasOwnProperty("__ko_mapping__")) {
+                    entity.__ko_mapping__.mappedProperties["ModifiedColumns"] = true;
+                }
+            }
+
+            for (propertyName in entity) {
+                if (propertyName !== 'RowState' && propertyName !== '__type' && propertyName !== 'esExtendedData') {
+                    addPropertyChanged(entity, propertyName);
+                }
+            }
+        }
+
+        function setupExtendedColumns(entity) {
+
+            var ext = undefined;
+
+            if (entity.esExtendedData !== undefined) {
+                for (i = 0; i < entity.esExtendedData.length; i++) {
+                    entity[entity.esExtendedData[i].Key] = entity.esExtendedData[i].Value;
+                }
+
+                ext = entity.esExtendedData;
+                delete entity.esExtendedData;
+            }
+
+            if (ext !== undefined) {
+
+                entity["esExtendedData"] = [];
+
+                for (i = 0; i < ext.length; i++) {
+                    entity.esExtendedData.push(ext[i].Key);
+                }
+            }
+        }
+
+        function teardownExtendedColumns(entity) {
+
+            if (entity.esExtendedData !== undefined) {
+                for (i = 0; i < entity.esExtendedData.length; i++) {
+                    delete entity[entity.esExtendedData[i]];
+                }
+                delete entity.esExtendedData;
+            }
         }
 
     })();

@@ -136,33 +136,24 @@
         modified: 16
     };
 
-    function isArray(o) {
-        return o.push && o.pop;
-    }
-
-
-
-    es.toJSON = function (rootObject) {
-        var plainJavaScriptObject = es.mapping.toJS(rootObject);
-        return ko.utils.stringifyJson(plainJavaScriptObject);
-    };
-
     //---------------------------------------------------
     // Public functions
     //---------------------------------------------------
     (function () {
         es.mapping = {};
 
-        es.mapping.fromJS = function (entity, reentry) {
+        es.mapping.fromJS = function (entity) {
 
             entity = ko.mapping.fromJS(entity);
 
-            es.mapping.visitModel(entity, function (entity, parent) {
+            es.mapping.visitModel(entity, function (obj) {
 
-                if (entity.hasOwnProperty("RowState")) {
-                    injectProperties(entity);
-                    setupExtendedColumns(entity);
+                if (obj.hasOwnProperty("RowState") && ko.isObservable(obj.RowState)) {
+                    injectProperties(obj);
+                    setupExtendedColumns(obj);
                 }
+
+                return obj
             });
 
             return entity;
@@ -170,55 +161,22 @@
 
         es.mapping.toJS = function (entity, reentry) {
 
-            var i;
-
-            if (isArray(entity)) {
-                var array;
-
-                if (ko.isObservable(entity)) {
-                    array = ko.utils.unwrapObservable(entity);
-                } else {
-                    array = entity;
-                }
-
-                ko.utils.arrayForEach(array, function (e) {
-                    es.mapping.toJS(e, true);
-                });
-            }
-
             entity = ko.mapping.toJS(entity);
 
-            if (isArray(entity)) {
-                var array;
-
-                if (ko.isObservable(entity)) {
-                    array = ko.utils.unwrapObservable(entity);
-                } else {
-                    array = entity;
+            es.mapping.visitModel(entity, function (obj) {
+                
+                if (obj.esExtendedData !== undefined) {
+                    for (i = 0; i < obj.esExtendedData.length; i++) {
+                        delete obj[obj.esExtendedData[i]];
+                    }
+                    delete obj.esExtendedData;
                 }
 
-                ko.utils.arrayForEach(array, function (e) {
-                    if (e.esExtendedData !== undefined) {
-                        for (i = 0; i < e.esExtendedData.length; i++) {
-                            delete e[e.esExtendedData[i]];
-                        }
-                        delete e.esExtendedData;
-                    }
-                });
-            }
-            else {
-                if (!isArray(entity) && reentry === undefined) {
-                    if (entity.esExtendedData !== undefined) {
-                        for (i = 0; i < entity.esExtendedData.length; i++) {
-                            delete entity[entity.esExtendedData[i]];
-                        }
-                        delete entity.esExtendedData;
-                    }
-                }
-            }
+                return obj
+            });
 
             return entity;
-        };
+        }
 
         es.mapping.visitModel = function (rootObject, callback, options) {
             options = options || {};
@@ -297,7 +255,7 @@
 
         function addPropertyChanged(obj, propertyName) {
             var property = obj[propertyName];
-            if (ko.isObservable(property) && !isArray(property)) {
+            if (ko.isObservable(property) && !(property instanceof Array)) {
 
                 // This is the actual PropertyChanged event
                 property.subscribe(function () {
@@ -342,23 +300,30 @@
 
         function setupExtendedColumns(entity) {
 
-            var ext = undefined;
+            var data = undefined;
 
             if (entity.esExtendedData !== undefined) {
-                for (i = 0; i < entity.esExtendedData.length; i++) {
-                    entity[entity.esExtendedData[i].Key] = entity.esExtendedData[i].Value;
+
+                data = ko.isObservable(entity.esExtendedData) ? entity.esExtendedData() : entity.esExtendedData;
+
+                for (i = 0; i < data.length; i++) {
+                    entity[data[i].Key()] = ko.observable(data[i].Value());
+
+                    if (entity.hasOwnProperty("__ko_mapping__")) {
+                        entity.__ko_mapping__.mappedProperties[data[i].Key()] = true;
+                    }
                 }
 
-                ext = entity.esExtendedData;
+                ext = entity.esExtendedData();
                 delete entity.esExtendedData;
             }
 
-            if (ext !== undefined) {
+            if (data !== undefined) {
 
                 entity["esExtendedData"] = [];
 
-                for (i = 0; i < ext.length; i++) {
-                    entity.esExtendedData.push(ext[i].Key);
+                for (i = 0; i < data.length; i++) {
+                    entity.esExtendedData.push(data[i].Key());
                 }
             }
         }

@@ -6,18 +6,18 @@
 
     var es = window["es"] = {};
 
-    // Google Closure Compiler helpers (used only to make the minified file smaller)
-    es.exportSymbol = function (publicPath, object) {
-        var tokens = publicPath.split(".");
-        var target = window;
-        for (var i = 0; i < tokens.length - 1; i++)
-            target = target[tokens[i]];
-        target[tokens[tokens.length - 1]] = object;
-    };
+        // Google Closure Compiler helpers (used only to make the minified file smaller)
+        es.exportSymbol = function (publicPath, object) {
+            var tokens = publicPath.split(".");
+            var target = window;
+            for (var i = 0; i < tokens.length - 1; i++)
+                target = target[tokens[i]];
+            target[tokens[tokens.length - 1]] = object;
+        };
 
-    es.exportProperty = function (owner, publicName, object) {
-        owner[publicName] = object;
-    };
+        es.exportProperty = function (owner, publicName, object) {
+            owner[publicName] = object;
+        };
 
     es.dataPager = function (grid, service, method) {
 
@@ -153,18 +153,18 @@
                     setupExtendedColumns(obj);
                 }
 
-                return obj
+                return obj;
             });
 
             return entity;
         };
 
-        es.mapping.toJS = function (entity, reentry) {
+        es.mapping.toJS = function (entity) {
 
             entity = ko.mapping.toJS(entity);
 
             es.mapping.visitModel(entity, function (obj) {
-                
+
                 if (obj.esExtendedData !== undefined) {
                     for (i = 0; i < obj.esExtendedData.length; i++) {
                         delete obj[obj.esExtendedData[i]];
@@ -172,11 +172,11 @@
                     delete obj.esExtendedData;
                 }
 
-                return obj
+                return obj;
             });
 
             return entity;
-        }
+        };
 
         es.mapping.visitModel = function (rootObject, callback, options) {
             options = options || {};
@@ -193,7 +193,7 @@
             }
 
             visitPropertiesOrArrayEntries(unwrappedRootObject, function (indexer) {
-                if (options.ignore && ko.utils.arrayIndexOf(options.ignore, indexer) != -1) return;
+                if (options.ignore && ko.utils.arrayIndexOf(options.ignore, indexer) != -1) { return; }
 
                 if (options.include && ko.utils.arrayIndexOf(options.include, indexer) === -1) {
                     // The mapped properties object contains all the properties that were part of the original object.
@@ -214,7 +214,7 @@
             });
 
             return mappedRootObject;
-        }
+        };
 
         function visitPropertiesOrArrayEntries(rootObject, visitorCallback) {
             if (rootObject instanceof Array) {

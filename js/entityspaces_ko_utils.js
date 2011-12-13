@@ -292,7 +292,7 @@
             }
 
             for (propertyName in entity) {
-                if (propertyName !== 'RowState' && propertyName !== '__type' && propertyName !== 'esExtendedData') {
+                if (propertyName !== 'RowState' && propertyName !== "ModifiedColumns" && propertyName !== '__type' && propertyName !== 'esExtendedData') {
                     addPropertyChanged(entity, propertyName);
                 }
             }

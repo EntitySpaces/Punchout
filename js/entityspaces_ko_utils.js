@@ -6,18 +6,18 @@
 
     var es = window["es"] = {};
 
-        // Google Closure Compiler helpers (used only to make the minified file smaller)
-        es.exportSymbol = function (publicPath, object) {
-            var tokens = publicPath.split(".");
-            var target = window;
-            for (var i = 0; i < tokens.length - 1; i++)
-                target = target[tokens[i]];
-            target[tokens[tokens.length - 1]] = object;
-        };
+    // Google Closure Compiler helpers (used only to make the minified file smaller)
+    es.exportSymbol = function (publicPath, object) {
+        var tokens = publicPath.split(".");
+        var target = window;
+        for (var i = 0; i < tokens.length - 1; i++)
+            target = target[tokens[i]];
+        target[tokens[tokens.length - 1]] = object;
+    };
 
-        es.exportProperty = function (owner, publicName, object) {
-            owner[publicName] = object;
-        };
+    es.exportProperty = function (owner, publicName, object) {
+        owner[publicName] = object;
+    };
 
     es.dataPager = function (grid, service, method) {
 
@@ -422,25 +422,25 @@
     //-------------------------------------
     // Paging Prototypes
     //-------------------------------------	
-    es.dataPager.prototype.onFirstPage = function (event) {
+    es.dataPager.prototype.onFirstPage = function (data, event) {
 
         this.pagerRequest.pageNumber = 1;
         this.fetchData();
     };
 
-    es.dataPager.prototype.onNextPage = function (event) {
+    es.dataPager.prototype.onNextPage = function (data, event) {
 
         this.pagerRequest.pageNumber = Math.min(this.pagerRequest.pageNumber + 1, this.totalPageCount());
         this.fetchData();
     };
 
-    es.dataPager.prototype.onLastPage = function (event) {
+    es.dataPager.prototype.onLastPage = function (data, event) {
 
         this.pagerRequest.pageNumber = this.totalPageCount();
         this.fetchData();
     };
 
-    es.dataPager.prototype.onPrevPage = function (event) {
+    es.dataPager.prototype.onPrevPage = function (data, event) {
 
         this.pagerRequest.pageNumber = Math.max(this.pagerRequest.pageNumber - 1, 1);
         this.fetchData();

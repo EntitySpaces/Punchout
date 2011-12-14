@@ -26,50 +26,50 @@
     // THIS IS WHAT THE TEMPLATE REALLY LOOKS LIKE    
     //------------------------------------------------------
     <table id="poTable" class="es-grid" cellspacing="0">
-        <thead data-bind="if: headerEnabled()">
-            <tr data-bind="foreach: columns">
-                <!-- ko if: $data.isVisible -->
-                <th data-bind="text: $data.displayName, attr: { poColumn: $data.columnName }, event: {click: $parent.onSort.bind($parent)}">
-                </th>
-                <!-- /ko -->
-            </tr>
-        </thead>
-        <tfoot data-bind="if: showFooterControl">
-            <!-- ko if: footerEnabled -->
-            <tr data-bind="foreach: columns">
-                <!-- ko if: $data.isVisible -->
-                <td data-bind="text: $data.footerValue">
-                </td>
-                <!-- /ko -->
-            </tr>
-            <!-- /ko -->
-            <tr data-bind="if: pager.enabled()">
-                <td colspan="200" nowrap="nowrap">
-                    <button data-bind="click: pager.onFirstPage.bind(pager)">
-                        <<
-                    </button>
-                    <button data-bind="click: pager.onPrevPage.bind(pager)">
-                        <
-                    </button>
-                    <button data-bind="click: pager.onNextPage.bind(pager)">
-                        >
-                    </button>
-                    <button data-bind="click: pager.onLastPage.bind(pager)">
-                        >>
-                    </button>
-                    Page <em data-bind="text: pager.currentPage()"></em>of <em data-bind="text: pager.totalPageCount()">
-                    </em>
-                </td>
-            </tr>
-        </tfoot>
-        <tbody data-bind="foreach: collection.slice(pager.startingRow(), pager.endingRow())">
-            <tr data-bind="foreach: $parent.columns, event: { mouseover: $parent.onMouseIn.bind($parent),  mouseout: $parent.onMouseOut.bind($parent), click: $parent.onClick.bind($parent) }">
-                <!-- ko if: $data.isVisible -->
-                <td data-bind="text: $parent[$data.propertyName]">
-                </td>
-                <!-- /ko -->
-            </tr>
-        </tbody>
+    <thead data-bind="if: headerEnabled()">
+    <tr data-bind="foreach: columns">
+    <!-- ko if: $data.isVisible -->
+    <th data-bind="text: $data.displayName, attr: { poColumn: $data.columnName }, event: {click: $parent.onSort.bind($parent)}">
+    </th>
+    <!-- /ko -->
+    </tr>
+    </thead>
+    <tfoot data-bind="if: showFooterControl">
+    <!-- ko if: footerEnabled -->
+    <tr data-bind="foreach: columns">
+    <!-- ko if: $data.isVisible -->
+    <td data-bind="text: $data.footerValue">
+    </td>
+    <!-- /ko -->
+    </tr>
+    <!-- /ko -->
+    <tr data-bind="if: pager.enabled()">
+    <td colspan="200" nowrap="nowrap">
+    <button data-bind="click: pager.onFirstPage.bind(pager)">
+    <<
+    </button>
+    <button data-bind="click: pager.onPrevPage.bind(pager)">
+    <
+    </button>
+    <button data-bind="click: pager.onNextPage.bind(pager)">
+    >
+    </button>
+    <button data-bind="click: pager.onLastPage.bind(pager)">
+    >>
+    </button>
+    Page <em data-bind="text: pager.currentPage()"></em>of <em data-bind="text: pager.totalPageCount()">
+    </em>
+    </td>
+    </tr>
+    </tfoot>
+    <tbody data-bind="foreach: collection.slice(pager.startingRow(), pager.endingRow())">
+    <tr data-bind="foreach: $parent.columns, event: { mouseover: $parent.onMouseIn.bind($parent),  mouseout: $parent.onMouseOut.bind($parent), click: $parent.onClick.bind($parent) }">
+    <!-- ko if: $data.isVisible -->
+    <td data-bind="text: $parent[$data.propertyName]">
+    </td>
+    <!-- /ko -->
+    </tr>
+    </tbody>
     </table>
     */
 
@@ -173,9 +173,14 @@
             };
 
             this.selectedEntity = ko.dependentObservable(function () {
-                var index = this.selectedIndex(); // workaround
+
+                var proposedIndex = this.selectedIndex(); // workaround
+                var collectionCount = Math.max(this.collection()().length -1, 0);
+
+                var validIndex = Math.min(proposedIndex, collectionCount);
+
                 if (this.collection()().length > 0 && this.pager !== null) {
-                    return this.collection()()[this.selectedIndex()];
+                    return this.collection()()[validIndex];
                 } else {
                     return this.collection()()[0];
                 }
@@ -186,7 +191,7 @@
     //-------------------------------------
     // DataTable Prototypes
     //-------------------------------------	
-    po.poGrid.dataTable.prototype.onMouseIn = function (event) {
+    po.poGrid.dataTable.prototype.onMouseIn = function (data, event) {
         var tableRow = this.findParentRow(event.target.parentNode);
         if (tableRow.style.backgroundColor === 'lightblue') {
             return;
@@ -194,7 +199,7 @@
         tableRow.style.backgroundColor = '#dcfac9';
     };
 
-    po.poGrid.dataTable.prototype.onMouseOut = function (event) {
+    po.poGrid.dataTable.prototype.onMouseOut = function (data, event) {
         var tableRow = this.findParentRow(event.target.parentNode);
         if (tableRow.style.backgroundColor === 'lightblue') {
             return;
@@ -202,7 +207,7 @@
         tableRow.style.backgroundColor = 'white';
     };
 
-    po.poGrid.dataTable.prototype.onClick = function (event) {
+    po.poGrid.dataTable.prototype.onClick = function (data, event) {
         if (this.selectedRow !== null) {
             this.selectedRow.style.backgroundColor = 'white';
         }
@@ -216,7 +221,7 @@
     //-------------------------------------	
     // Sort Handler
     //-------------------------------------	
-    po.poGrid.dataTable.prototype.onSort = function (event) {
+    po.poGrid.dataTable.prototype.onSort = function (data, event) {
         var current, sortColumn, sortDir, i, th, tds;
 
         if (event.target.poOrig === undefined) {
@@ -249,21 +254,21 @@
     //-------------------------------------
     // Paging Prototypes
     //-------------------------------------	
-    po.poGrid.dataPager.prototype.onFirstPage = function (event) {
+    po.poGrid.dataPager.prototype.onFirstPage = function (data, event) {
         this.currentPage(1);
     };
 
-    po.poGrid.dataPager.prototype.onNextPage = function (event) {
+    po.poGrid.dataPager.prototype.onNextPage = function (data, event) {
         var i = this.currentPage();
         this.currentPage(Math.min(i + 1, this.totalPageCount()));
     };
 
-    po.poGrid.dataPager.prototype.onLastPage = function (event) {
+    po.poGrid.dataPager.prototype.onLastPage = function (data, event) {
         var lastPage = this.totalPageCount();
         this.currentPage(lastPage);
     };
 
-    po.poGrid.dataPager.prototype.onPrevPage = function (event) {
+    po.poGrid.dataPager.prototype.onPrevPage = function (data, event) {
         var i = this.currentPage();
         this.currentPage(Math.max(i - 1, 1));
     };

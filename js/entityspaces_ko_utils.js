@@ -19,6 +19,30 @@
         owner[publicName] = object;
     };
 
+    function addPropertyChangedHandlers(obj, propertyName) {
+        var property = obj[propertyName];
+        if (ko.isObservable(property) && !(property instanceof Array)) {
+
+            // This is the actual PropertyChanged event
+            property.subscribe(function () {
+                if (ko.utils.arrayIndexOf(obj.ModifiedColumns(), propertyName) === -1) {
+
+                    if (propertyName !== "RowState") {
+                        obj.ModifiedColumns.push(propertyName);
+
+                        if (obj.RowState() !== es.RowStateEnum.modified && obj.RowState() !== es.RowStateEnum.added) {
+                            obj.RowState(es.RowStateEnum.modified);
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    function unwrapObservable(value) {
+        return ko.isObservable(value) ? value() : value;
+    }
+
     es.dataPager = function (grid, service, method) {
 
         this.grid = grid;
@@ -149,8 +173,8 @@
             es.mapping.visitModel(entity, function (obj) {
 
                 if (obj.hasOwnProperty("RowState") && ko.isObservable(obj.RowState)) {
-                    injectProperties(obj);
-                    setupExtendedColumns(obj);
+                    es.startTracking(obj);
+                    es.expandExtraColumns(obj, true);
                 }
 
                 return obj;
@@ -164,14 +188,7 @@
             entity = ko.mapping.toJS(entity);
 
             es.mapping.visitModel(entity, function (obj) {
-
-                if (obj.esExtendedData !== undefined) {
-                    for (i = 0; i < obj.esExtendedData.length; i++) {
-                        delete obj[obj.esExtendedData[i]];
-                    }
-                    delete obj.esExtendedData;
-                }
-
+                es.removeExtraColumns(obj);
                 return obj;
             });
 
@@ -253,92 +270,108 @@
             return typeof x;
         }
 
-        function addPropertyChanged(obj, propertyName) {
-            var property = obj[propertyName];
-            if (ko.isObservable(property) && !(property instanceof Array)) {
-
-                // This is the actual PropertyChanged event
-                property.subscribe(function () {
-                    if (ko.utils.arrayIndexOf(obj.ModifiedColumns(), propertyName) === -1) {
-
-                        if (propertyName !== "RowState") {
-                            obj.ModifiedColumns.push(propertyName);
-
-                            if (obj.RowState() !== es.RowStateEnum.modified && obj.RowState() !== es.RowStateEnum.added) {
-                                obj.RowState(es.RowStateEnum.modified);
-                            }
-                        }
-                    }
-                });
-            }
-        }
-
-        function injectProperties(entity) {
-
-            var propertyName;
-
-            if (!entity.hasOwnProperty("RowState")) {
-                entity.RowState = ko.observable(es.RowStateEnum.added);
-                if (entity.hasOwnProperty("__ko_mapping__")) {
-                    entity.__ko_mapping__.mappedProperties["RowState"] = true;
-                }
-            }
-
-            if (!entity.hasOwnProperty("ModifiedColumns")) {
-                entity.ModifiedColumns = ko.observableArray();
-                if (entity.hasOwnProperty("__ko_mapping__")) {
-                    entity.__ko_mapping__.mappedProperties["ModifiedColumns"] = true;
-                }
-            }
-
-            for (propertyName in entity) {
-                if (propertyName !== 'RowState' && propertyName !== "ModifiedColumns" && propertyName !== '__type' && propertyName !== 'esExtendedData') {
-                    addPropertyChanged(entity, propertyName);
-                }
-            }
-        }
-
-        function setupExtendedColumns(entity) {
-
-            var data = undefined;
-
-            if (entity.esExtendedData !== undefined) {
-
-                data = ko.isObservable(entity.esExtendedData) ? entity.esExtendedData() : entity.esExtendedData;
-
-                for (i = 0; i < data.length; i++) {
-                    entity[data[i].Key()] = ko.observable(data[i].Value());
-
-                    if (entity.hasOwnProperty("__ko_mapping__")) {
-                        entity.__ko_mapping__.mappedProperties[data[i].Key()] = true;
-                    }
-                }
-
-                ext = entity.esExtendedData();
-                delete entity.esExtendedData;
-            }
-
-            if (data !== undefined) {
-
-                entity["esExtendedData"] = [];
-
-                for (i = 0; i < data.length; i++) {
-                    entity.esExtendedData.push(data[i].Key());
-                }
-            }
-        }
-
-        function teardownExtendedColumns(entity) {
-
-            if (entity.esExtendedData !== undefined) {
-                for (i = 0; i < entity.esExtendedData.length; i++) {
-                    delete entity[entity.esExtendedData[i]];
-                }
-                delete entity.esExtendedData;
-            }
-        }
-
     })();
+
+    es.startTracking = function (entity) {
+
+        var propertyName;
+
+        if (!entity.hasOwnProperty("RowState")) {
+            entity.RowState = ko.observable(es.RowStateEnum.added);
+            if (entity.hasOwnProperty("__ko_mapping__")) {
+                entity.__ko_mapping__.mappedProperties["RowState"] = true;
+            }
+        } else {
+            if (!ko.isObservable(entity.RowState)) {
+                entity.RowState = ko.observable(entity.RowState);
+            }
+        }
+
+        if (!entity.hasOwnProperty("ModifiedColumns")) {
+            entity.ModifiedColumns = ko.observableArray();
+            if (entity.hasOwnProperty("__ko_mapping__")) {
+                entity.__ko_mapping__.mappedProperties["ModifiedColumns"] = true;
+            }
+        } else {
+            if (!ko.isObservable(entity.ModifiedColumns)) {
+                entity.ModifiedColumns = ko.observable(entity.ModifiedColumns);
+            }
+        }
+
+        for (propertyName in entity) {
+            if (propertyName !== 'RowState' && propertyName !== "ModifiedColumns" && propertyName !== '__type' && propertyName !== 'esExtendedData') {
+
+                var property = entity[propertyName];
+
+                if (property instanceof Array) { continue; }
+
+                if (!ko.isObservable(property)) {
+                    entity[propertyName] = ko.observable(entity[propertyName]);
+                }
+                addPropertyChangedHandlers(entity, propertyName);
+            }
+        }
+
+        return entity;
+    }
+
+    es.expandExtraColumns = function (entity, makeObservable) {
+
+        var data = undefined;
+        if (makeObservable === undefined) {
+            makeObservable = false;
+        }
+
+
+        if (entity.esExtendedData !== undefined) {
+
+            data = unwrapObservable(entity.esExtendedData);
+
+            for (i = 0; i < data.length; i++) {
+
+                if (makeObservable) {
+                    entity[unwrapObservable(data[i].Key)] = ko.observable(unwrapObservable(data[i].Value));
+                } else {
+                    entity[unwrapObservable(data[i].Key)] = unwrapObservable(data[i].Value);
+                }
+
+                if (entity.hasOwnProperty("__ko_mapping__")) {
+                    if (entity.__ko_mapping__.hasOwnProperty("mappedProperties")) {
+                        entity.__ko_mapping__.mappedProperties[unwrapObservable(data[i].Key)] = true;
+                    }
+                }
+            }
+
+            ext = unwrapObservable(entity.esExtendedData);
+            delete entity.esExtendedData;
+        }
+
+        if (data !== undefined) {
+
+            entity["esExtendedData"] = [];
+
+            for (i = 0; i < data.length; i++) {
+                entity.esExtendedData.push(unwrapObservable(data[i].Key));
+            }
+        }
+
+        return entity;
+    };
+
+    es.removeExtraColumns = function (entity) {
+
+        if (entity.esExtendedData !== undefined) {
+
+            var data = unwrapObservable(entity.esExtendedData);
+
+            for (i = 0; i < data.length; i++) {
+                delete entity[data[i]];
+            }
+            delete entity.esExtendedData;
+        }
+
+        return entity;
+    };
 
     es.markAsDeleted = function (entity) {
 

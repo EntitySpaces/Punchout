@@ -105,6 +105,11 @@
     function onCommit() {
 
         var dirtyEntities = es.getDirtyEntities(myView.collection());
+		
+		if ( dirtyEntities === null) {
+			return;
+		}
+		
         var json = ko.toJSON(es.mapping.toJS(dirtyEntities));
 
         var employees = es.makeRequest(service, 'EmployeesCollection_Save', json);

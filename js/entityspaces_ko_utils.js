@@ -6,12 +6,14 @@
 
     var es = window["es"] = {};
 
-    // Google Closure Compiler helpers (used only to make the minified file smaller)
+    //Google Closure Compiler helpers (used only to make the minified file smaller)
     es.exportSymbol = function (publicPath, object) {
         var tokens = publicPath.split(".");
         var target = window;
-        for (var i = 0; i < tokens.length - 1; i++)
+        var i;
+        for (i = 0; i < tokens.length - 1; i++) {
             target = target[tokens[i]];
+        }
         target[tokens[tokens.length - 1]] = object;
     };
 
@@ -20,6 +22,7 @@
     };
 
     function addPropertyChangedHandlers(obj, propertyName) {
+
         var property = obj[propertyName];
         if (ko.isObservable(property) && !(property instanceof Array)) {
 
@@ -41,6 +44,219 @@
 
     function unwrapObservable(value) {
         return ko.isObservable(value) ? value() : value;
+    }
+
+    // ===============================================================
+    // BEGIN
+    // ===============================================================
+    // Copyright 2010 James Halliday (mail@substack.net)
+    //
+    // js-traverse
+    //
+    // https://github.com/substack/js-traverse/blob/master/LICENSE
+    // ===============================================================
+
+    function Traverse(obj) {
+        if (!(this instanceof Traverse)) {
+            return new Traverse(obj);
+        }
+        this.value = obj;
+    }
+
+    var Array_isArray = Array.isArray || function isArray(xs) {
+        return Object.prototype.toString.call(xs) === '[object Array]';
+    };
+
+    var Object_keys = Object.keys || function keys(obj) {
+        var res = [];
+        for (var key in obj) {
+            res.push(key);
+        }
+        return res;
+    };
+
+    function walk(root, cb, immutable) {
+        var path = [];
+        var parents = [];
+        var alive = true;
+
+        return (function walker(node_) {
+            var node = immutable ? copy(node_) : node_;
+            var modifiers = {};
+
+            var keepGoing = true;
+
+            var state = {
+                node: node,
+                node_: node_,
+                path: [].concat(path),
+                parent: parents[parents.length - 1],
+                parents: parents,
+                key: path.slice(-1)[0],
+                isRoot: path.length === 0,
+                level: path.length,
+                circular: null,
+                update: function (x, stopHere) {
+                    if (!state.isRoot) {
+                        state.parent.node[state.key] = x;
+                    }
+                    state.node = x;
+                    if (stopHere) { keepGoing = false; }
+                },
+                'delete': function (stopHere) {
+                    delete state.parent.node[state.key];
+                    if (stopHere) { keepGoing = false; }
+                },
+                remove: function (stopHere) {
+                    if (Array_isArray(state.parent.node)) {
+                        state.parent.node.splice(state.key, 1);
+                    } else {
+                        delete state.parent.node[state.key];
+                    }
+                    if (stopHere) { keepGoing = false; }
+                },
+                keys: null,
+                before: function (f) { modifiers.before = f; },
+                after: function (f) { modifiers.after = f; },
+                pre: function (f) { modifiers.pre = f; },
+                post: function (f) { modifiers.post = f; },
+                stop: function () { alive = false; },
+                block: function () { keepGoing = false; }
+            };
+
+            if (!alive) { return state; }
+
+            if (typeof node === 'object' && node !== null) {
+                state.keys = Object_keys(node);
+
+                state.isLeaf = state.keys.length === 0;
+
+                for (var i = 0; i < parents.length; i++) {
+                    if (parents[i].node_ === node_) {
+                        state.circular = parents[i];
+                        break;
+                    }
+                }
+            }
+            else {
+                state.isLeaf = true;
+            }
+
+            state.notLeaf = !state.isLeaf;
+            state.notRoot = !state.isRoot;
+
+            // use return values to update if defined
+            var ret = cb.call(state, state.node);
+            if (ret !== undefined && state.update) state.update(ret);
+
+            if (modifiers.before) modifiers.before.call(state, state.node);
+
+            if (!keepGoing) return state;
+
+            if (typeof state.node == 'object' && state.node !== null && !state.circular) {
+                parents.push(state);
+
+                forEach(state.keys, function (key, i) {
+                    path.push(key);
+
+                    if (modifiers.pre) modifiers.pre.call(state, state.node[key], key);
+
+                    var child = walker(state.node[key]);
+                    if (immutable && Object.hasOwnProperty.call(state.node, key)) {
+                        state.node[key] = child.node;
+                    }
+
+                    child.isLast = i == state.keys.length - 1;
+                    child.isFirst = i == 0;
+
+                    if (modifiers.post) modifiers.post.call(state, child);
+
+                    path.pop();
+                });
+                parents.pop();
+            }
+
+            if (modifiers.after) modifiers.after.call(state, state.node);
+
+            return state;
+        })(root).node;
+    };
+
+    Traverse.prototype.forEach = function (cb) {
+        this.value = walk(this.value, cb, false);
+        return this.value;
+    };
+
+    var forEach = function (xs, fn) {
+        if (xs.forEach) return xs.forEach(fn)
+        else for (var i = 0; i < xs.length; i++) {
+            fn(xs[i], i, xs);
+        }
+    };
+
+    function shallowCopy(src) {
+        if (typeof src === 'object' && src !== null) {
+            var dst;
+
+            if (Array_isArray(src)) {
+                dst = [];
+            }
+            else if (src instanceof Date) {
+                dst = new Date(src);
+            }
+            else if (src instanceof Boolean) {
+                dst = new Boolean(src);
+            }
+            else if (src instanceof Number) {
+                dst = new Number(src);
+            }
+            else if (src instanceof String) {
+                dst = new String(src);
+            }
+            else if (Object.create && Object.getPrototypeOf) {
+                dst = Object.create(Object.getPrototypeOf(src));
+            }
+            else if (src.__proto__ || src.constructor.prototype) {
+                var proto = src.__proto__ || src.constructor.prototype || {};
+                var T = function () { };
+                T.prototype = proto;
+                dst = new T;
+                if (!dst.__proto__) dst.__proto__ = proto;
+            }
+
+            forEach(Object_keys(src), function (key) {
+                if (!isEntitySpacesCollection(src[key])) {
+                    dst[key] = src[key];
+                }
+            });
+            return dst;
+        }
+        else return src;
+    }
+
+    // ===============================================================
+    // END
+    // ===============================================================
+    // Copyright 2010 James Halliday (mail@substack.net)
+    //
+    // js-traverse
+    //
+    // https://github.com/substack/js-traverse/blob/master/LICENSE
+    // ===============================================================
+
+    function isEntitySpacesCollection(array) {
+
+        var isEsArray = false;
+
+        if (Array_isArray(array)) {
+            if (array.length > 0) {
+                if (array[0].hasOwnProperty("RowState")) {
+                    isEsArray = true;
+                }
+            }
+        }
+
+        return isEsArray;
     }
 
     es.dataPager = function (grid, service, method) {
@@ -124,6 +340,8 @@
         this.grid = grid;
 
         this.sort = function (column, dir) {
+
+            var data;
 
             this.grid.pager.pagerRequest.pageNumber = 1;
             this.grid.pager.pagerRequest.sortCriteria = [];
@@ -322,7 +540,6 @@
             makeObservable = false;
         }
 
-
         if (entity.esExtendedData !== undefined) {
 
             data = unwrapObservable(entity.esExtendedData);
@@ -396,19 +613,79 @@
         }
     };
 
-    es.getDirtyEntities = function (collection) {
-        var index = 0, modifiedRecords = [];
+    es.getDirtyEntities = function (obj) {
 
-        ko.utils.arrayFirst(collection(), function (entity) {
-            if (entity.RowState() !== es.RowStateEnum.unchanged) {
-                modifiedRecords.push(entity);
+        var dirty, paths = [], root = null;
+
+        Traverse(obj).forEach(function (theObj) {
+
+            if (this.key === "esExtendedData") {
+                this.block();
+            } else {
+
+                if (this.isLeaf === false) {
+
+                    if (theObj instanceof Array) { return theObj; }
+
+                    if (theObj.hasOwnProperty("RowState")) {
+
+                        switch (theObj.RowState) {
+
+                            case es.RowStateEnum.added:
+                            case es.RowStateEnum.deleted:
+                            case es.RowStateEnum.modified:
+
+                                paths.push(this.path);
+                                break;
+                        }
+                    }
+                }
             }
+
+            return theObj;
         });
 
-        if (modifiedRecords.length === 0) { return null; }
+        if (paths.length > 0) {
 
-        return modifiedRecords;
-    };
+            if (Array_isArray(obj)) {
+                dirty = [];
+            } else {
+                dirty = shallowCopy(obj);
+            }
+
+            root = dirty;
+
+            for (i = 0; i < paths.length; i++) {
+
+                var thePath = paths[i];
+                var data = obj;
+                dirty = root;
+
+                for (k = 0; k < thePath.length; k++) {
+
+                    if (!dirty.hasOwnProperty(thePath[k])) {
+
+                        if (Array_isArray(data[thePath[k]])) {
+                            dirty[thePath[k]] = [];
+                            dirty = dirty[thePath[k]];
+                        }
+                    } else {
+                        dirty = dirty[thePath[k]];
+                    }
+
+                    data = data[thePath[k]];
+                }
+
+                if (Array_isArray(dirty)) {
+                    dirty.push(shallowCopy(data));
+                } else {
+                    dirty = shallowCopy(data);
+                }
+            }
+        }
+
+        return root;
+    }
 
     es.makeRequstError = null;
 

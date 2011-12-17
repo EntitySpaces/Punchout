@@ -76,8 +76,8 @@
             </td>
             <td>
                 <input type="checkbox" onclick="{ myView.columns()[0].isVisible(!checked) }">Hide Employee Id</input><br />
-                <input type="checkbox" onclick="{ myView.columns()[1].isVisible(!checked) }">Hide Last Name</input><br />
-                <input type="checkbox" onclick="{ myView.columns()[2].isVisible(!checked) }">Hide First Name</input>
+                <input type="checkbox" onclick="{ myView.columns()[1].isVisible(!checked) }">Hide First Name</input><br />
+                <input type="checkbox" onclick="{ myView.columns()[2].isVisible(!checked) }">Hide Last Name</input>
             </td>
         <tr>
     </table>
@@ -104,12 +104,14 @@
 
     function onCommit() {
 
-        var dirtyEntities = es.getDirtyEntities(myView.collection());
-		
-		if ( dirtyEntities === null) {
-			return;
-		}
-		
+        var employees = es.mapping.toJS(myView.collection());
+
+        var dirtyEntities = es.getDirtyEntities(employees);
+        
+        if ( dirtyEntities === null) {
+            return;
+        }
+        
         var json = ko.toJSON(es.mapping.toJS(dirtyEntities));
 
         var employees = es.makeRequest(service, 'EmployeesCollection_Save', json);

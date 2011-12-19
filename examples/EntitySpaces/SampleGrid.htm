@@ -22,7 +22,7 @@
                 <!--------------------------->
                 <!--   The Punchout Grid   -->
                 <!--------------------------->
-                <div data-bind="poGrid: myView"></div>
+                <div data-bind="poGrid: myView" poColumnCollection="default"></div>
             </td>
         <td>
             &nbsp;&nbsp;&nbsp;&nbsp;
@@ -94,8 +94,8 @@
 
 <script language="javascript" type="text/javascript">
 
-    //var service = 'http://localhost/esService/esJson.svc/';
-    var service = 'http://www.entityspaces.net/Knockout/Part1/esService/esJson.svc/';
+    var service = 'http://localhost/esService/esJson.svc/';
+    //var service = 'http://www.entityspaces.net/Knockout/Part1/esService/esJson.svc/';
     var method = 'Employees_Pager';
 
     // NOTE: MUCH OF THE LOGIC AROUND SAVING DATA WILL EVENTUALLY BE MOVED INTO THE
@@ -111,7 +111,7 @@
             return;
         }
         
-        var json = ko.toJSON(es.mapping.toJS(dirtyEntities));
+        var json = ko.toJSON(dirtyEntities);
 
         var employees = es.makeRequest(service, 'EmployeesCollection_Save', json);
 
@@ -153,7 +153,7 @@
     //------------------------------------------------------------------------------
     // This view is going to page against an EntitySpaces JSON WCF Service
     //------------------------------------------------------------------------------
-    var myView = new po.poGrid.dataTable(viewModel.data, viewModel.columns);
+    var myView = new po.poGrid(viewModel.data, viewModel.columns);
     myView.pager = new es.dataPager(myView, service, method); // Notice we use the es.dataPager here
     myView.sorter = new es.dataSorter(myView);                // Notice we use the es.dataSorter here
 

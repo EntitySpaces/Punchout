@@ -285,6 +285,16 @@
 
             resultSet = es.makeRequest(this.service, this.method, ko.toJSON(this.pagerRequest));
 
+            if (resultSet.columnCollection !== null) {
+                for (i = 0; i < resultSet.columnCollection.length; i++) {
+                    resultSet.columnCollection[resultSet.columnCollection[i].Key] = resultSet.columnCollection[i].Value;
+                }
+
+                for (i = resultSet.columnCollection.length - 1; i >= 0; i--) {
+                    delete resultSet.columnCollection[i];
+                }
+            }
+
             data = es.mapping.fromJS(resultSet.collection);
 
             this.colSpan(resultSet.columns.length);

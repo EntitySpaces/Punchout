@@ -121,6 +121,7 @@ var viewModel = {
            "isInPrimaryKey": true,
            "isNullable": false,
            "isVisible": true,
+           "isSortable": true,		   
            "numericPrecision": 10,
            "numericScale": 0,
            "ordinal": 0,
@@ -139,6 +140,7 @@ var viewModel = {
            "isInPrimaryKey": false,
            "isNullable": false,
            "isVisible": true,
+           "isSortable": true,		   
            "numericPrecision": 0,
            "numericScale": 0,
            "ordinal": 1,
@@ -157,6 +159,7 @@ var viewModel = {
            "isInPrimaryKey": false,
            "isNullable": false,
            "isVisible": true,
+           "isSortable": true,		   
            "numericPrecision": 0,
            "numericScale": 0,
            "ordinal": 2,
@@ -169,9 +172,9 @@ var viewModel = {
 //------------------------------------------------------------------------------
 // This is all client side
 //------------------------------------------------------------------------------
-var myView = new po.poGrid.dataTable(ko.mapping.fromJS(viewModel.data()), viewModel.columns);
-myView.pager = new po.poGrid.dataPager(myView);   // Notice we use the Punchout dataPager here
-myView.sorter = new po.poGrid.dataSorter(myView); // Notice we use the Punchout dataSorter here
+var myView = new po.poGrid(ko.mapping.fromJS(viewModel.data()), viewModel.columns);
+myView.pager = new po.dataPager(myView);   // Notice we use the Punchout dataPager here
+myView.sorter = new po.dataSorter(myView); // Notice we use the Punchout dataSorter here
 
 myView.pager.enabled(true);
 myView.headerEnabled(true);

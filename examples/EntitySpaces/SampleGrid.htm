@@ -22,7 +22,7 @@
                 <!--------------------------->
                 <!--   The Punchout Grid   -->
                 <!--------------------------->
-                <div data-bind="poGrid: myView" poColumnCollection="default"></div>
+                <div data-bind="poGrid: grid" poColumnCollection="default"></div>
             </td>
         <td>
             &nbsp;&nbsp;&nbsp;&nbsp;
@@ -34,19 +34,19 @@
             <table id="EditArea" class="es-grid" cellpadding="3" style="vertical-align:top;">
                 <tr>
                     <td>EmployeeID: </td>
-                    <td data-bind="text: myView.selectedEntity().EmployeeID"></td>
+                    <td data-bind="text: grid.selectedEntity().EmployeeID"></td>
                 </tr>
                 <tr>
                     <td>First Name: </td>
-                    <td><input data-bind='value: myView.selectedEntity().FirstName, valueUpdate: "afterkeydown"' maxlength="10" /></td>
+                    <td><input data-bind='value: grid.selectedEntity().FirstName, valueUpdate: "afterkeydown"' maxlength="10" /></td>
                 </tr>
                 <tr>
                     <td>Last Name: </td>
-                    <td><input data-bind='value: myView.selectedEntity().LastName, valueUpdate: "afterkeydown"' maxlength="20"/></td>
+                    <td><input data-bind='value: grid.selectedEntity().LastName, valueUpdate: "afterkeydown"' maxlength="20"/></td>
                 </tr>
                 <tr>
                     <td>RowState: </td>
-                    <td data-bind="text: myView.selectedEntity().RowState"></td>
+                    <td data-bind="text: grid.selectedEntity().RowState"></td>
                 </tr>
                 <tr>
                     <td colspan="2">
@@ -69,14 +69,14 @@
         </tr>
         <tr>
             <td>
-                <input type="checkbox" onclick="{ myView.headerEnabled(!myView.headerEnabled()) }">Hide Headers</input><br />
-                <input type="checkbox" onclick="{ myView.footerEnabled(!myView.footerEnabled()) }">Hide Footers</input><br />
-                <input type="checkbox" onclick="{ myView.pager.enabled(!myView.pager.enabled()) }">Hide Pager</input>
+                <input type="checkbox" onclick="{ grid.headerEnabled(!grid.headerEnabled()) }">Hide Headers</input><br />
+                <input type="checkbox" onclick="{ grid.footerEnabled(!grid.footerEnabled()) }">Hide Footers</input><br />
+                <input type="checkbox" onclick="{ grid.pager.enabled(!grid.pager.enabled()) }">Hide Pager</input>
             </td>
             <td>
-                <input type="checkbox" onclick="{ myView.columns()[0].isVisible(!checked) }">Hide Employee Id</input><br />
-                <input type="checkbox" onclick="{ myView.columns()[1].isVisible(!checked) }">Hide First Name</input><br />
-                <input type="checkbox" onclick="{ myView.columns()[2].isVisible(!checked) }">Hide Last Name</input>
+                <input type="checkbox" onclick="{ grid.columns()[0].isVisible(!checked) }">Hide Employee Id</input><br />
+                <input type="checkbox" onclick="{ grid.columns()[1].isVisible(!checked) }">Hide First Name</input><br />
+                <input type="checkbox" onclick="{ grid.columns()[2].isVisible(!checked) }">Hide Last Name</input>
             </td>
         <tr>
     </table>
@@ -102,8 +102,8 @@
     //       ENTITYSPACES JAVASCRIPT FILE
 
     function onCommit() {
-
-        var employees = es.mapping.toJS(myView.collection());
+	
+        var employees = es.mapping.toJS(grid.collection());
 
         var dirtyEntities = es.getDirtyEntities(employees);
         
@@ -116,31 +116,31 @@
         var employees = es.makeRequest(service, 'EmployeesCollection_Save', json);
 
         // For total rows to be refetched ..
-        myView.pager.pagerRequest.totalRows = 0;
+        grid.pager.pagerRequest.totalRows = 0;
 
-        myView.pager.fetchData();
+        grid.pager.fetchData();
     }
 
     function onAdd() {
         var employee = { "EmployeeID": 0, "FirstName": "", "LastName": "", "RowState": es.RowStateEnum.added };
         employee = es.mapping.fromJS(employee);
 
-        myView.collection().pop();
-        myView.collection().push(employee);
-        myView.selectedIndex(myView.collection()().length - 1);
+        grid.collection().pop();
+        grid.collection().push(employee);
+        grid.selectedIndex(grid.collection()().length - 1);
     }
 
     function onDelete() {
 
-        es.markAsDeleted(myView.selectedEntity());
-        var json = ko.toJSON(es.mapping.toJS(myView.selectedEntity()));
+        es.markAsDeleted(grid.selectedEntity());
+        var json = ko.toJSON(es.mapping.toJS(grid.selectedEntity()));
 
         var employees = es.makeRequest(service, 'Employees_Save', json);
 
         // For total rows to be refetched ..
-        myView.pager.pagerRequest.totalRows = 0;
+        grid.pager.pagerRequest.totalRows = 0;
 
-        myView.pager.fetchData();
+        grid.pager.fetchData();
     }
 
     // Since w'ere going to load this from the database let's give the 
@@ -153,14 +153,14 @@
     //------------------------------------------------------------------------------
     // This view is going to page against an EntitySpaces JSON WCF Service
     //------------------------------------------------------------------------------
-    var myView = new po.poGrid(viewModel.data, viewModel.columns);
-    myView.pager = new es.dataPager(myView, service, method); // Notice we use the es.dataPager here
-    myView.sorter = new es.dataSorter(myView);                // Notice we use the es.dataSorter here
+    var grid = new po.poGrid(viewModel.data, viewModel.columns);
+    grid.pager = new es.dataPager(grid, service, method); // Notice we use the es.dataPager here
+    grid.sorter = new es.dataSorter(grid);                // Notice we use the es.dataSorter here
 
-    myView.pager.enabled(true);
-    myView.headerEnabled(true);
-    myView.footerEnabled(true);
+    grid.pager.enabled(true);
+    grid.headerEnabled(true);
+    grid.footerEnabled(true);
 
-    ko.applyBindings(myView);
+    ko.applyBindings(grid);
 
 </script>

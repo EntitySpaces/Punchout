@@ -22,7 +22,7 @@
                 <!--------------------------->
                 <!--   The Punchout Grid   -->
                 <!--------------------------->
-                <div data-bind="poGrid: myView"></div>
+                <div data-bind="poGrid: grid"></div>
             </td>
         <td>
             &nbsp;&nbsp;&nbsp;&nbsp;
@@ -34,29 +34,29 @@
             <table id="EditArea" class="es-grid" cellpadding="3" style="vertical-align:top;">
                 <tr>
                     <td>EmployeeID: </td>
-                    <td data-bind="text: myView.selectedEntity().EmployeeID"></td>
+                    <td data-bind="text: grid.selectedEntity().EmployeeID"></td>
                 </tr>
                 <tr>
                     <td>First Name: </td>
-                    <td><input data-bind='value: myView.selectedEntity().FirstName, valueUpdate: "afterkeydown"' maxlength="10" /></td>
+                    <td><input data-bind='value: grid.selectedEntity().FirstName, valueUpdate: "afterkeydown"' maxlength="10" /></td>
                 </tr>
                 <tr>
                     <td>Last Name: </td>
-                    <td><input data-bind='value: myView.selectedEntity().LastName, valueUpdate: "afterkeydown"' maxlength="20"/></td>
+                    <td><input data-bind='value: grid.selectedEntity().LastName, valueUpdate: "afterkeydown"' maxlength="20"/></td>
                 </tr>
             </table>
         </td>
         </tr>
         <tr>
             <td>
-                <input type="checkbox" onclick="{ myView.headerEnabled(!myView.headerEnabled()) }">Hide Headers</input><br />
-                <input type="checkbox" onclick="{ myView.footerEnabled(!myView.footerEnabled()) }">Hide Footers</input><br />
-                <input type="checkbox" onclick="{ myView.pager.enabled(!myView.pager.enabled()) }">Hide Pager</input>
+                <input type="checkbox" onclick="{ grid.headerEnabled(!grid.headerEnabled()) }">Hide Headers</input><br />
+                <input type="checkbox" onclick="{ grid.footerEnabled(!grid.footerEnabled()) }">Hide Footers</input><br />
+                <input type="checkbox" onclick="{ grid.pager.enabled(!grid.pager.enabled()) }">Hide Pager</input>
             </td>
             <td>
-                <input type="checkbox" onclick="{ myView.columns()[0].isVisible(!checked) }">Hide Employee Id</input><br />
-                <input type="checkbox" onclick="{ myView.columns()[1].isVisible(!checked) }">Hide Last Name</input><br />
-                <input type="checkbox" onclick="{ myView.columns()[2].isVisible(!checked) }">Hide First Name</input>
+                <input type="checkbox" onclick="{ grid.columns()[0].isVisible(!checked) }">Hide Employee Id</input><br />
+                <input type="checkbox" onclick="{ grid.columns()[1].isVisible(!checked) }">Hide Last Name</input><br />
+                <input type="checkbox" onclick="{ grid.columns()[2].isVisible(!checked) }">Hide First Name</input>
             </td>
         </tr>
     </table>
@@ -172,14 +172,14 @@ var viewModel = {
 //------------------------------------------------------------------------------
 // This is all client side
 //------------------------------------------------------------------------------
-var myView = new po.poGrid(ko.mapping.fromJS(viewModel.data()), viewModel.columns);
-myView.pager = new po.dataPager(myView);   // Notice we use the Punchout dataPager here
-myView.sorter = new po.dataSorter(myView); // Notice we use the Punchout dataSorter here
+var grid = new po.poGrid(ko.mapping.fromJS(viewModel.data()), viewModel.columns);
+grid.pager = new po.dataPager(grid);   // Notice we use the Punchout dataPager here
+grid.sorter = new po.dataSorter(grid); // Notice we use the Punchout dataSorter here
 
-myView.pager.enabled(true);
-myView.headerEnabled(true);
-myView.footerEnabled(true);
+grid.pager.enabled(true);
+grid.headerEnabled(true);
+grid.footerEnabled(true);
 
-ko.applyBindings(myView); 
+ko.applyBindings(grid); 
 
 </script>

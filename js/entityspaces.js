@@ -307,15 +307,15 @@
             return index;
         };
 
-        this.startingRow = ko.dependentObservable(function () {
+        this.startingRow = ko.computed(function () {
             return (this.pagerRequest.pageNumber - 1) * this.rowsPerPage();
         }, this);
 
-        this.endingRow = ko.dependentObservable(function () {
+        this.endingRow = ko.computed(function () {
             return this.pagerRequest.pageNumber * this.rowsPerPage();
         }, this);
 
-        this.totalPageCount = ko.dependentObservable(function () {
+        this.totalPageCount = ko.computed(function () {
             var lastPage, mod, count = this.totalRowCount();
 
             if (count > 0) {

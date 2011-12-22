@@ -26,19 +26,19 @@
                 return ((this.currentPage() - 1) * this.rowsPerPage()) + index;
             };
 
-            this.startingRow = ko.dependentObservable(function () {
+            this.startingRow = ko.computed(function () {
                 return (this.currentPage() - 1) * this.rowsPerPage();
             }, this);
 
-            this.endingRow = ko.dependentObservable(function () {
+            this.endingRow = ko.computed(function () {
                 return this.currentPage() * this.rowsPerPage();
             }, this);
 
-            this.totalRowCount = ko.dependentObservable(function () {
+            this.totalRowCount = ko.computed(function () {
                 return this.grid.collection()().length;
             }, this);
 
-            this.totalPageCount = ko.dependentObservable(function () {
+            this.totalPageCount = ko.computed(function () {
                 var lastPage, mod, count = this.grid.collection()().length;
 
                 if (count > 0) {
@@ -186,7 +186,7 @@
         this.headerEnabled = ko.observable(true);
         this.footerEnabled = ko.observable(false);
 
-        this.showFooterControl = ko.dependentObservable(function () {
+        this.showFooterControl = ko.computed(function () {
             if (this.footerEnabled) { return true; }
             if (this.pager.enabled) { return true; }
             return false;
@@ -199,7 +199,7 @@
             return this.findParentRow(element.parentNode);
         };
 
-        this.selectedEntity = ko.dependentObservable(function () {
+        this.selectedEntity = ko.computed(function () {
 
             var proposedIndex = this.selectedIndex(); // workaround
             var collectionCount = Math.max(this.collection()().length - 1, 0);

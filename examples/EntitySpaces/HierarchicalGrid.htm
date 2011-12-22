@@ -1,0 +1,135 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <script src="../../lib/json2.js" type="text/javascript"></script>
+    <script src="../../lib/jquery-1.7.js" type="text/javascript"></script>
+    <script src="../../lib/knockout-latest.debug.js" type="text/javascript"></script>
+    <script src="../../lib/knockout.mapping.js" type="text/javascript"></script>
+    <script src="../../js/punchout_grid.js" type="text/javascript"></script>
+    <script src="../../js/entityspaces.js" type="text/javascript"></script>
+    <link href="../../css/punchout_grid.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+   <table>
+        <tr>
+            <td colspan="2">
+                This Punchout Grid is using an EntitySpaces JSON Service
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" valign="top">
+                <!--------------------------->
+                <!--   The Punchout Grid   -->
+                <!--------------------------->
+                <div id="employeesGrid" data-bind="poGrid: employeesGrid"></div>
+            </td>
+        </tr>
+        <tr>
+            <td valign="top">
+                <!--------------------------->
+                <!--   The Punchout Grid   -->
+                <!--------------------------->
+                <div id="ordersGrid" data-bind="poGrid: ordersGrid"></div>
+            </td>
+            <td valign="top">
+                <!--------------------------->
+                <!--   The Punchout Grid   -->
+                <!--------------------------->
+                <div id="orderDetailsGrid" data-bind="poGrid: orderDetailsGrid"></div>
+            </td>
+        </tr>
+    </table>
+
+    <button data-bind="click: onEmployeesGrid"  style="width:180px">Clicked on Employees</button>
+    <button data-bind="click: onOrdersGrid" style="width:180px">Clicked on Orders</button>
+
+    <br/><br/>
+    <a href="https://github.com/EntitySpaces/Punchout/blob/master/examples/EntitySpaces/SampleGrid.htm" target="new">Source for this Page</A>
+    <br/>
+    <a href="https://github.com/EntitySpaces/Punchout/blob/master/js/punchout_grid.js" target="new">Source for the Punchout Grid</A>					
+    <br/>
+    <a href="https://github.com/EntitySpaces/Punchout/blob/master/js/entityspaces.js" target="new">Source for the EntitySpaces KO Utils</A>					
+    <br/>
+    <a href="https://github.com/EntitySpaces/Punchout" target="new">Punchout github site</A>	
+</body>
+</html>
+
+<script language="javascript" type="text/javascript">
+
+    var service = 'http://localhost/esService/esJson.svc/';
+    //var service = 'http://www.entityspaces.net/Knockout/Part1/esService/esJson.svc/';
+
+    // NOTE: MUCH OF THE LOGIC AROUND SAVING DATA WILL EVENTUALLY BE MOVED INTO THE
+    //       ENTITYSPACES JAVASCRIPT FILE
+
+    function onEmployeesGrid() {
+        ordersGrid.collection(ko.observableArray(employeesGrid.selectedEntity().OrdersCollectionByEmployeeID));
+    }
+
+    function onOrdersGrid() {
+        orderDetailsGrid.collection(ko.observableArray(ordersGrid.selectedEntity().OrderDetailsCollectionByOrderID));
+    }
+
+    var result = es.makeRequest(service, 'Employees_LoadForHierarchical');
+    es.flattenColumnCollection(result.columnCollection);
+
+    var viewModel = {
+        data: ko.observableArray(result.collection),
+        columns: ko.observableArray(result.columnCollection["Employees"])
+    }
+
+    var ordersColumns = result.columnCollection["Orders"];
+
+    // Hide a bunch of columns or the grid will be huge
+    ordersColumns[3].isVisible = false;
+    ordersColumns[4].isVisible = false;
+    ordersColumns[5].isVisible = false;
+    ordersColumns[6].isVisible = false;
+    ordersColumns[7].isVisible = false;
+    ordersColumns[8].isVisible = false;
+    ordersColumns[9].isVisible = false;
+    ordersColumns[10].isVisible = false;
+    ordersColumns[11].isVisible = false;
+    ordersColumns[12].isVisible = false;
+
+    var viewModel1 = {
+        data: ko.observableArray(result.collection[0].OrdersCollectionByEmployeeID),
+        columns: ko.observableArray(result.columnCollection["Orders"])
+    }
+
+    var viewModel2 = {
+        data: ko.observableArray(result.collection[0].OrdersCollectionByEmployeeID[0].OrderDetailsCollectionByOrderID),
+        columns: ko.observableArray(result.columnCollection["OrderDetails"])
+    }
+
+    //------------------------------------------------------------------------------
+    // Employee Grid
+    //------------------------------------------------------------------------------
+    var employeesGrid = new po.poGrid(viewModel.data, viewModel.columns);
+    employeesGrid.pager = new po.dataPager(employeesGrid);   // Notice we use the Punchout dataPager here
+    employeesGrid.sorter = new po.dataSorter(employeesGrid); // Notice we use the Punchout dataSorter here
+    employeesGrid.pager.rowsPerPage(5);
+
+    //------------------------------------------------------------------------------
+    // Orders Grid
+    //------------------------------------------------------------------------------
+    var ordersGrid = new po.poGrid(viewModel1.data, viewModel1.columns);
+    ordersGrid.pager = new po.dataPager(ordersGrid);   // Notice we use the Punchout dataPager here
+    ordersGrid.sorter = new po.dataSorter(ordersGrid); // Notice we use the Punchout dataSorter here
+    ordersGrid.pager.rowsPerPage(5);
+
+    //------------------------------------------------------------------------------
+    // OrderItems Grid
+    //------------------------------------------------------------------------------
+    var orderDetailsGrid = new po.poGrid(viewModel2.data, viewModel2.columns);
+    orderDetailsGrid.pager = new po.dataPager(orderDetailsGrid);   // Notice we use the Punchout dataPager here
+    orderDetailsGrid.sorter = new po.dataSorter(orderDetailsGrid); // Notice we use the Punchout dataSorter here
+    orderDetailsGrid.pager.rowsPerPage(5);
+
+    ko.applyBindings(employeesGrid);
+    ko.applyBindings(ordersGrid, document.getElementById('grid1'));
+    ko.applyBindings(orderDetailsGrid, document.getElementById('grid2'));
+
+</script>
+

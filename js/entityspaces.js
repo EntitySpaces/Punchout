@@ -284,16 +284,7 @@
             this.initialized = true;
 
             resultSet = es.makeRequest(this.service, this.method, ko.toJSON(this.pagerRequest));
-
-            if (resultSet.columnCollection !== null) {
-                for (i = 0; i < resultSet.columnCollection.length; i++) {
-                    resultSet.columnCollection[resultSet.columnCollection[i].Key] = resultSet.columnCollection[i].Value;
-                }
-
-                for (i = resultSet.columnCollection.length - 1; i >= 0; i--) {
-                    delete resultSet.columnCollection[i];
-                }
-            }
+            es.flattenColumnCollection(resultSet.columnCollection);
 
             data = es.mapping.fromJS(resultSet.collection);
 
@@ -620,6 +611,19 @@
         for (i = 0; i < collection().length; i += 1) {
             entity = collection()[i];
             es.markAsDeleted(entity);
+        }
+    };
+
+    es.flattenColumnCollection = function (columnCollection) {
+
+        if (columnCollection !== null) {
+            for (i = 0; i < columnCollection.length; i++) {
+                columnCollection[columnCollection[i].Key] = columnCollection[i].Value;
+            }
+
+            for (i = columnCollection.length - 1; i >= 0; i--) {
+                delete columnCollection[i];
+            }
         }
     };
 

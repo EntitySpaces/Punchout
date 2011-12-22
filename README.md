@@ -1,7 +1,7 @@
 Purpose of Punchout
 ==================================
 
-**The Punchout Controls** are a set of javascript user interface controls for Knockout (MVVM) library for Javascript. Punchout is currently up-to-date with Knockout 1.3.
+**The Punchout Controls** are a set of javascript user interface controls for Knockout (MVVM) library for Javascript. Punchout is currently up-to-date with Knockout 2.0.
 
 Controls Currently Under Development
 ---------------------

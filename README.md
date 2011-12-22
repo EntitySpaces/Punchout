@@ -23,6 +23,9 @@ EntitySpaces, LLC will be contributing much to this library, however, we will be
 
  * **Punchout poGrid Sample** (This example uses EntitySpaces)
     [poGrid Sample](http://www.entityspaces.net/Punchout/examples/EntitySpaces/SampleGrid.htm) 
+
+ * **Punchout Hierarchical poGrid Sample - a work in progress ** (This example uses EntitySpaces)
+    [poGrid Sample](http://www.entityspaces.net/Punchout/examples/EntitySpaces/HierarchicalGrid.htm)
 	
  * **Punchout poGrid Sample** (This example does not EntitySpaces)
     [poGrid Sample](http://www.entityspaces.net/Punchout/examples/Non-EntitySpaces/SampleGrid.htm) 	

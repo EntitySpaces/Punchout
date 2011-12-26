@@ -701,12 +701,15 @@
         return root;
     }
 
-    es.makeRequstError = null;
+    es.makeRequest = function (url, methodName, params, successCallback, failureCallback) {
 
-    es.makeRequest = function (url, methodName, params) {
-        var theData = null, path = null, xmlHttp;
+        var theData = null, path = null, async = false, xmlHttp, success, failure, noop = function () { };
 
-        es.getDataError = null;
+        if (successCallback !== undefined || failureCallback !== undefined) {
+            async = true;
+            success = successCallback || noop;
+            failure = failureCallback || noop;
+        }
 
         // Create HTTP request
         try {
@@ -728,16 +731,31 @@
         path = url + methodName;
 
         // Make the HTTP request
-        xmlHttp.open("POST", path, false);
+        xmlHttp.open("POST", path, async);
         xmlHttp.setRequestHeader("Content-type", "application/json; charset=utf-8");
+
+        if (async === true) {
+            xmlHttp.onreadystatechange = function () {
+                if (xmlHttp.readyState === 4) {
+                    if (xmlHttp.status === 200) {
+                        success(JSON.parse(xmlHttp.responseText));
+                    } else {
+                        failure(xmlHttp.status, xmlHttp.statusText);
+                    }
+                }
+            };
+        }
+
         xmlHttp.send(params);
 
-        if (xmlHttp.status === 200) {
-            if (xmlHttp.responseText !== '{}' && xmlHttp.responseText !== "") {
-                theData = JSON.parse(xmlHttp.responseText);
+        if (async === false) {
+            if (xmlHttp.status === 200) {
+                if (xmlHttp.responseText !== '{}' && xmlHttp.responseText !== "") {
+                    theData = JSON.parse(xmlHttp.responseText);
+                }
+            } else {
+                es.makeRequstError = xmlHttp.statusText;
             }
-        } else {
-            es.makeRequstError = xmlHttp.responseText;
         }
 
         return theData;

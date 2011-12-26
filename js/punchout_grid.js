@@ -63,8 +63,7 @@
             this.sort = function (column, dir) {
                 alert("Sort on " + column + " dir " + dir);
             };
-        },
-
+        }
     };
 
     // Google Closure Compiler helpers (used only to make the minified file smaller)

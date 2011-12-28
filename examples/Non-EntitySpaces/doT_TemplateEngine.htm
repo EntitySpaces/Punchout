@@ -1,0 +1,88 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>The doT template engine</title>
+    <script src="../../lib/json2.js" type="text/javascript"></script>
+    <script src="../../lib/jquery-1.7.js" type="text/javascript"></script>
+    <script src="../../lib/templating.js" type="text/javascript"></script>
+    <script src="../../lib/knockout-2.0.0.debug.js" type="text/javascript"></script>
+    <script src="../../lib/knockout.mapping.js" type="text/javascript"></script>
+</head>
+
+<body>
+
+    <button data-bind="click: onCol6Change" style="width:280px">Change Col6 for first 15 rows ...</button>
+
+    <div data-bind="template: { name: 'doT-template' }"></div>
+
+    <!-- An example Template -->
+    <script type="text/html" id="doT-template">
+        <table style="position:fixed; top:6em">
+           `for ( t=0 ; t < Self.Items.length ; t++ ) { var x= Self.Items[t]; `
+           <tr>
+              <td>`=x.Col1`</td>
+              <td>`=x.Col2`</td>
+              <td>`=x.Col3`</td>
+              <td>`=x.Col4`</td>
+              <td>`=x.Col5`</td>
+              <td>`=x.Col6()`</td>
+              <td>`=x.Col7`</td>
+              <td>`=x.Col8`</td>
+              <td>`=x.Col9`</td>
+              <td>`=x.Col10`</td>
+              <td>`=x.Col11`</td>
+              <td>`=x.Col12`</td>
+           </tr> `}`
+        </table>
+    </script>
+
+</body>
+    
+</html>
+
+<script type="text/javascript">
+
+    function onCol6Change() {
+
+        var i;
+        for (i = 0; i < 15; i++) {
+            viewModel.Items[i].Col6(Math.random().toString());
+        }
+    }
+
+    var viewModel = {
+        Items : []
+    };
+
+    for (var t = 1; t <= 1000; t++)
+        viewModel.Items.push({
+            Col1: "C1R" + t.toString(),
+            Col2: "C2R" + t.toString(),
+            Col3: "C3R" + t.toString(),
+            Col4: "C4R" + t.toString(),
+            Col5: "C5R" + t.toString(),
+            Col6: ko.observable("C6R" + t.toString()),
+            Col7: "C7R" + t.toString(),
+            Col8: "C8R" + t.toString(),
+            Col9: "C9R" + t.toString(),
+            Col10: "C10R" + t.toString(),
+            Col11: "C11R" + t.toString(),
+            Col12: "C12R" + t.toString()
+        });
+
+
+    /* --- Begin defining doT template engine --- */
+    ko.doT_TemplateEngine = function () { }
+    ko.doT_TemplateEngine.prototype = ko.utils.extend(new ko.templateEngine(), {
+        renderTemplateSource: function (templateSource, bindingContext, options) {
+
+            var template = Templating.template(document.getElementById("doT-template").innerHTML);
+            return ko.utils.parseHtmlFragment(template(viewModel));
+        }
+    });
+    ko.setTemplateEngine(new ko.doT_TemplateEngine());
+    /* --- End defining Underscore template engine --- */
+
+    ko.applyBindings(viewModel);
+</script>

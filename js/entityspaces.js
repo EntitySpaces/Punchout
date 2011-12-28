@@ -21,6 +21,22 @@
         owner[publicName] = object;
     };
 
+    //#region Private Methods
+
+    function isEntitySpacesCollection(array) {
+        var isEsArray = false;
+
+        if (es.isArray(array)) {
+            if (array.length > 0) {
+                if (array[0].hasOwnProperty("RowState")) {
+                    isEsArray = true;
+                }
+            }
+        }
+
+        return isEsArray;
+    }
+
     function addPropertyChangedHandlers(obj, propertyName) {
 
         var property = obj[propertyName];
@@ -46,6 +62,34 @@
         return ko.isObservable(value) ? value() : value;
     }
 
+    //#endregion
+
+    es.isArray = function (array) {
+        if (!array) { return false; }
+        return array.isArray || Object.prototype.toString.call(array) === '[object Array]';
+    };
+
+    es.pagerRequest = function () {
+        this.initialRequest = 1;
+        this.totalRows = 0;
+        this.pageSize = 10;
+        this.pageNumber = 1;
+        this.sortCriteria = new Array();
+    };
+
+    //---------------------------------------------------
+    // Private helper functions
+    //---------------------------------------------------
+    es.RowStateEnum = {
+        invalid: 0,
+        unchanged: 2,
+        added: 4,
+        deleted: 8,
+        modified: 16
+    };
+
+    //#region Traverse
+
     // ===============================================================
     // BEGIN
     // ===============================================================
@@ -62,10 +106,6 @@
         }
         this.value = obj;
     }
-
-    var Array_isArray = Array.isArray || function isArray(xs) {
-        return Object.prototype.toString.call(xs) === '[object Array]';
-    };
 
     var Object_keys = Object.keys || function keys(obj) {
         var res = [];
@@ -198,7 +238,7 @@
         if (typeof src === 'object' && src !== null) {
             var dst;
 
-            if (Array_isArray(src)) {
+            if (es.isArray(src)) {
                 dst = [];
             }
             else if (src instanceof Date) {
@@ -234,30 +274,9 @@
         else return src;
     }
 
-    // ===============================================================
-    // END
-    // ===============================================================
-    // Copyright 2010 James Halliday (mail@substack.net)
-    //
-    // js-traverse
-    //
-    // https://github.com/substack/js-traverse/blob/master/LICENSE
-    // ===============================================================
+    //#endregion
 
-    function isEntitySpacesCollection(array) {
-
-        var isEsArray = false;
-
-        if (Array_isArray(array)) {
-            if (array.length > 0) {
-                if (array[0].hasOwnProperty("RowState")) {
-                    isEsArray = true;
-                }
-            }
-        }
-
-        return isEsArray;
-    }
+    //#region es.dataPager
 
     es.dataPager = function (grid, service, method) {
 
@@ -336,6 +355,10 @@
         this.init();
     };
 
+    //#endregion
+
+    //#region es.dataSorter
+
     es.dataSorter = function (grid) {
 
         this.grid = grid;
@@ -360,24 +383,9 @@
         };
     };
 
-    es.pagerRequest = function () {
-        this.initialRequest = 1;
-        this.totalRows = 0;
-        this.pageSize = 10;
-        this.pageNumber = 1;
-        this.sortCriteria = new Array();
-    };
+    //#endregion
 
-    //---------------------------------------------------
-    // Private helper functions
-    //---------------------------------------------------
-    es.RowStateEnum = {
-        invalid: 0,
-        unchanged: 2,
-        added: 4,
-        deleted: 8,
-        modified: 16
-    };
+    //#region es.mapping
 
     //---------------------------------------------------
     // Public functions
@@ -490,6 +498,8 @@
         }
 
     })();
+
+    //#endregion
 
     es.startTracking = function (entity) {
 
@@ -661,7 +671,7 @@
 
         if (paths.length > 0) {
 
-            if (Array_isArray(obj)) {
+            if (es.isArray(obj)) {
                 dirty = [];
             } else {
                 dirty = shallowCopy(obj);
@@ -679,7 +689,7 @@
 
                     if (!dirty.hasOwnProperty(thePath[k])) {
 
-                        if (Array_isArray(data[thePath[k]])) {
+                        if (es.isArray(data[thePath[k]])) {
                             dirty[thePath[k]] = [];
                             dirty = dirty[thePath[k]];
                         }
@@ -690,7 +700,7 @@
                     data = data[thePath[k]];
                 }
 
-                if (Array_isArray(dirty)) {
+                if (es.isArray(dirty)) {
                     dirty.push(shallowCopy(data));
                 } else {
                     dirty = shallowCopy(data);

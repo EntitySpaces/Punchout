@@ -71,7 +71,7 @@
         orderDetailsGrid.collection(ko.observableArray(ordersGrid.selectedEntity().OrderDetailsCollectionByOrderID));
     }
 
-    var result = es.makeRequest(service, 'Employees_LoadForHierarchical');
+    var result = es.makeRequest(service, 'Employees_LoadHierarchical');
     es.flattenColumnCollection(result.columnCollection);
 
     var viewModel = {
